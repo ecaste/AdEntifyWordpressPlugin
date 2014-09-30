@@ -1,2 +1,14 @@
-<img src="{{ imageUrl }}" />
+<div class="adentify-container">
+    <img src="{{ imageUrl }}" />
+    <ul class="tags">
+        {% for tag in tags %}
+            <li>
+                {% if tag.type == 'place' %}{{ include('tags/venue.html.twig', { model: tag }) }}
+                {% elseif tag.type == 'person' %}{{ include('tags/person.html.twig', { model: tag }) }}
+                {% else %}{{ include('tags/product.html.twig', { model: tag }) }}{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
 <a href="{{ link }}">{{ caption }}</a>

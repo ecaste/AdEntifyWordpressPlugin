@@ -1,0 +1,18 @@
+{% if model is defined %}
+<div class="tag person-tag-container">
+    <div class="tag-user-icon tag-icon"></div>
+    <div class="popover">
+        <div class="tag-popover-arrow"></div>
+        <div class="popover-inner">
+            {% if model.link is defined or model.person.link is defined %}
+            <a class="person-picture" href="{{ model.link is defined ? model.link : model.person.link }}" target="_blank"><img src="{{ model.personModel.largeProfilePicture }}" /></a>
+            <span class="title"><a href="{{ model.link is defined ? model.link : model.person.link }}" target="_blank">{{ model.title }}</a></span>
+            {% else %}
+            <div class="person-picture"><img src="<%= model.get('personModel').get('largeProfilePicture') %>" /></div>
+            <span class="title">{{ model.title }}</span>
+            {% endif %}
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+{% endif %}

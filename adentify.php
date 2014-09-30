@@ -67,3 +67,22 @@ function my_the_content_filter( $content ) {
     // Returns the content.
     return $content;
 }
+
+add_action( 'admin_menu', 'adentify_setting_menu' );
+
+function adentify_setting_menu() {
+	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', 'adentify_plugin_settings', 'adentify_plugin_settings' );
+}
+
+function adentify_plugin_settings() {
+	if ( !current_user_can( 'manage_options' ) )  {
+		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+	}
+
+	$loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
+	$twig = new Twig_Environment($loader, array(
+		'cache' => ADENTIFY__PLUGIN_DIR . 'cache/templates',
+	));
+	$template = $twig->loadTemplate('adentify.settings.html.twig');
+	echo $template->render(array());
+}

@@ -1,0 +1,63 @@
+{% if model is defined %}
+<div class="tag product-tag-container">
+    <div class="glyphicon glyphicon-tag tag-icon"></div>
+    <div class="popover">
+        <div class="tag-popover-arrow"></div>
+        <div class="popover-inner">
+
+            {% if model.link %}
+            <span class="title"><a href="{{ model.link }}" target="_blank">{{ model.title }}</a></span>
+            {% else %}
+            <span class="title">{{ model.title }}</span>
+            {% endif %}
+
+            {% if model.product is defined and model.product.small_url %}
+            <div class="pull-left">
+                {% if model.link %}<a href="{{ model.link }}" target="_blank">{% endif %}
+                <img src="{{ model.product.small_url }}" class="product-photo" />
+                {% if model.link %}</a>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if model.description is defined and model.description %}
+            <p class="tag-description">{{ model.description }}</p>
+            {% elseif model.product is defined and model.product.description is defined and model.product.description %}
+            <p class="tag-description">{{ model.product.description }}</p>
+            {% endif %}
+
+            {% if model.brandModel is defined and model.brandModel %}
+            <div class="brand">
+                <a href="{{ model.brandModel.link }}">
+                    {% if model.brandModel.small_logo_url is not defined %}
+                    {{ model.brandModel.name }}
+                    {% else %}
+                    <img src="{{ model.brandModel.small_logo_url }}" alt="{{ model.brandModel.name }}" class="brand-logo" />
+                    {% endif %}
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+        <div class="clearfix"></div>
+        {% if model.product is defined and model.product.purchase_url
+        or (model.product is defined and model.product.legal_notice)
+        or (model.brandModel is defined and model.brandModel.legal_notice) %}
+        <div class="popover-details">
+            {% if model.product is defined and model.product.purchase_url %}
+            <p>
+                <a href="{{ model.link }}" target="_blank" class="more-info"><i class="icon-shopping-cart icon-white"></i> <%= $.t('tag.moreInfo') %></a>
+            </p>
+            <div class="row">
+                <div class="col-xs-6 more-info-url-wrapper">
+                    <a href="{{ model.link }}" target="_blank" class="more-info-url"><i class="glyphicon glyphicon-globe icon"></i> {{ model.link }}</a>
+                </div>
+                <div class="col-xs-6">
+                    <div class="venue-adress-wrapper"></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

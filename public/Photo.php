@@ -30,13 +30,14 @@ class Photo
     {
         $loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
         $twig = new Twig_Environment($loader, array(
-            'cache' => ADENTIFY__PLUGIN_DIR . 'cache/templates',
+            'cache' => WP_DEBUG ? false : ADENTIFY__PLUGIN_DIR . 'cache/templates',
         ));
         $template = $twig->loadTemplate('photo.html.twig');
         return $template->render(array(
             'link' => $this->getLink(),
             'imageUrl' => $this->getImageUrl(),
-            'caption' => $this->getCaption()
+            'caption' => $this->getCaption(),
+            'tags' => $this->getTags()
         ));
     }
 
@@ -53,7 +54,12 @@ class Photo
 
     public function getCaption()
     {
-        return $this->getJson()->caption;
+        return isset($this->getJson()->caption) ? $this->getJson()->caption : null;
+    }
+
+    public function getTags()
+    {
+        return $this->getJson()->tags;
     }
 
     /**

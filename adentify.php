@@ -29,6 +29,7 @@ defined('ABSPATH') or die("No script kiddies please!");
 define( 'ADENTIFY_API_ROOT_URL', 'https://adentify.com/api/v1/%s' );
 define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'PLUGIN_VERSION', '1.0.0');
 
 require 'vendor/autoload.php';
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
@@ -86,3 +87,20 @@ function adentify_plugin_settings() {
 	$template = $twig->loadTemplate('adentify.settings.html.twig');
 	echo $template->render(array());
 }
+
+/* CSS and JS files */
+function wptuts_styles_with_the_lot()
+{
+    // Register the style like this for a plugin:
+    wp_register_style( 'adentify-tags-style', plugins_url( '/css/adentify-tags.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+
+    // For either a plugin or a theme, you can then enqueue the style:
+    wp_enqueue_style( 'adentify-tags-style' );
+
+    // Register the script like this for a plugin:
+    wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+
+    // For either a plugin or a theme, you can then enqueue the script:
+    wp_enqueue_script( 'adentify-tags-js' );
+}
+add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );

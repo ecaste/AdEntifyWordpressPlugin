@@ -1,3 +1,60 @@
+{#<div class="wrap">#}
+    {#<input type="checkbox" name="photo-is-private" value="photo-is-private"> Display the photos uploaded here on adentify.com<br>#}
+    {#<input type="checkbox" name="adentify-database" value="adentify-database"> Access to adentify database's products<br>#}
+    {#<input type="radio" name="tags-visibility" value="always-visible"> Tags always visible<br>#}
+    {#<input type="radio" name="tags-visibility" value="visible-on-hover"> Tags visible on hover<br>#}
+{#</div>#}
+
 <div class="wrap">
-    <p>toto</p>
+    <h2>Adentify settings</h2>
+
+    <form method="post" action="" novalidate="novalidate">
+        <input type="hidden" name="<?php echo $check_post_hidden; ?>" value="Y">
+
+        {#<input type='hidden' name='option_page' value='adentify' /><input type="hidden" name="action" value="update" /><input type="hidden" name="_wp_http_referer" value="/wp-admin/options-general.php?page=adentify_plugin_settings" />#}
+        <table class="form-table">
+            <tr>
+                <th scope="row">Show photos on AdEntify</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Show photos on AdEntify</span>
+                        </legend>
+                        <label for="photo-is-private">
+                            <input name="photo-is-private" type="checkbox" id="photo-is-private" value="1"/> Display the photos uploaded here on AdEntify
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Products from AdEntify database</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Have access to adentify database's products</span>
+                        </legend>
+                        <label for="adentify-database">
+                            <input name="adentify-database" type="checkbox" id="adentify-database" value="1"/> Grant access to adentify database's products
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Tags visibility</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Display tags mode</span>
+                        </legend>
+                        <label for="tags-visibility">
+                            {#<input name="tags-visibility" type="checkbox" id="tags-visibility" value="1"/> Tags always visible#}
+                            <input type="radio" name="tags-visibility" value="always-visible"> Tags always visible &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="tags-visibility" value="visible-on-hover"> Tags only visible on hover<br>
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+        <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save the modifications"  /></p>
+    </form>
 </div>

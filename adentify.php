@@ -71,7 +71,7 @@ function my_the_content_filter( $content ) {
 add_action( 'admin_menu', 'adentify_setting_menu' );
 
 function adentify_setting_menu() {
-	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', 'adentify_plugin_settings', 'adentify_plugin_settings' );
+	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', 'adentify_plugin_submenu', 'adentify_plugin_settings' );
 }
 
 function adentify_plugin_settings() {
@@ -79,10 +79,123 @@ function adentify_plugin_settings() {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	}
 
+    $checkPostHidden = 'check_post_hidden';
+    $photoIsPrivate = 'photo-is-private';
+    $adEntifyDatabase = 'adentify-database';
+    $tagsVisibility = 'tags-visibility';
+
+
+    // Read in existing option value from database
+    $photoIsPrivate_val = get_option($photoIsPrivate);
+    $adEntifyDatabase_val = get_option($adEntifyDatabase);
+    $tagsVisibility_val = get_option($tagsVisibility);
+
+    // See if the user has posted us some information
+    // If they did, this hidden field will be set to 'Y'
+    if( isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y' ) {
+        $photoIsPrivate_val = $_POST[$photoIsPrivate];
+        $adEntifyDatabase_val = $_POST[$adEntifyDatabase];
+        $tagsVisibility_val = $_POST[$tagsVisibility];
+
+        // Save the posted value in the database
+        update_option($photoIsPrivate, $photoIsPrivate_val);
+        update_option($adEntifyDatabase, $adEntifyDatabase_val);
+        update_option($tagsVisibility, $tagsVisibility_val);
+
+        // Put an settings updated message on the screen
+
+        ?>
+        <div class="updated"><p><strong><?php _e('settings saved.', 'menu-test' ); ?></strong></p></div>
+    <?php
+
+    }
+
 	$loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
 	$twig = new Twig_Environment($loader, array(
-		'cache' => ADENTIFY__PLUGIN_DIR . 'cache/templates',
+		'cache' => WP_DEBUG ? false : ADENTIFY__PLUGIN_DIR . 'cache/templates',
 	));
 	$template = $twig->loadTemplate('adentify.settings.html.twig');
-	echo $template->render(array());
+	echo $template->render(array(
+        'photo-is-private' => $photoIsPrivate,
+        'adentify-database' => $adEntifyDatabase,
+        'tags-visibility' => $tagsVisibility,
+        'check-post-hidden' => $checkPostHidden,
+        'photo-is-private-val' => $photoIsPrivate_val,
+        'adentidy-database-val' => $adEntifyDatabase_val,
+        'tags-visibility-val' => $tagsVisibility_val,
+    ));
+}
+
+// Hook for adding admin menus
+add_action('admin_menu', 'mt_add_pages');
+
+// action function for above hook
+function mt_add_pages()
+{
+    // Add a new submenu under Settings:
+    add_options_page(__('Test Settings', 'menu-test'), __('Test Settings', 'menu-test'), 'manage_options', 'testsettings', 'mt_settings_page');
+}
+
+// mt_settings_page() displays the page content for the Test settings submenu
+function mt_settings_page() {
+
+    //must check that the user has the required capability
+    if (!current_user_can('manage_options'))
+    {
+        wp_die( __('You do not have sufficient permissions to access this page.') );
+    }
+
+    // variables for the field and option names
+    $opt_name = 'mt_favorite_color';
+    $hidden_field_name = 'mt_submit_hidden';
+    $data_field_name = 'mt_favorite_color';
+
+    // Read in existing option value from database
+    $opt_val = get_option( $opt_name );
+
+    // See if the user has posted us some information
+    // If they did, this hidden field will be set to 'Y'
+    if( isset($_POST[ $hidden_field_name ]) && $_POST[ $hidden_field_name ] == 'Y' ) {
+        // Read their posted value
+        $opt_val = $_POST[ $data_field_name ];
+
+        // Save the posted value in the database
+        update_option( $opt_name, $opt_val );
+
+        // Put an settings updated message on the screen
+
+        ?>
+        <div class="updated"><p><strong><?php _e('settings saved.', 'menu-test' ); ?></strong></p></div>
+    <?php
+
+    }
+
+    // Now display the settings editing screen
+
+    echo '<div class="wrap">';
+
+    // header
+
+    echo "<h2>" . __( 'Menu Test Plugin Settings', 'menu-test' ) . "</h2>";
+
+    // settings form
+
+    ?>
+
+    <form name="form1" method="post" action="">
+        <input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y">
+
+        <p><?php _e("Favorite Color:", 'menu-test' ); ?>
+            <input type="text" name="<?php echo $data_field_name; ?>" value="<?php echo $opt_val; ?>" size="20">
+        </p><hr />
+
+        <p class="submit">
+            <input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
+        </p>
+
+    </form>
+    </div>
+
+<?php
+
 }

@@ -33,9 +33,6 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility')));
-//define( 'ADENTIFY__OPT_IS_PRIVATE', 'photoIsPrivate' );
-//define( 'ADENTIFY__OPT_USE_DATABASE', 'adentifyDatabase');
-//define( 'ADENTIFY__OPT_TAGS_VISIBILITY', 'tagsVisibility' );
 
 require 'vendor/autoload.php';
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
@@ -92,9 +89,6 @@ function adentify_plugin_settings() {
     $twig_variable = array('checkPostHidden' => 'checkPostHidden');
     foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
         $settings[$key] = get_option($key);
-//    $photoIsPrivate_val = get_option(ADENTIFY__OPT_IS_PRIVATE);
-//    $adEntifyDatabase_val = get_option(ADENTIFY__OPT_USE_DATABASE);
-//    $tagsVisibility_val = get_option(ADENTIFY__OPT_TAGS_VISIBILITY);
 
     if (isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y') {
         foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
@@ -102,12 +96,6 @@ function adentify_plugin_settings() {
             $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
             update_option($key, $settings[$key]);
         }
-//        $photoIsPrivate_val = (isset($_POST[ADENTIFY__OPT_IS_PRIVATE])) ? $_POST[ADENTIFY__OPT_IS_PRIVATE] : null;
-//        $adEntifyDatabase_val = (isset($_POST[ADENTIFY__OPT_USE_DATABASE])) ? $_POST[ADENTIFY__OPT_USE_DATABASE] : null;
-//        $tagsVisibility_val = (isset($_POST[ADENTIFY__OPT_TAGS_VISIBILITY])) ? $_POST[ADENTIFY__OPT_TAGS_VISIBILITY] : null;
-//        update_option(ADENTIFY__OPT_IS_PRIVATE, $photoIsPrivate_val);
-//        update_option(ADENTIFY__OPT_USE_DATABASE, $adEntifyDatabase_val);
-//        update_option(ADENTIFY__OPT_TAGS_VISIBILITY, $tagsVisibility_val);
         ?>
         <div class="updated"><p><strong>Settings saved.</strong></p></div>
     <?php
@@ -118,14 +106,4 @@ function adentify_plugin_settings() {
         $twig_variable[$key] = $key;
     }
     echo Twig::render('adentify.settings.html.twig', $twig_variable);
-
-/*        array(
-        'photoIsPrivate' => 'photoIsPrivate',
-        'adentifyDatabase' => 'adentifyDatabase',
-        'tagsVisibility' => 'tagsVisibility',
-        'checkPostHidden' => $checkPostHidden,
-        'photoIsPrivateVal' => $photoIsPrivate_val,
-        'adentifyDatabaseVal' => $adEntifyDatabase_val,
-        'tagsVisibilityVal' => $tagsVisibility_val,
-    ));*/
 }

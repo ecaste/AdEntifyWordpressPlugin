@@ -59,14 +59,7 @@ class Photo
 
     public function getTags()
     {
-        $tags = $this->getJson()->tags;
-        if (count($tags) > 0) {
-            foreach($tags as $tag) {
-                $tag->style = sprintf('left: %s%%; top: %s%%; margin-left: %spx; margin-top: %spx', ($tag->x_position * 100), ($tag->y_position * 100),  '-15', '-15');
-            }
-        }
-
-        return $tags;
+        return $this->getJson()->tags;
     }
 
     /**

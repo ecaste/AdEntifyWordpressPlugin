@@ -107,3 +107,23 @@ function adentify_plugin_settings() {
     }
     echo Twig::render('adentify.settings.html.twig', $twig_variable);
 }
+
+function adentify_upload_image_button($editor_id = 'content') {
+
+    $post = get_post();
+    if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
+        $post = $GLOBALS['post_ID'];
+
+    wp_enqueue_media( array(
+        'post' => $post
+    ) );
+
+    $img = '<span class="wp-media-buttons-icon"></span> ';
+
+    printf( '<a href="#" id="adentify-upload-img" class="button add_media" data-editor="%s" title="%s">%s</a>',
+        esc_attr( $editor_id ),
+        esc_attr__( 'Upload image' ),
+        $img . __( 'Upload image' )
+    );
+}
+add_action( 'media_buttons', 'adentify_upload_image_button' );

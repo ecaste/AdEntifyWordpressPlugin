@@ -1,5 +1,5 @@
 {% if model is defined %}
-<div class="tag product-tag-container">
+<div class="tag product-tag-container" style="{{ tag.style }}">
     <div class="glyphicon glyphicon-tag tag-icon"></div>
     <div class="popover">
         <div class="tag-popover-arrow"></div>
@@ -39,25 +39,6 @@
 
         </div>
         <div class="clearfix"></div>
-        {% if model.product is defined and model.product.purchase_url
-        or (model.product is defined and model.product.legal_notice)
-        or (model.brandModel is defined and model.brandModel.legal_notice) %}
-        <div class="popover-details">
-            {% if model.product is defined and model.product.purchase_url %}
-            <p>
-                <a href="{{ model.link }}" target="_blank" class="more-info"><i class="icon-shopping-cart icon-white"></i> <%= $.t('tag.moreInfo') %></a>
-            </p>
-            <div class="row">
-                <div class="col-xs-6 more-info-url-wrapper">
-                    <a href="{{ model.link }}" target="_blank" class="more-info-url"><i class="glyphicon glyphicon-globe icon"></i> {{ model.link }}</a>
-                </div>
-                <div class="col-xs-6">
-                    <div class="venue-adress-wrapper"></div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endif %}

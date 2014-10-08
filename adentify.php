@@ -33,6 +33,7 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility')));
+define( 'PLUGIN_VERSION', '1.0.0');
 
 require 'vendor/autoload.php';
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
@@ -127,3 +128,20 @@ function adentify_upload_image_button($editor_id = 'content') {
     );
 }
 add_action( 'media_buttons', 'adentify_upload_image_button' );
+
+/* CSS and JS files */
+function wptuts_styles_with_the_lot()
+{
+    // Register the style like this for a plugin:
+    wp_register_style( 'adentify-tags-style', plugins_url( '/css/adentify-tags.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+
+    // For either a plugin or a theme, you can then enqueue the style:
+    wp_enqueue_style( 'adentify-tags-style' );
+
+    // Register the script like this for a plugin:
+    wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+
+    // For either a plugin or a theme, you can then enqueue the script:
+    wp_enqueue_script( 'adentify-tags-js' );
+}
+add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );

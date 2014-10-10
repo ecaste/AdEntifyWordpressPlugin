@@ -109,25 +109,26 @@ function adentify_plugin_settings() {
     echo Twig::render('adentify.settings.html.twig', $twig_variable);
 }
 
-function adentify_upload_image_button($editor_id = 'content') {
-
+function adentify_button($editor_id = 'content') {
+/*
+    //enqueues everything needed to use media JavaScript APIs
     $post = get_post();
     if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
         $post = $GLOBALS['post_ID'];
 
     wp_enqueue_media( array(
         'post' => $post
-    ) );
+    ) );*/
 
-    $img = '<span class="wp-media-buttons-icon"></span> ';
-
+    //displays the button
     printf( '<a href="#" id="adentify-upload-img" class="button add_media" data-editor="%s" title="%s">%s</a>',
         esc_attr( $editor_id ),
-        esc_attr__( 'Upload image' ),
-        $img . __( 'Upload image' )
+        esc_attr__( 'Upload images with AdEntify plugin' ),
+        'AdEntify'
     );
+    echo Twig::render('tags\upload.modal.html.twig', array());
 }
-add_action( 'media_buttons', 'adentify_upload_image_button' );
+add_action( 'media_buttons', 'adentify_button' );
 
 /* CSS and JS files */
 function wptuts_styles_with_the_lot()
@@ -145,3 +146,5 @@ function wptuts_styles_with_the_lot()
     wp_enqueue_script( 'adentify-tags-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+

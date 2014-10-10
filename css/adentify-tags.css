@@ -47,3 +47,15 @@
                 padding: 6px;
             }
             /* END : Popover styles */
+
+.ad-media-modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    min-height: 360px;
+    background: #000;
+    opacity: 0.7;
+    z-index: 159900;
+}

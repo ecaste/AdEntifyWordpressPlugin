@@ -43,7 +43,7 @@ class APIManager
      */
     private function deleteAction($url) {
         $response = $this->client->delete(sprintf(ADENTIFY_API_ROOT_URL, $url));
-        return $response->getStatusCode() == 200 | $response->getStatusCode() == 204;
+        return $response->getStatusCode() == 200 || $response->getStatusCode() == 204;
     }
 
     /**

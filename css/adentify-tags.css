@@ -59,3 +59,45 @@
     opacity: 0.7;
     z-index: 159900;
 }
+
+.ad-media-frame-title {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 0;
+    height: 50px;
+    z-index: 200;
+}
+
+.ad-media-frame-router {
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    right: 0;
+    height: 36px;
+    z-index: 200;
+}
+
+.ad-media-frame-content {
+    position: absolute;
+    top: 84px;
+    left: 0px;
+    right: 0;
+    bottom: 61px;
+    height: auto;
+    width: auto;
+    margin: 0;
+    overflow: auto;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.ad-media-frame-toolbar {
+    position: absolute;
+    left: 0px;
+    right: 0;
+    bottom: 0;
+    height: 60px;
+    z-index: 100;
+}

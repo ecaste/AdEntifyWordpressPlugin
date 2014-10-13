@@ -11,6 +11,8 @@ class Photo
     protected $client;
     protected $id;
     protected $json;
+    protected $caption;
+    protected $visibilityScope = 'public';
 
     public function __construct($id)
     {
@@ -41,6 +43,22 @@ class Photo
         ));
     }
 
+    /**
+     * Serialize photo to an array
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $photo = array(
+            'source' => 'wordpress',
+            'visibility_scope' => $this->visibilityScope
+        );
+        if ($this->caption)
+            $photo['caption'] = $this->caption;
+        return $photo;
+    }
+
     public function getLink()
     {
         // TODO: add language config
@@ -55,6 +73,15 @@ class Photo
     public function getCaption()
     {
         return isset($this->getJson()->caption) ? $this->getJson()->caption : null;
+    }
+
+    /**
+     * @param mixed $caption
+     */
+    public function setCaption($caption)
+    {
+        $this->caption = $caption;
+        return $this;
     }
 
     public function getTags()
@@ -99,6 +126,23 @@ class Photo
     public function setJson($json)
     {
         $this->json = json_decode($json);
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVisibilityScope()
+    {
+        return $this->visibilityScope;
+    }
+
+    /**
+     * @param mixed $visibilityScope
+     */
+    public function setVisibilityScope($visibilityScope)
+    {
+        $this->visibilityScope = $visibilityScope;
         return $this;
     }
 }

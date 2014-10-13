@@ -17,7 +17,7 @@ class APIManager
         $this->client = new GuzzleHttp\Client();
         $this->config = array(
             'curl' => array(
-                CURLOPT_SSL_VERIFYPEER => !WP_DEBUG
+                CURLOPT_SSL_VERIFYPEER => !WP_DEBUG,
             )
         );
     }
@@ -165,11 +165,22 @@ class APIManager
         )));
     }
 
-    public function getAuthorizationHeader()
+    private function getAuthorizationHeader()
     {
-        return array(
+        return $this->getAccessToken() ? array(
             'Authorization' => sprintf('Bearer %s', $this->getAccessToken())
-        );
+        ) : array();
+    }
+
+    private function getCsrfToken($intention)
+    {
+        try {
+            $response = $this->getAction(sprintf('csrftokens/%s', $intention));
+            $json = json_decode($response);
+            return isset($json->csrf_token) ? $json->csrf_token : false;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return false;
+        }
     }
 
     /**
@@ -181,7 +192,9 @@ class APIManager
     private function getAction($url, $rootUrl = ADENTIFY_API_ROOT_URL) {
         try {
             $response = $this->client->get(sprintf($rootUrl, $url), array(
-                'config' => $this->config
+                'headers' => $this->getAuthorizationHeader(),
+                'config' => $this->config,
+                'cookies' => true,
             ));
             if ($response->getStatusCode() == 200) {
                 return $response->getBody();
@@ -198,28 +211,14 @@ class APIManager
      * @param $url
      * @return int
      */
-    private function deleteAction($url, $headers = array()) {
+    private function deleteAction($url) {
         try {
             $response = $this->client->delete(sprintf(ADENTIFY_API_ROOT_URL, $url), array(
-                'headers' => $headers,
-                'config' => $this->config
+                'headers' => $this->getAuthorizationHeader(),
+                'config' => $this->config,
+                'cookies' => true,
             ));
             return $response->getStatusCode() == 200 || $response->getStatusCode() == 204;
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return false;
-        }
-    }
-
-    private function getCsrfToken($intention)
-    {
-        try {
-            $response = $this->client->get(sprintf(ADENTIFY_API_ROOT_URL, sprintf('csrftokens/%s', $intention)), array(
-                'config' => $this->config
-            ));
-            if ($response->getStatusCode() == 200) {
-                $json = json_decode($response->getBody());
-                return isset($json->csrf_token) ? $json->csrf_token : false;
-            }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             return false;
         }
@@ -237,8 +236,9 @@ class APIManager
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
                 'body' => $body,
-                'headers' => $headers,
-                'config' => $this->config
+                'headers' => $this->getAuthorizationHeader(),
+                'config' => $this->config,
+                'cookies' => true,
             ));
             return $response->getStatusCode() == 200 ? $response->getBody() : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {

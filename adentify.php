@@ -26,7 +26,7 @@
 */
 
 defined('ABSPATH') or die("No script kiddies please!");
-define( 'ADENTIFY_API_ROOT_URL', 'https://adentify.com/api/v1/%s' );
+define( 'ADENTIFY_API_ROOT_URL', 'https://dev.adentify.com/api/v1/%s' );
 define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_VERSION', '1.0.0');

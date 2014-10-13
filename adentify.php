@@ -26,7 +26,7 @@
 */
 
 defined('ABSPATH') or die("No script kiddies please!");
-define( 'ADENTIFY_API_ROOT_URL', 'https://dev.adentify.com/api/v1/%s' );
+define( 'ADENTIFY_API_ROOT_URL', 'http://dev.adentify.com/api/v1/%s' );
 define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
@@ -36,7 +36,9 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
 define( 'PLUGIN_VERSION', '1.0.0');
 
 require 'vendor/autoload.php';
+require_once( ADENTIFY__PLUGIN_DIR . 'public/APIManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
+require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );

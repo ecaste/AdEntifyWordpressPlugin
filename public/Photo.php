@@ -22,25 +22,20 @@ class Photo
 
     public function load()
     {
-        $response = $this->client->get(sprintf(ADENTIFY_API_ROOT_URL, sprintf('photos/%s', $this->id)));
-        if ($response->getStatusCode() == 200) {
-            $this->setJson($response->getBody());
+        $photo = APIManager::getInstance()->getPhoto($this->id);
+        if (!empty($photo)) {
+            $this->setJson($photo);
         }
     }
 
     public function render()
     {
-        $loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
-        $twig = new Twig_Environment($loader, array(
-            'cache' => WP_DEBUG ? false : ADENTIFY__PLUGIN_DIR . 'cache/templates',
-        ));
-        $template = $twig->loadTemplate('photo.html.twig');
-        return $template->render(array(
+        return $this->getJson() ? Twig::render('photo.html.twig', array(
             'link' => $this->getLink(),
             'imageUrl' => $this->getImageUrl(),
             'caption' => $this->getCaption(),
             'tags' => $this->getTags()
-        ));
+        )) : 'Can\'t load this image.';
     }
 
     /**

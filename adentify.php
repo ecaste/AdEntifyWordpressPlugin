@@ -29,10 +29,15 @@ defined('ABSPATH') or die("No script kiddies please!");
 define( 'ADENTIFY_API_ROOT_URL', 'https://dev.adentify.com/api/v1/%s' );
 define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
+    'IS_PRIVATE' => 'photoIsPrivate',
+    'USE_DATABASE' => 'adentifyDatabase',
+    'TAGS_VISIBILITY' => 'tagsVisibility')));
 define( 'PLUGIN_VERSION', '1.0.0');
 
 require 'vendor/autoload.php';
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
+require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
@@ -72,7 +77,7 @@ function my_the_content_filter( $content ) {
 add_action( 'admin_menu', 'adentify_setting_menu' );
 
 function adentify_setting_menu() {
-	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', 'adentify_plugin_settings', 'adentify_plugin_settings' );
+	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', 'adentify_plugin_submenu', 'adentify_plugin_settings' );
 }
 
 function adentify_plugin_settings() {
@@ -80,13 +85,50 @@ function adentify_plugin_settings() {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	}
 
-	$loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
-	$twig = new Twig_Environment($loader, array(
-		'cache' => ADENTIFY__PLUGIN_DIR . 'cache/templates',
-	));
-	$template = $twig->loadTemplate('adentify.settings.html.twig');
-	echo $template->render(array());
+    $checkPostHidden = 'checkPostHidden';
+    $settings = array();
+    $twig_variable = array('checkPostHidden' => 'checkPostHidden');
+    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
+        $settings[$key] = get_option($key);
+
+    if (isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y') {
+        foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
+        {
+            $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
+            update_option($key, $settings[$key]);
+        }
+        ?>
+        <div class="updated"><p><strong>Settings saved.</strong></p></div>
+    <?php
+    }
+    foreach($settings as $key => $value)
+    {
+        $twig_variable[$key.'Val'] = $value;
+        $twig_variable[$key] = $key;
+    }
+    echo Twig::render('adentify.settings.html.twig', $twig_variable);
 }
+
+function adentify_button($editor_id = 'content') {
+/*
+    //enqueues everything needed to use media JavaScript APIs
+    $post = get_post();
+    if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
+        $post = $GLOBALS['post_ID'];
+
+    wp_enqueue_media( array(
+        'post' => $post
+    ) );*/
+
+    //displays the button
+    printf( '<a href="#" id="adentify-upload-img" class="button add_media" data-editor="%s" title="%s">%s</a>',
+        esc_attr( $editor_id ),
+        esc_attr__( 'Upload images with AdEntify plugin' ),
+        'AdEntify'
+    );
+    echo Twig::render('tags\upload.modal.html.twig', array());
+}
+add_action( 'media_buttons', 'adentify_button' );
 
 /* CSS and JS files */
 function wptuts_styles_with_the_lot()
@@ -104,3 +146,5 @@ function wptuts_styles_with_the_lot()
     wp_enqueue_script( 'adentify-tags-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+

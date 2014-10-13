@@ -1,3 +1,50 @@
 <div class="wrap">
-    <p>toto</p>
+    <h2>Adentify settings</h2>
+    <form method="post" action="" novalidate="novalidate">
+        <input type="hidden" name="{{ checkPostHidden }}" value="Y">
+
+        <table class="form-table">
+            <tr>
+                <th scope="row">Show photos on AdEntify</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Show photos on AdEntify</span>
+                        </legend>
+                        <label for="photoIsPrivate">
+                            <input name="photoIsPrivate" type="checkbox" id="photoIsPrivate" {% if(photoIsPrivateVal) %} checked {% endif %}/> Display the photos uploaded here on AdEntify
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Products from AdEntify database</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Have access to adentify database's products</span>
+                        </legend>
+                        <label for="adentifyDatabase">
+                            <input name="adentifyDatabase" type="checkbox" id="adentifyDatabase" {% if(adentifyDatabaseVal) %} checked {% endif %}"/> Grant access to adentify database's products
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Tags visibility</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Display tags mode</span>
+                        </legend>
+                        <label for="tagsVisibility">
+                            <input type="radio" name="tagsVisibility" value="always-visible" {{ (tagsVisibilityVal == 'always-visible') ? 'checked' : null }}> Tags always visible &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="tagsVisibility" value="visible-on-hover" {{ (tagsVisibilityVal == 'visible-on-hover') ? 'checked' : null }}> Tags only visible on hover<br>
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+        <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save the modifications"  /></p>
+    </form>
 </div>

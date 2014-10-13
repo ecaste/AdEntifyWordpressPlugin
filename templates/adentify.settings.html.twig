@@ -1,5 +1,12 @@
 <div class="wrap">
     <h2>Adentify settings</h2>
+
+    {% if authorization_url is defined %}
+        <div class="error">
+            <p>You have to link your AdEntify account to the plugin before using it, please connect to your AdEntify account on adentify.com and go to this <a href="{{ authorization_url }}">url to authorized the Plugin Wordpress app</a>.</p>
+        </div>
+    {% endif %}
+
     <form method="post" action="" novalidate="novalidate">
         <input type="hidden" name="{{ checkPostHidden }}" value="Y">
 

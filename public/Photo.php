@@ -14,7 +14,7 @@ class Photo
     protected $caption;
     protected $visibilityScope = 'public';
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
         $this->id = $id;
         $this->client = new GuzzleHttp\Client();
@@ -43,14 +43,16 @@ class Photo
      *
      * @return array
      */
-    public function serialize()
+    public function serialize($data = array())
     {
         $photo = array(
             'source' => 'wordpress',
-            'visibility_scope' => $this->visibilityScope
+            'visibility_scope' => $this->visibilityScope,
+            'original_url' => 'https://s3-eu-west-1.amazonaws.com/cdndev.adentify.com/uploads/photos/users/1/original/53badc1b3d421.jpg'
         );
         if ($this->caption)
             $photo['caption'] = $this->caption;
+        $photo = array_merge($photo, $data);
         return $photo;
     }
 

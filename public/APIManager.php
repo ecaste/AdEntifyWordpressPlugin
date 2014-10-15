@@ -167,8 +167,9 @@ class APIManager
 
     private function getAuthorizationHeader()
     {
-        return $this->getAccessToken() ? array(
-            'Authorization' => sprintf('Bearer %s', $this->getAccessToken())
+        $accessToken = $this->getAccessToken();
+        return $accessToken ? array(
+            'Authorization' => sprintf('Bearer %s', $accessToken)
         ) : array();
     }
 

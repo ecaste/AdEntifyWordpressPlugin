@@ -26,18 +26,36 @@
 */
 
 defined('ABSPATH') or die("No script kiddies please!");
-define( 'ADENTIFY_API_ROOT_URL', 'https://dev.adentify.com/api/v1/%s' );
+define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
+define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
+define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
+define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
 define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility')));
+define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
+define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
+define( 'ADENTIFY_API_CLIENT_NAME', sprintf('plugin_wordpress_%s', $_SERVER['HTTP_HOST']));
+define( 'ADENTIFY_API_CLIENT_ID_KEY', 'api_client_id');
+define( 'ADENTIFY_API_CLIENT_SECRET_KEY', 'api_client_secret');
+define( 'ADENTIFY_API_ACCESS_TOKEN', 'api_access_token');
+define( 'ADENTIFY_API_REFRESH_TOKEN', 'api_refresh_token');
+define( 'ADENTIFY_API_EXPIRES_TIMESTAMP', 'api_expires_timestamp');
 define( 'PLUGIN_VERSION', '1.0.0');
 
 require 'vendor/autoload.php';
+require_once( ADENTIFY__PLUGIN_DIR . 'public/APIManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
+require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
+
+APIManager::getInstance()->registerPluginClient();
+$photo = new Photo();
+$photo->setCaption('test');
+APIManager::getInstance()->postPhoto($photo);
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
@@ -77,7 +95,7 @@ function my_the_content_filter( $content ) {
 add_action( 'admin_menu', 'adentify_setting_menu' );
 
 function adentify_setting_menu() {
-	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', 'adentify_plugin_submenu', 'adentify_plugin_settings' );
+	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME, 'adentify_plugin_settings' );
 }
 
 function adentify_plugin_settings() {
@@ -85,9 +103,13 @@ function adentify_plugin_settings() {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	}
 
+    if (isset($_GET['code'])) {
+        APIManager::getInstance()->getAccessTokenWithAuthorizationCode($_GET['code']);
+    }
+
     $checkPostHidden = 'checkPostHidden';
     $settings = array();
-    $twig_variable = array('checkPostHidden' => 'checkPostHidden');
+    $parameters = array('checkPostHidden' => 'checkPostHidden');
     foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
         $settings[$key] = get_option($key);
 
@@ -97,16 +119,18 @@ function adentify_plugin_settings() {
             $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
             update_option($key, $settings[$key]);
         }
-        ?>
-        <div class="updated"><p><strong>Settings saved.</strong></p></div>
-    <?php
+        echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
     }
     foreach($settings as $key => $value)
     {
         $twig_variable[$key.'Val'] = $value;
         $twig_variable[$key] = $key;
     }
-    echo Twig::render('adentify.settings.html.twig', $twig_variable);
+
+    if (!APIManager::getInstance()->getAccessToken())
+        $parameters['authorization_url'] = APIManager::getInstance()->getAuthorizationUrl();
+
+    echo Twig::render('adentify.settings.html.twig', $parameters);
 }
 
 function adentify_button($editor_id = 'content') {
@@ -139,6 +163,7 @@ function wptuts_styles_with_the_lot()
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+
 
 function adentify_register_attachments_tax()
 {
@@ -176,3 +201,9 @@ function adentify_upload_handle()
     }
 }
 add_action('init', 'adentify_upload_handle', 0);
+
+/* AdEntify activate */
+function adentify_activate() {
+    APIManager::getInstance()->registerPluginClient();
+}
+register_activation_hook( __FILE__, 'adentify_activate' );

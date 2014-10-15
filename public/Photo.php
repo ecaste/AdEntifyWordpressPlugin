@@ -14,7 +14,7 @@ class Photo
     protected $caption;
     protected $visibilityScope = 'public';
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
         $this->id = $id;
         $this->client = new GuzzleHttp\Client();
@@ -22,25 +22,20 @@ class Photo
 
     public function load()
     {
-        $response = $this->client->get(sprintf(ADENTIFY_API_ROOT_URL, sprintf('photos/%s', $this->id)));
-        if ($response->getStatusCode() == 200) {
-            $this->setJson($response->getBody());
+        $photo = APIManager::getInstance()->getPhoto($this->id);
+        if (!empty($photo)) {
+            $this->setJson($photo);
         }
     }
 
     public function render()
     {
-        $loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
-        $twig = new Twig_Environment($loader, array(
-            'cache' => WP_DEBUG ? false : ADENTIFY__PLUGIN_DIR . 'cache/templates',
-        ));
-        $template = $twig->loadTemplate('photo.html.twig');
-        return $template->render(array(
+        return $this->getJson() ? Twig::render('photo.html.twig', array(
             'link' => $this->getLink(),
             'imageUrl' => $this->getImageUrl(),
             'caption' => $this->getCaption(),
             'tags' => $this->getTags()
-        ));
+        )) : 'Can\'t load this image.';
     }
 
     /**
@@ -48,14 +43,16 @@ class Photo
      *
      * @return array
      */
-    public function serialize()
+    public function serialize($data = array())
     {
         $photo = array(
             'source' => 'wordpress',
-            'visibility_scope' => $this->visibilityScope
+            'visibility_scope' => $this->visibilityScope,
+            'original_url' => 'https://s3-eu-west-1.amazonaws.com/cdndev.adentify.com/uploads/photos/users/1/original/53badc1b3d421.jpg'
         );
         if ($this->caption)
             $photo['caption'] = $this->caption;
+        $photo = array_merge($photo, $data);
         return $photo;
     }
 

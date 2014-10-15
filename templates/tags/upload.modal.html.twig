@@ -47,6 +47,12 @@
                     </div>
                     <div id="ad-library" style="display:none">
                         <p>Library</p>
+                        <form id="featured_upload" method="post" action="#" enctype="multipart/form-data"> {#action="../wp-content/plugins/adentify/test-upload.php">#}
+                            <input type="file" name="my_image_upload" id="my_image_upload"  multiple="false" />
+                            <input type="hidden" name="post_id" id="post_id" value="0" />
+                            {{ wp_nonce_image_upload() }}
+                            <input id="submit_my_image_upload" name="submit_my_image_upload" type="submit" value="Upload" />
+                        </form>
                     </div>
                     {#<div class="attachments-browser">#}
                         {#<div class="media-toolbar">#}

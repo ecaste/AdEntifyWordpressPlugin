@@ -110,23 +110,15 @@ function adentify_plugin_settings() {
 }
 
 function adentify_button($editor_id = 'content') {
-/*
-    //enqueues everything needed to use media JavaScript APIs
-    $post = get_post();
-    if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
-        $post = $GLOBALS['post_ID'];
-
-    wp_enqueue_media( array(
-        'post' => $post
-    ) );*/
-
     //displays the button
     printf( '<a href="#" id="adentify-upload-img" class="button add_media" data-editor="%s" title="%s">%s</a>',
         esc_attr( $editor_id ),
         esc_attr__( 'Upload images with AdEntify plugin' ),
         'AdEntify'
     );
-    echo Twig::render('tags\upload.modal.html.twig', array());
+    echo Twig::render('tags\upload.modal.html.twig', array(), function(){
+        wp_nonce_field( 'my_image_upload', 'my_image_upload_nonce' );
+    });
 }
 add_action( 'media_buttons', 'adentify_button' );
 
@@ -148,3 +140,39 @@ function wptuts_styles_with_the_lot()
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 
+function adentify_register_attachments_tax()
+{
+    register_taxonomy( 'adentify-category', 'attachment',
+        array(
+            'labels' =>  array(
+                'name'              => 'Plugin',
+                'singular_name'     => 'Plugin',
+                'search_items'      => 'Search plugin Categories',
+                'all_items'         => 'All Plugin Categories',
+                'edit_item'         => 'Edit Plugin Categories',
+                'update_item'       => 'Update Plugin Category',
+                'add_new_item'      => 'Add New Plugin Category',
+                'new_item_name'     => 'New Plugin Category Name',
+                'menu_name'         => 'Plugin',
+            ),
+            'hierarchical' => true,
+            'sort' => true,
+            'show_admin_column' => true
+        )
+    );
+}
+add_action( 'init', 'adentify_register_attachments_tax', 0 );
+
+function adentify_upload_handle()
+{
+    if ( !empty($_POST) && !empty($_FILES) && isset( $_POST['my_image_upload_nonce'], $_POST['post_id'] )
+        && wp_verify_nonce( $_POST['my_image_upload_nonce'], 'my_image_upload' )
+        && current_user_can( 'edit_post', $_POST['post_id'] ))
+    {
+        require_once('../wp-admin/includes/image.php');
+        require_once('../wp-admin/includes/file.php');
+        require_once('../wp-admin/includes/media.php');
+        media_handle_upload('my_image_upload', 0);
+    }
+}
+add_action('init', 'adentify_upload_handle', 0);

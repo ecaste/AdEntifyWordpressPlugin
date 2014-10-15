@@ -33,7 +33,8 @@ jQuery(function($) {
                 //rajouter touche escape
 
                 $('#adentify-uploader-button').click(function() {
-                    //this.attr("data-url", '');
+                    $(this).attr('data-url', 'test-upload.php');
+                    console.log($(this).attr('data-url'));
                     $('#upload-img').fileupload({
                         done: function (e, data) {
                             if (data.result) {
@@ -58,6 +59,10 @@ jQuery(function($) {
                     $(this).addClass('active');
                     $('.uploader-inline').hide();
                     $('#ad-library').show();
+                });
+
+                $('#submit_my_image_upload').click(function(){
+                    console.log('submit-upload');
                 });
             }
             else

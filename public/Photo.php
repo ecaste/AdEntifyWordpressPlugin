@@ -48,7 +48,6 @@ class Photo
         $photo = array(
             'source' => 'wordpress',
             'visibility_scope' => $this->visibilityScope,
-            'original_url' => 'https://s3-eu-west-1.amazonaws.com/cdndev.adentify.com/uploads/photos/users/1/original/53badc1b3d421.jpg'
         );
         if ($this->caption)
             $photo['caption'] = $this->caption;

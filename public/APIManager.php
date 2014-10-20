@@ -5,6 +5,7 @@
  * Date: 10/10/2014
  * Time: 12:02
  */
+use GuzzleHttp\Post\PostFile;
 
 class APIManager
 {
@@ -45,14 +46,23 @@ class APIManager
      * Post a photo
      *
      * @param Photo $photo
+     * @param $file_stream
      * @return bool
      */
-    public function postPhoto(Photo $photo)
+    public function postPhoto(Photo $photo, $file_stream)
     {
+//        echo "toto";
+        /*print_r($this->postAction('photo', array(
+            'photo' => $photo->serialize(array(
+                '_token' => $this->getCsrfToken('photo_item')
+            )),
+            'file' => $file_stream
+        ), $this->getAuthorizationHeader()));die;*/
         return $this->postAction('photo', array(
             'photo' => $photo->serialize(array(
                 '_token' => $this->getCsrfToken('photo_item')
-            ))
+            )),
+            'file' => new PostFile('file', $file_stream)
         ), $this->getAuthorizationHeader());
     }
 
@@ -234,6 +244,7 @@ class APIManager
      */
     private function postAction($url, $body = array(), $headers = array(), $rootUrl = ADENTIFY_API_ROOT_URL)
     {
+//        print_r($this->getAuthorizationHeader());
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
                 'body' => $body,
@@ -243,9 +254,11 @@ class APIManager
             ));
             return $response->getStatusCode() == 200 ? $response->getBody() : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-//            echo $e->getResponse()->getBody();die;
+//            echo ($e->getResponse()->getStatusCode());
+//            print_r($e);die;
+//            print_r($e->getResponse()->getBody());die;
 //            print_r($e->getRequest()->getHeaders());die;
             return false;
         }
     }
-} 
+}

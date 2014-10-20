@@ -16,7 +16,7 @@
                         <div class="uploader-inline-content no-upload-message">
                             <div class="upload-ui">
                                 <form role="form" enctype="multipart/form-data">
-                                    <input id="upload-img" type="file" accept="image/jpg, image/gif, image/png" name="bababa" style="display: none"/>
+                                    <input id="upload-img" type="file" accept="image/jpg, image/gif, image/png" name="ad-upload-img" style="display: none"/>
                                     <h3 class="upload-instructions drop-instructions">Déposez vos fichiers n’importe où pour les mettre en ligne</h3>
                                     <p class="upload-instructions drop-instructions">ou</p>
                                     <a href="#" class="browser button button-hero" style="display: inline; position: relative; z-index: 1;" id="adentify-uploader-button">
@@ -47,12 +47,12 @@
                     </div>
                     <div id="ad-library" style="display:none">
                         <p>Library</p>
-                        <form id="featured_upload" method="post" action="#" enctype="multipart/form-data"> {#action="../wp-content/plugins/adentify/test-upload.php">#}
+{#                        <form id="featured_upload" method="post" action="#" enctype="multipart/form-data"> &#123;&#35;action="../wp-content/plugins/adentify/test-upload.php">&#35;&#125;
                             <input type="file" name="my_image_upload" id="my_image_upload"  multiple="false" />
                             <input type="hidden" name="post_id" id="post_id" value="0" />
                             {{ wp_nonce_image_upload() }}
                             <input id="submit_my_image_upload" name="submit_my_image_upload" type="submit" value="Upload" />
-                        </form>
+                        </form>#}
                     </div>
                     {#<div class="attachments-browser">#}
                         {#<div class="media-toolbar">#}

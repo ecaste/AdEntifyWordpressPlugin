@@ -196,41 +196,44 @@ register_activation_hook( __FILE__, 'adentify_activate' );
 
 function ad_upload() {
     // upload the file in the upload folder
-    $upload = wp_upload_bits($_FILES["my_image_upload"]["name"], null, file_get_contents($_FILES["my_image_upload"]["tmp_name"]));
+    $upload = wp_upload_bits($_FILES["ad-upload-img"]["name"], null, file_get_contents($_FILES["ad-upload-img"]["tmp_name"]));
 
-    // $filename should be the path to a file in the upload directory.
-    $filename = $upload['file'];
+    if (!empty($upload))
+    {
+        // $filename should be the path to a file in the upload directory.
+        $filename = $upload['file'];
 
-    // The ID of the post this attachment is for.
-    $parent_post_id = 0;
+        // The ID of the post this attachment is for.
+        $parent_post_id = 0;
 
-    // Check the type of tile. We'll use this as the 'post_mime_type'.
-    $filetype = wp_check_filetype( basename( $filename ), null );
+        // Check the type of tile. We'll use this as the 'post_mime_type'.
+        $filetype = wp_check_filetype( basename( $filename ), null );
 
-    // Get the path to the upload directory.
-    $wp_upload_dir = wp_upload_dir();
+        // Get the path to the upload directory.
+        $wp_upload_dir = wp_upload_dir();
 
-    // Prepare an array of post data for the attachment.
-    $attachment = array(
-        'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ),
-        'post_mime_type' => $filetype['type'],
-        'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
-        'post_content'   => '',
-        'post_status'    => 'inherit'
-    );
+        // Prepare an array of post data for the attachment.
+        $attachment = array(
+            'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ),
+            'post_mime_type' => $filetype['type'],
+            'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+            'post_content'   => '',
+            'post_status'    => 'inherit'
+        );
 
-    // Insert the attachment.
-    $attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
+        // Insert the attachment.
+        $attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
 
-    // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
-    // Generate the metadata for the attachment, and update the database record.
-    $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
-    wp_update_attachment_metadata( $attach_id, $attach_data );
+        // Generate the metadata for the attachment, and update the database record.
+        $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+        wp_update_attachment_metadata( $attach_id, $attach_data );
 
-    // Set the AdEntify category to the new image
-    wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
-//    print_r(get_the_terms( $attach_id, 'adentify-category' ));
+        // Set the AdEntify category to the new image
+        if ($attach_id)
+            wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
+    }
 }
 add_action( 'wp_ajax_ad_upload', 'ad_upload' );

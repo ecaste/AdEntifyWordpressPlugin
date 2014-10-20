@@ -61,12 +61,44 @@ jQuery(function($) {
                     $('#ad-library').show();
                 });
 
-                $('#submit_my_image_upload').click(function(){
-                    console.log('submit-upload');
+                //$('#my_image_upload').attr("data-url", '../wp-content/plugins/adentify/adentify.php?upload-adentify=1');
+                $('#my_image_upload').fileupload({
+                    //action: 'ad_upload',
+                    //url: '../wp-content/plugins/adentify/adentify.php?upload-adentify=1',
+                    url: 'http://local.wordpress.com/wp-admin/admin-ajax.php',
+                    formData:                 {
+                        'action': 'ad_upload',
+                        'data':   'foobarid'
+                    },
+                    done: function (e, data) {
+                       if (data.result) {
+                           console.log("OK");
+                       } else {
+                           console.log("KO")
+                       }
+                    },
+                    error: function () {
+                       console.log("error");
+                    }
                 });
+                /*$('#my_image_upload').change(function() {
+                    console.log($(this));
+                    $.get("../wp-content/plugins/adentify/upload_to_wp.php", { file_path: $(this).value});
+                    return false;
+                });*/
             }
             else
                 $('#adentify-upload-modal').show();
+            /*jQuery.post(
+                ajaxurl,
+                {
+                    'action': 'ad_upload',
+                    'data':   'foobarid'
+                },
+                function(response){
+                    alert('The server responded: ' + response);
+                }
+            );*/
         });
     });
 })(jQuery);

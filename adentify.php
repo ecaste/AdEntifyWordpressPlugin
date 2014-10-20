@@ -104,7 +104,7 @@ function adentify_plugin_settings() {
 	}
 
     if (isset($_GET['code'])) {
-        APIManager::getInstance()->getAccessTokenWithAuthorizationCode($_GET['code']);
+        APIManager::getInstance()-> getAccessTokenWithAuthorizationCode($_GET['code']);
     }
 
     $checkPostHidden = 'checkPostHidden';
@@ -188,22 +188,49 @@ function adentify_register_attachments_tax()
 }
 add_action( 'init', 'adentify_register_attachments_tax', 0 );
 
-function adentify_upload_handle()
-{
-    if ( !empty($_POST) && !empty($_FILES) && isset( $_POST['my_image_upload_nonce'], $_POST['post_id'] )
-        && wp_verify_nonce( $_POST['my_image_upload_nonce'], 'my_image_upload' )
-        && current_user_can( 'edit_post', $_POST['post_id'] ))
-    {
-        require_once('../wp-admin/includes/image.php');
-        require_once('../wp-admin/includes/file.php');
-        require_once('../wp-admin/includes/media.php');
-        media_handle_upload('my_image_upload', 0);
-    }
-}
-add_action('init', 'adentify_upload_handle', 0);
-
 /* AdEntify activate */
 function adentify_activate() {
     APIManager::getInstance()->registerPluginClient();
 }
 register_activation_hook( __FILE__, 'adentify_activate' );
+
+function ad_upload() {
+    // upload the file in the upload folder
+    $upload = wp_upload_bits($_FILES["my_image_upload"]["name"], null, file_get_contents($_FILES["my_image_upload"]["tmp_name"]));
+
+    // $filename should be the path to a file in the upload directory.
+    $filename = $upload['file'];
+
+    // The ID of the post this attachment is for.
+    $parent_post_id = 0;
+
+    // Check the type of tile. We'll use this as the 'post_mime_type'.
+    $filetype = wp_check_filetype( basename( $filename ), null );
+
+    // Get the path to the upload directory.
+    $wp_upload_dir = wp_upload_dir();
+
+    // Prepare an array of post data for the attachment.
+    $attachment = array(
+        'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ),
+        'post_mime_type' => $filetype['type'],
+        'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+        'post_content'   => '',
+        'post_status'    => 'inherit'
+    );
+
+    // Insert the attachment.
+    $attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
+
+    // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+    // Generate the metadata for the attachment, and update the database record.
+    $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+    wp_update_attachment_metadata( $attach_id, $attach_data );
+
+    // Set the AdEntify category to the new image
+    wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
+//    print_r(get_the_terms( $attach_id, 'adentify-category' ));
+}
+add_action( 'wp_ajax_ad_upload', 'ad_upload' );

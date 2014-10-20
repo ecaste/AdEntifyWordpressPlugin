@@ -243,8 +243,8 @@ class APIManager
             ));
             return $response->getStatusCode() == 200 ? $response->getBody() : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            echo $e->getResponse()->getBody();die;
-            print_r($e->getRequest()->getHeaders());die;
+//            echo $e->getResponse()->getBody();die;
+//            print_r($e->getRequest()->getHeaders());die;
             return false;
         }
     }

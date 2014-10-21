@@ -51,11 +51,6 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/APIManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
-/*
-APIManager::getInstance()->registerPluginClient();
-$photo = new Photo();
-$photo->setCaption('test');
-APIManager::getInstance()->postPhoto($photo, null);*/
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
@@ -195,50 +190,53 @@ function adentify_activate() {
 register_activation_hook( __FILE__, 'adentify_activate' );
 
 function ad_upload() {
-    // upload the file in the upload folder
-    $upload = wp_upload_bits($_FILES["ad-upload-img"]["name"], null, file_get_contents($_FILES["ad-upload-img"]["tmp_name"]));
-
-    if (!empty($upload))
+    if (APIManager::getInstance()->getAccessToken())
     {
-        // $filename should be the path to a file in the upload directory.
-        $filename = $upload['file'];
+        // upload the file in the upload folder
+        $upload = wp_upload_bits($_FILES["ad-upload-img"]["name"], null, file_get_contents($_FILES["ad-upload-img"]["tmp_name"]));
 
-        // The ID of the post this attachment is for.
-        $parent_post_id = 0;
+        if (!empty($upload))
+        {
+            // $filename should be the path to a file in the upload directory.
+            $filename = $upload['file'];
 
-        // Check the type of tile. We'll use this as the 'post_mime_type'.
-        $filetype = wp_check_filetype( basename( $filename ), null );
+            // The ID of the post this attachment is for.
+            $parent_post_id = 0;
 
-        // Get the path to the upload directory.
-        $wp_upload_dir = wp_upload_dir();
+            // Check the type of tile. We'll use this as the 'post_mime_type'.
+            $filetype = wp_check_filetype( basename( $filename ), null );
 
-        // Prepare an array of post data for the attachment.
-        $attachment = array(
-            'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ),
-            'post_mime_type' => $filetype['type'],
-            'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
-            'post_content'   => '',
-            'post_status'    => 'inherit'
-        );
+            // Get the path to the upload directory.
+            $wp_upload_dir = wp_upload_dir();
 
-        // Insert the attachment.
-        $attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
+            // Prepare an array of post data for the attachment.
+            $attachment = array(
+                'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ),
+                'post_mime_type' => $filetype['type'],
+                'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+                'post_content'   => '',
+                'post_status'    => 'inherit'
+            );
 
-        // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+            // Insert the attachment.
+            $attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
 
-        // Generate the metadata for the attachment, and update the database record.
-        $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
-        wp_update_attachment_metadata( $attach_id, $attach_data );
+            // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
-        // Set the AdEntify category to the new image
-        if ($attach_id)
-            wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
+            // Generate the metadata for the attachment, and update the database record.
+            $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+            wp_update_attachment_metadata( $attach_id, $attach_data );
 
-        APIManager::getInstance()->registerPluginClient();
-        $photo = new Photo();
-        $photo->setCaption('baba');
-        APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'));
+            // Set the AdEntify category to the new image
+            if ($attach_id)
+                wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
+
+            $photo = new Photo();
+            APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r')); //error
+        }
     }
+    else
+        echo "status code: 401 Unauthorized</BR>";
 }
 add_action( 'wp_ajax_ad_upload', 'ad_upload' );

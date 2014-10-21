@@ -46,16 +46,16 @@ class APIManager
      * Post a photo
      *
      * @param Photo $photo
-     * @param $file_stream
+     * @param $fileStream
      * @return bool
      */
-    public function postPhoto(Photo $photo, $file_stream)
+    public function postPhoto(Photo $photo, $fileStream)
     {
         return $this->postAction('photo', array(
             'photo' => $photo->serialize(array(
                 '_token' => $this->getCsrfToken('photo_item')
             )),
-            'file' => new PostFile('file', $file_stream)
+            'file' => new PostFile('file', $fileStream)
         ), $this->getAuthorizationHeader());
     }
 
@@ -246,8 +246,6 @@ class APIManager
             ));
             return $response->getStatusCode() == 200 ? $response->getBody() : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            if ($e->getResponse()->getStatusCode() == 401)
-                echo "error 401: Unauthorized";
             return false;
         }
     }

@@ -200,7 +200,7 @@ function ad_upload() {
 
     if (!empty($upload))
     {
-/*        // $filename should be the path to a file in the upload directory.
+        // $filename should be the path to a file in the upload directory.
         $filename = $upload['file'];
 
         // The ID of the post this attachment is for.
@@ -233,16 +233,12 @@ function ad_upload() {
 
         // Set the AdEntify category to the new image
         if ($attach_id)
-            wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );*/
+            wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
-//        print_r($upload);die;
-//        echo fopen($_FILES['ad-upload-img']['tmp_name'], "r");
         APIManager::getInstance()->registerPluginClient();
         $photo = new Photo();
         $photo->setCaption('baba');
         APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'));
-//        APIManager::getInstance()->getPhoto(434);
-//        print_r($_FILES);
     }
 }
 add_action( 'wp_ajax_ad_upload', 'ad_upload' );

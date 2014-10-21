@@ -51,13 +51,6 @@ class APIManager
      */
     public function postPhoto(Photo $photo, $file_stream)
     {
-//        echo "toto";
-        /*print_r($this->postAction('photo', array(
-            'photo' => $photo->serialize(array(
-                '_token' => $this->getCsrfToken('photo_item')
-            )),
-            'file' => $file_stream
-        ), $this->getAuthorizationHeader()));die;*/
         return $this->postAction('photo', array(
             'photo' => $photo->serialize(array(
                 '_token' => $this->getCsrfToken('photo_item')
@@ -244,7 +237,6 @@ class APIManager
      */
     private function postAction($url, $body = array(), $headers = array(), $rootUrl = ADENTIFY_API_ROOT_URL)
     {
-//        print_r($this->getAuthorizationHeader());
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
                 'body' => $body,
@@ -254,10 +246,8 @@ class APIManager
             ));
             return $response->getStatusCode() == 200 ? $response->getBody() : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-//            echo ($e->getResponse()->getStatusCode());
-//            print_r($e);die;
-//            print_r($e->getResponse()->getBody());die;
-//            print_r($e->getRequest()->getHeaders());die;
+            if ($e->getResponse()->getStatusCode() == 401)
+                echo "error 401: Unauthorized";
             return false;
         }
     }

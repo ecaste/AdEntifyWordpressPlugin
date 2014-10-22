@@ -135,9 +135,8 @@ function adentify_button($editor_id = 'content') {
         esc_attr__( 'Upload images with AdEntify plugin' ),
         'AdEntify'
     );
-    echo Twig::render('tags\upload.modal.html.twig', array(), function(){
-        wp_nonce_field( 'my_image_upload', 'my_image_upload_nonce' );
-    });
+    echo Twig::render('tags\upload.modal.html.twig', array());
+    echo Twig::render('tags\tag.modal.html.twig', array());
 }
 add_action( 'media_buttons', 'adentify_button' );
 
@@ -190,6 +189,7 @@ function adentify_activate() {
 register_activation_hook( __FILE__, 'adentify_activate' );
 
 function ad_upload() {
+//    exit();
     if (APIManager::getInstance()->getAccessToken())
     {
         // upload the file in the upload folder
@@ -233,10 +233,17 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r')); //error
+            if ($photo = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->json())
+            {
+                echo(json_encode($photo));
+                exit();
+            }
+            else
+                echo "Unknown error</BR>";
         }
     }
     else
         echo "status code: 401 Unauthorized</BR>";
+    exit();
 }
 add_action( 'wp_ajax_ad_upload', 'ad_upload' );

@@ -26,6 +26,7 @@
 */
 
 defined('ABSPATH') or die("No script kiddies please!");
+
 define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
@@ -38,6 +39,7 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'TAGS_VISIBILITY' => 'tagsVisibility')));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
+define( 'ADENTIFY_ADMIN_URL', admin_url('admin-ajax.php'));
 define( 'ADENTIFY_API_CLIENT_NAME', sprintf('plugin_wordpress_%s', $_SERVER['HTTP_HOST']));
 define( 'ADENTIFY_API_CLIENT_ID_KEY', 'api_client_id');
 define( 'ADENTIFY_API_CLIENT_SECRET_KEY', 'api_client_secret');
@@ -51,6 +53,13 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/APIManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
+
+/*
+delete_option(ADENTIFY_API_ACCESS_TOKEN);
+delete_option(ADENTIFY_API_REFRESH_TOKEN);
+delete_option(ADENTIFY_API_EXPIRES_TIMESTAMP);*/
+
+/*APIManager::getInstance()->registerPluginClient();*/
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
@@ -151,6 +160,10 @@ function wptuts_styles_with_the_lot()
 
     // Register the script like this for a plugin:
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+
+    wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+        'admin_ajax_url' => ADENTIFY_ADMIN_URL
+    ));
 
     // For either a plugin or a theme, you can then enqueue the script:
     wp_enqueue_script( 'adentify-tags-js' );

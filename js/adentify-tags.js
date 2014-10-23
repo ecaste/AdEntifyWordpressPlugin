@@ -57,7 +57,7 @@ jQuery(function($) {
                 $('#adentify-uploader-button').click(function() {
                     $('#upload-img').click().fileupload({
                         datatype: 'json',
-                        url: 'http://local.wordpress.com/wp-admin/admin-ajax.php', //utiliser global
+                        url: adentifyTagsData.admin_ajax_url, //utiliser global
                         formData: {
                             'action': 'ad_upload'
                         },

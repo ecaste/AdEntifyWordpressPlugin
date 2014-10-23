@@ -107,7 +107,7 @@ class APIManager
             )
         ));
         if ($response) {
-            $json = json_decode($response);
+            $json = json_decode($response->getBody());
             update_option(ADENTIFY_API_CLIENT_ID_KEY, $json->id);
             update_option(ADENTIFY_API_CLIENT_SECRET_KEY, $json->secret);
         }
@@ -129,7 +129,7 @@ class APIManager
             'redirect_uri' => ADENTIFY_REDIRECT_URI
         ), array(), ADENTIFY_TOKEN_URL);
         if ($response) {
-            $json = json_decode($response);
+            $json = json_decode($response->getBody());
             if (isset($json->access_token)) {
                 update_option(ADENTIFY_API_ACCESS_TOKEN, $json->access_token);
                 update_option(ADENTIFY_API_REFRESH_TOKEN, $json->refresh_token);

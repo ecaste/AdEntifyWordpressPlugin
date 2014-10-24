@@ -144,8 +144,8 @@ function adentify_button($editor_id = 'content') {
         esc_attr__( 'Upload images with AdEntify plugin' ),
         'AdEntify'
     );
-    echo Twig::render('tags\upload.modal.html.twig', array());
-    echo Twig::render('tags\tag.modal.html.twig', array());
+    echo Twig::render('admin\modals\upload.modal.html.twig', array());
+    echo Twig::render('admin\modals\tag.modal.html.twig', array());
 }
 add_action( 'media_buttons', 'adentify_button' );
 
@@ -202,7 +202,7 @@ function adentify_activate() {
 register_activation_hook( __FILE__, 'adentify_activate' );
 
 function ad_upload() {
-//    exit();
+    exit();
     if (APIManager::getInstance()->getAccessToken())
     {
         // upload the file in the upload folder

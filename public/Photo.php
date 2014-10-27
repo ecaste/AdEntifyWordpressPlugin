@@ -12,6 +12,7 @@ class Photo
     protected $id;
     protected $json;
     protected $caption;
+    protected $smallUrl;
     protected $visibilityScope = 'public';
 
     public function __construct($id = null)
@@ -140,6 +141,23 @@ class Photo
     public function setVisibilityScope($visibilityScope)
     {
         $this->visibilityScope = $visibilityScope;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSmallUrl()
+    {
+        return $this->smallUrl;
+    }
+
+    /**
+     * @param mixed $smallUrl
+     */
+    public function setSmallUrl($smallUrl)
+    {
+        $this->smallUrl = $smallUrl;
         return $this;
     }
 }

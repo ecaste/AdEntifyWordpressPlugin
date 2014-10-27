@@ -26,6 +26,7 @@
 */
 
 defined('ABSPATH') or die("No script kiddies please!");
+
 define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
@@ -38,6 +39,7 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'TAGS_VISIBILITY' => 'tagsVisibility')));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
+define( 'ADENTIFY_ADMIN_URL', admin_url('admin-ajax.php'));
 define( 'ADENTIFY_API_CLIENT_NAME', sprintf('plugin_wordpress_%s', $_SERVER['HTTP_HOST']));
 define( 'ADENTIFY_API_CLIENT_ID_KEY', 'api_client_id');
 define( 'ADENTIFY_API_CLIENT_SECRET_KEY', 'api_client_secret');
@@ -53,6 +55,7 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/DBManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
+
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
@@ -101,7 +104,7 @@ function adentify_plugin_settings() {
 	}
 
     if (isset($_GET['code'])) {
-        APIManager::getInstance()->getAccessTokenWithAuthorizationCode($_GET['code']);
+        APIManager::getInstance()-> getAccessTokenWithAuthorizationCode($_GET['code']);
     }
 
     $checkPostHidden = 'checkPostHidden';
@@ -131,23 +134,14 @@ function adentify_plugin_settings() {
 }
 
 function adentify_button($editor_id = 'content') {
-/*
-    //enqueues everything needed to use media JavaScript APIs
-    $post = get_post();
-    if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
-        $post = $GLOBALS['post_ID'];
-
-    wp_enqueue_media( array(
-        'post' => $post
-    ) );*/
-
     //displays the button
     printf( '<a href="#" id="adentify-upload-img" class="button add_media" data-editor="%s" title="%s">%s</a>',
         esc_attr( $editor_id ),
         esc_attr__( 'Upload images with AdEntify plugin' ),
         'AdEntify'
     );
-    echo Twig::render('tags\upload.modal.html.twig', array());
+    echo Twig::render('admin\modals\upload.modal.html.twig', array());
+    echo Twig::render('admin\modals\tag.modal.html.twig', array());
 }
 add_action( 'media_buttons', 'adentify_button' );
 
@@ -163,15 +157,42 @@ function wptuts_styles_with_the_lot()
     // Register the script like this for a plugin:
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
+    wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+        'admin_ajax_url' => ADENTIFY_ADMIN_URL
+    ));
+
     // For either a plugin or a theme, you can then enqueue the script:
     wp_enqueue_script( 'adentify-tags-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 
+function adentify_register_attachments_tax()
+{
+    register_taxonomy( 'adentify-category', 'attachment',
+        array(
+            'labels' =>  array(
+                'name'              => 'Plugin',
+                'singular_name'     => 'Plugin',
+                'search_items'      => 'Search plugin Categories',
+                'all_items'         => 'All Plugin Categories',
+                'edit_item'         => 'Edit Plugin Categories',
+                'update_item'       => 'Update Plugin Category',
+                'add_new_item'      => 'Add New Plugin Category',
+                'new_item_name'     => 'New Plugin Category Name',
+                'menu_name'         => 'Plugin',
+            ),
+            'hierarchical' => true,
+            'sort' => true,
+            'show_admin_column' => true
+        )
+    );
+}
+add_action( 'init', 'adentify_register_attachments_tax', 0 );
+
 /* AdEntify plugin activated */
 function adentify_activated() {
-    // Register plugin
+
     APIManager::getInstance()->registerPluginClient();
 
     // Database config
@@ -206,3 +227,72 @@ function adentify_activated() {
     dbDelta( $sql );
 }
 register_activation_hook( __FILE__, 'adentify_activated' );
+
+
+function ad_upload() {
+    exit();
+    if (APIManager::getInstance()->getAccessToken())
+    {
+        // upload the file in the upload folder
+        $upload = wp_upload_bits($_FILES["ad-upload-img"]["name"], null, file_get_contents($_FILES["ad-upload-img"]["tmp_name"]));
+
+        if (!empty($upload))
+        {
+            // $filename should be the path to a file in the upload directory.
+            $filename = $upload['file'];
+
+            // The ID of the post this attachment is for.
+            $parent_post_id = 0;
+
+            // Check the type of tile. We'll use this as the 'post_mime_type'.
+            $filetype = wp_check_filetype( basename( $filename ), null );
+
+            // Get the path to the upload directory.
+            $wp_upload_dir = wp_upload_dir();
+
+            // Prepare an array of post data for the attachment.
+            $attachment = array(
+                'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ),
+                'post_mime_type' => $filetype['type'],
+                'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+                'post_content'   => '',
+                'post_status'    => 'inherit'
+            );
+
+            // Insert the attachment.
+            $attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
+
+            // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+            // Generate the metadata for the attachment, and update the database record.
+            $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+            wp_update_attachment_metadata( $attach_id, $attach_data );
+
+            // Set the AdEntify category to the new image
+            if ($attach_id)
+                wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
+
+            $photo = new Photo();
+            if ($photo = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->json())
+            {
+                echo(json_encode($photo));
+                exit();
+            }
+            else
+                echo "Unknown error</BR>";
+        }
+    }
+    else
+        echo "status code: 401 Unauthorized</BR>";
+    exit();
+}
+add_action( 'wp_ajax_ad_upload', 'ad_upload' );
+
+function ad_tag() {
+//    print_r($_POST);
+    $tag = Tag::loadPost($_POST['tag']);
+    echo APIManager::getInstance()->postTag($tag)->getBody();
+    exit();
+}
+add_action( 'wp_ajax_ad_tag', 'ad_tag' );

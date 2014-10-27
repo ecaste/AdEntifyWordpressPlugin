@@ -5,6 +5,7 @@
  * Date: 10/10/2014
  * Time: 12:02
  */
+use GuzzleHttp\Post\PostFile;
 
 class APIManager
 {
@@ -45,14 +46,16 @@ class APIManager
      * Post a photo
      *
      * @param Photo $photo
+     * @param $fileStream
      * @return bool
      */
-    public function postPhoto(Photo $photo)
+    public function postPhoto(Photo $photo, $fileStream)
     {
         return $this->postAction('photo', array(
             'photo' => $photo->serialize(array(
                 '_token' => $this->getCsrfToken('photo_item')
-            ))
+            )),
+            'file' => new PostFile('file', $fileStream)
         ), $this->getAuthorizationHeader());
     }
 
@@ -76,7 +79,7 @@ class APIManager
      */
     public function postTag(Tag $tag)
     {
-        return $this->postAction('tag', $tag->serialize());
+        return $this->postAction('tag', $tag->serialize(array('_token' => $this->getCsrfToken('tag_item'))));
     }
 
     /**
@@ -104,7 +107,7 @@ class APIManager
             )
         ));
         if ($response) {
-            $json = json_decode($response);
+            $json = json_decode($response->getBody());
             update_option(ADENTIFY_API_CLIENT_ID_KEY, $json->id);
             update_option(ADENTIFY_API_CLIENT_SECRET_KEY, $json->secret);
         }
@@ -126,7 +129,7 @@ class APIManager
             'redirect_uri' => ADENTIFY_REDIRECT_URI
         ), array(), ADENTIFY_TOKEN_URL);
         if ($response) {
-            $json = json_decode($response);
+            $json = json_decode($response->getBody());
             if (isset($json->access_token)) {
                 update_option(ADENTIFY_API_ACCESS_TOKEN, $json->access_token);
                 update_option(ADENTIFY_API_REFRESH_TOKEN, $json->refresh_token);
@@ -234,6 +237,12 @@ class APIManager
      */
     private function postAction($url, $body = array(), $headers = array(), $rootUrl = ADENTIFY_API_ROOT_URL)
     {
+        /*print_r(array(
+            'body' => $body,
+            'headers' => $this->getAuthorizationHeader(),
+            'config' => $this->config,
+            'cookies' => true,
+        ));die;*/
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
                 'body' => $body,
@@ -241,11 +250,10 @@ class APIManager
                 'config' => $this->config,
                 'cookies' => true,
             ));
-            return $response->getStatusCode() == 200 ? $response->getBody() : false;
+
+            return $response->getStatusCode() == 200 ? $response : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            echo $e->getResponse()->getBody();die;
-            print_r($e->getRequest()->getHeaders());die;
             return false;
         }
     }
-} 
+}

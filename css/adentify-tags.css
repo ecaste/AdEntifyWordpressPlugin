@@ -77,7 +77,14 @@
     height: 36px;
     z-index: 200;
 }
-
+.ad-tag-router {
+    position: absolute;
+    top: 50px;
+    /*left: 0px;*/
+    right: 288px;
+    height: 36px;
+    z-index: 200;
+}
 .ad-media-frame-content {
     position: absolute;
     top: 84px;
@@ -101,3 +108,53 @@
     height: 60px;
     z-index: 100;
 }
+
+.ad-tag-router .active,
+.ad-tag-router .media-router > a.active:last-child {
+    margin: -1px -1px 0;
+    background: #f3f3f3;
+}
+.ad-tag-frame-content {
+    position: absolute;
+    top: 50px;
+    left: 0px;
+    right: 0;
+    /*bottom: 0px;*/
+    /*height: 100%;*/
+    /*width: 100%;*/
+    margin: 0;
+    overflow: auto;
+    background: #f3f3f3;
+    text-align: center;
+    /*border-top: 1px solid #ddd;*/
+    /*border-bottom: 1px solid #ddd;*/
+}
+#ad-display-photo {
+    right: 500px;
+}
+.form-control {
+    width: 70%;
+    margin-bottom: 10px;
+}
+/*
+.tag-text {
+    font-family: 'robotoregular', "Helvetica Neue", "Arial", sans-serif;
+    font-size: 16px;
+    padding: 10px;
+}
+.tag-text .add-tag-info {
+    font-size: 16px;
+}
+.tag-text .add-tag-info span {
+    font-size: 16px;
+}
+.tag-text .add-tag-info li {
+    margin: 10px 0px;
+}
+.pacifico-adentify {
+    font-size: 32px;
+    color: #2c2c2e;
+    font-family: 'pacificoregular', "Helvetica Neue", "Arial", sans-serif;
+    padding: 10px 0px 10px 50px;
+    border: 0px;
+}*/

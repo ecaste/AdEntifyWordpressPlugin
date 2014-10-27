@@ -2,7 +2,8 @@
     <div tabindex="0" id="__wp-uploader-id-2" class="supports-drag-drop" style="position: relative;">
         <div class="media-modal wp-core-ui">
             <a id="adentify-modal-close" class="media-modal-close" href="#"><span class="media-modal-icon"><span class="screen-reader-text">Fermer le panneau des médias</span></span></a>
-            <div class="media-modal-content"><div class="media-frame mode-select wp-core-ui" id="__wp-uploader-id-0">
+            <div id="ad-upload-modal" class="media-modal-content">
+                <div class="media-frame mode-select wp-core-ui" id="__wp-uploader-id-0">
                 {#<div class="media-frame-menu"><div class="media-menu"><a href="#" class="media-menu-item active">Insérer un média</a><a href="#" class="media-menu-item">Créer une galerie</a><a href="#" class="media-menu-item hidden">Créer une liste de lecture audio</a><a href="#" class="media-menu-item hidden">Créer une liste de lecture vidéo</a><a href="#" class="media-menu-item">Mettre une image à la Une</a><div class="separator"></div><a href="#" class="media-menu-item">Insérer à partir d’une adresse web</a></div></div>#}
                 <div class="ad-media-frame-title"><h1>Insérer un média</h1></div>
                 <div class="ad-media-frame-router">
@@ -12,11 +13,11 @@
                     </div>
                 </div>
                 <div class="ad-media-frame-content">
-                    <div class="uploader-inline">
+                    <div id="ad-uploader" class="uploader-inline">
                         <div class="uploader-inline-content no-upload-message">
                             <div class="upload-ui">
                                 <form role="form" enctype="multipart/form-data">
-                                    <input id="upload-img" type="file" accept="image/jpg, image/gif, image/png" name="bababa" style="display: none"/>
+                                    <input id="upload-img" type="file" accept="image/jpg, image/gif, image/png" name="ad-upload-img" style="display: none"/>
                                     <h3 class="upload-instructions drop-instructions">Déposez vos fichiers n’importe où pour les mettre en ligne</h3>
                                     <p class="upload-instructions drop-instructions">ou</p>
                                     <a href="#" class="browser button button-hero" style="display: inline; position: relative; z-index: 1;" id="adentify-uploader-button">
@@ -45,8 +46,17 @@
                             </div>
                         </div>
                     </div>
+
                     <div id="ad-library" style="display:none">
-                        <p>Library</p>
+                        <div class="uploader-inline-content no-upload-message">
+                            <h2 style="text-align: center">Bibliotheque</h2>
+                        </div>
+{#                        <form id="featured_upload" method="post" action="#" enctype="multipart/form-data"> &#123;&#35;action="../wp-content/plugins/adentify/test-upload.php">&#35;&#125;
+                            <input type="file" name="my_image_upload" id="my_image_upload"  multiple="false" />
+                            <input type="hidden" name="post_id" id="post_id" value="0" />
+                            {{ wp_nonce_image_upload() }}
+                            <input id="submit_my_image_upload" name="submit_my_image_upload" type="submit" value="Upload" />
+                        </form>#}
                     </div>
                     {#<div class="attachments-browser">#}
                         {#<div class="media-toolbar">#}

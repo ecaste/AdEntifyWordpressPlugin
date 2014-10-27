@@ -45,17 +45,14 @@ define( 'ADENTIFY_API_ACCESS_TOKEN', 'api_access_token');
 define( 'ADENTIFY_API_REFRESH_TOKEN', 'api_refresh_token');
 define( 'ADENTIFY_API_EXPIRES_TIMESTAMP', 'api_expires_timestamp');
 define( 'PLUGIN_VERSION', '1.0.0');
+define( 'ADENTIFY_SQL_TABLE_PHOTOS', 'adentify_photos');
 
 require 'vendor/autoload.php';
 require_once( ADENTIFY__PLUGIN_DIR . 'public/APIManager.php' );
+require_once( ADENTIFY__PLUGIN_DIR . 'public/DBManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
-
-APIManager::getInstance()->registerPluginClient();
-$photo = new Photo();
-$photo->setCaption('test');
-APIManager::getInstance()->postPhoto($photo);
 
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
@@ -172,8 +169,40 @@ function wptuts_styles_with_the_lot()
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 
-/* AdEntify activate */
-function adentify_activate() {
+/* AdEntify plugin activated */
+function adentify_activated() {
+    // Register plugin
     APIManager::getInstance()->registerPluginClient();
+
+    // Database config
+    global $wpdb;
+    $table_name = $wpdb->prefix . ADENTIFY_SQL_TABLE_PHOTOS;
+
+    /*
+     * We'll set the default character set and collation for this table.
+     * If we don't do this, some characters could end up being converted
+     * to just ?'s when saved in our table.
+    */
+    $charset_collate = '';
+
+    if ( ! empty( $wpdb->charset ) ) {
+        $charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+    }
+
+    if ( ! empty( $wpdb->collate ) ) {
+        $charset_collate .= " COLLATE {$wpdb->collate}";
+    }
+
+    $sql = "CREATE TABLE $table_name (
+      id bigint(20) NOT NULL AUTO_INCREMENT,
+      time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+      wordpress_photo_id bigint(20) NOT NULL,
+      adentify_photo_id bigint(20) NOT NULL,
+      thumb_url text NOT NULL,
+      UNIQUE KEY id (id)
+    ) $charset_collate;";
+
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
 }
-register_activation_hook( __FILE__, 'adentify_activate' );
+register_activation_hook( __FILE__, 'adentify_activated' );

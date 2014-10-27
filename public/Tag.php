@@ -43,7 +43,7 @@ class Tag
 
     private $brand;
 
-    public function serialize()
+    public function serialize($data = array())
     {
         $tag = array(
             'type' => $this->type,
@@ -66,7 +66,43 @@ class Tag
         if ($this->brand)
             $tag['brand'] = $this->brand;
 
+        $tag = array_merge($tag, $data);
         return $tag;
+    }
+
+    static function loadPost($postArray)
+    {
+        $tag = new Tag;
+        $tag->setType($postArray['type']);
+        $tag->setTitle($postArray['title']);
+        $tag->setDescription($postArray['description']);
+        $tag->setLink($postArray['link']);
+        $tag->setXPosition($postArray['x_position']);
+        $tag->setYPosition($postArray['y_position']);
+        $tag->setPhoto($postArray['photo']);
+
+        switch ($tag->getType()) {
+            case 'product':
+                $tag->setProductType(($postArray['productType']) ? $postArray['productType'] : null);
+                $tag->setProduct(($postArray['product']) ? $postArray['product'] : null);
+                $tag->setBrand(($postArray['brand']) ? $postArray['brand'] : null);
+                if ($tag->getProductType() && $tag->getProduct() && $tag->getBrand())
+                    return $tag;
+                break;
+            case 'venue':
+                $tag->setVenue(($postArray['venue']) ? $postArray['venue'] : null);
+                if ($tag->getVenue())
+                    return $tag;
+                break;
+            case 'person':
+                $tag->setPerson(($postArray['person']) ? $postArray['person'] : null);
+                if ($tag->getPerson())
+                    return $tag;
+                break;
+            default:
+                break;
+        }
+        return array('error' => 0);
     }
 
     /**

@@ -115,6 +115,37 @@ jQuery(function($) {
                         }
                     });
                 });
+
+                // post tag
+                $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click(function(e) {
+                    e.preventDefault();
+                    var tag = {
+                        'type': 'venue',
+                        'title': 'toto',
+                        'description': 'toto',
+                        'link': 'http://www.sss.com',
+                        'x_position': 0.5,
+                        'y_position': 0.5,
+                        'photo': 434,
+                        //'brand': 10,
+                        //'product': 10,
+                        //'productType': 10,
+                        'venue': 62,
+                        //'person': 10
+                    };
+                    console.log("submitting tag");
+                    $.ajax({
+                        type: 'POST',
+                        url: adentifyTagsData.admin_ajax_url,
+                        data: {
+                            'action': 'ad_tag',
+                            'tag': tag
+                        },
+                        complete: function() {
+                            console.log("completed submit-tag-ajax");
+                        }
+                    });
+                });
             }
             else
                 $('#adentify-upload-modal').show();

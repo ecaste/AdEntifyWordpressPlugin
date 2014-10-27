@@ -79,7 +79,7 @@ class APIManager
      */
     public function postTag(Tag $tag)
     {
-        return $this->postAction('tag', $tag->serialize());
+        return $this->postAction('tag', $tag->serialize(array('_token' => $this->getCsrfToken('tag_item'))));
     }
 
     /**
@@ -237,6 +237,12 @@ class APIManager
      */
     private function postAction($url, $body = array(), $headers = array(), $rootUrl = ADENTIFY_API_ROOT_URL)
     {
+        /*print_r(array(
+            'body' => $body,
+            'headers' => $this->getAuthorizationHeader(),
+            'config' => $this->config,
+            'cookies' => true,
+        ));die;*/
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
                 'body' => $body,
@@ -244,6 +250,7 @@ class APIManager
                 'config' => $this->config,
                 'cookies' => true,
             ));
+
             return $response->getStatusCode() == 200 ? $response : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             return false;

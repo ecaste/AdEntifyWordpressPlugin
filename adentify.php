@@ -260,3 +260,11 @@ function ad_upload() {
     exit();
 }
 add_action( 'wp_ajax_ad_upload', 'ad_upload' );
+
+function ad_tag() {
+//    print_r($_POST);
+    $tag = Tag::loadPost($_POST['tag']);
+    echo APIManager::getInstance()->postTag($tag)->getBody();
+    exit();
+}
+add_action( 'wp_ajax_ad_tag', 'ad_tag' );

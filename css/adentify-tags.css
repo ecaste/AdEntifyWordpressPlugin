@@ -136,8 +136,26 @@
     width: 70%;
     margin-bottom: 10px;
 }
+.ad-library-photo-wrapper {
+    display: inline-block;
+    height: 128px;
+    width: 128px;
+    overflow: hidden;
+    text-align: center;
+    background: #eee;
+    margin-left: 5px;
+    margin-top: 5px;
+    /*display: table-cell;*/
+    /*vertical-align: middle;*/
+}
 .ad-selected-photo {
     border: black 1px solid;
+}
+.ad-photo-getting-tagged {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    right: 300px;
 }
 /*
 .tag-text {

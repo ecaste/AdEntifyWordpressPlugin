@@ -11,7 +11,7 @@
                 $('#adentify-upload-modal').html($('#adentify-uploader').html());
                 $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
 
-                // hide the upload modal
+                // hide the modals
                 $('#adentify-modal-backdrop, #adentify-modal-backdrop2, #adentify-modal-close, #adentify-modal-close2').click(function(){
                     $('#adentify-upload-modal').hide();
                     $('#adentify-tag-modal').hide();
@@ -73,25 +73,17 @@
                                 $('#adentify-tag-modal').show();
                                 $('#__wp-uploader-id-3').focus();
                                 try {
-                                    var photo = data.result.data;
-                                    var img = document.createElement("img");
-
-                                    img.id = 'photo-getting-tagged';
-                                    img.src = photo.large_url;
-                                    img.style.maxHeight = $('#ad-display-photo').height() + 'px';
-                                    img.style.display = 'block';
-                                    img.style.marginLeft = 'auto';
-                                    img.style.marginRight = 'auto';
-                                    img.style.right = "300px";
-                                    // TODO: bouger le style vers le fichier .css
-
-                                    document.getElementById('ad-display-photo').appendChild(img);
+                                    var photo = data.data;
+                                    var style = {
+                                        'max-height': $('#ad-display-photo').height()
+                                    };
+                                    $('#ad-display-photo').append('<img id="photo-getting-tagged" src="' + photo.large_url + '"/>');
+                                    $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
 
                                     // append the new photo to the library content
-                                    var library_img = document.createElement("img");
-                                    library_img.className = 'ad-library-photo';
-                                    library_img.src = photo.small_url;
-                                    document.getElementById('ad-library-content').appendChild(library_img);
+                                    var img = '<img tabindex="0" class="ad-library-photo" data-adentify-photo-id="' + photo.id + '" src="' + photo.small_url + '" />';
+                                    var wrapper = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '">' + img + '</div>';
+                                    $('#ad-library-content').append(wrapper);
                                 } catch(e) {
                                     console.log("Error: " + data.data); // TODO : gestion erreur
                                 }
@@ -105,7 +97,7 @@
                 // post tag
                 $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click(function(e) {
                     e.preventDefault();
-                    // Ajouter un switch suivant le type de tag + builder tag
+                    // TODO: Ajouter un switch suivant le type de tag + builder tag
                     var tag = {
                         'type': 'venue',
                         'title': 'toto',
@@ -146,7 +138,6 @@
                    currentSelectedPhoto.addClass(selectedPhotoClassName);
                    $('#ad-insert-from-library').removeAttr('disabled');
                    $('#ad-tag-from-library').removeAttr('disabled');
-                   // TODO: A tester
                    photoIdSelected = currentSelectedPhoto.attr('data-adentify-photo-id');
                 });
 
@@ -167,16 +158,11 @@
                                 $('#__wp-uploader-id-3').focus();
                                 try {
                                     var photo = JSON.parse(data.data);
-                                    var img = document.createElement("img");
-                                    img.id = 'photo-getting-tagged';
-                                    img.src = photo.large_url;
-                                    img.style.maxHeight = $('#ad-display-photo').height() + 'px';
-                                    img.style.display = 'block';
-                                    img.style.marginLeft = 'auto';
-                                    img.style.marginRight = 'auto';
-                                    img.style.right = "300px";
-                                   // TODO: bouger vers .css
-                                    $('#ad-display-photo').appendChild(img);
+                                    var style = {
+                                        'max-height': $('#ad-display-photo').height()
+                                    };
+                                    $('#ad-display-photo').append('<img id="photo-getting-tagged" src="' + photo.large_url + '"/>');
+                                    $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
                                     photoIdSelected = undefined;
                                     $('#ad-insert-from-library').attr('disabled', 'disabled');
                                     $('#ad-tag-from-library').attr('disabled', 'disabled');
@@ -206,9 +192,5 @@
                 $('#adentify-upload-modal').show();
             $('#__wp-uploader-id-2').focus();
         });
-
-       function createImageElement() {
-          
-       }
     });
 })(jQuery);

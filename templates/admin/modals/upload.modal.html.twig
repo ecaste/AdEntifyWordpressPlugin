@@ -48,8 +48,8 @@
 
                         <div id="ad-library" style="display:none">
                             <div id="ad-library-content">
-                                {% for photo in photos%}
-                                    <img tabindex="0" class="ad-library-photo" name="{{ photo.adentify_photo_id }}" src="{{ photo.thumb_url }}" />
+                                {% for photo in photos %}
+                                    <img tabindex="0" class="ad-library-photo" data-adentify-photo-id="{{ photo.adentify_photo_id }}" src="{{ photo.thumb_url }}" />
                                 {% endfor %}
                             </div>
                         </div>

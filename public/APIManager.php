@@ -161,6 +161,16 @@ class APIManager
     }
 
     /**
+     * Remove Access Token and linked data in Wordpress settings
+     */
+    public function revokeAccessToken()
+    {
+        delete_option(ADENTIFY_API_ACCESS_TOKEN);
+        delete_option(ADENTIFY_API_EXPIRES_TIMESTAMP);
+        delete_option(ADENTIFY_API_REFRESH_TOKEN);
+    }
+
+    /**
      * Get authorization url to get authorization code
      *
      * @return string
@@ -243,12 +253,6 @@ class APIManager
      */
     private function postAction($url, $body = array(), $headers = array(), $rootUrl = ADENTIFY_API_ROOT_URL)
     {
-        /*print_r(array(
-            'body' => $body,
-            'headers' => $this->getAuthorizationHeader(),
-            'config' => $this->config,
-            'cookies' => true,
-        ));die;*/
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
                 'body' => $body,

@@ -82,36 +82,36 @@ jQuery(function($) {
                         formData: {
                             'action': 'ad_upload'
                         },
-                        done: function (e, data) {
-                            $('#photo-getting-tagged').remove();
-                            $('#adentify-upload-modal').hide();
-                            $('#adentify-tag-modal').show();
-                            $('#__wp-uploader-id-3').focus();
-                            try {
-                                //var photo = JSON.parse(data.result);
-                                var img = document.createElement("img");
+                        success: function (data) {
+                            if (data.success) {
+                                $('#photo-getting-tagged').remove();
+                                $('#adentify-upload-modal').hide();
+                                $('#adentify-tag-modal').show();
+                                $('#__wp-uploader-id-3').focus();
+                                try {
+                                    var photo = data.result.data;
+                                    var img = document.createElement("img");
 
-                                //console.log(photo.id);
-                                //console.log($('#ad-display-photo').width());
-                                img.id = 'photo-getting-tagged';
-                                //img.src = photo.large_url;
-                                img.src = "https://s3-eu-west-1.amazonaws.com/cdndev.adentify.com/uploads/photos/users/35/photo-large/5448fd6335ab7phpB8lkkp.jpg";
-                                //img.src = "https://s3-eu-west-1.amazonaws.com/cdndev.adentify.com/uploads/photos/users/35/original/544914da6484fphpkoHMVU"
-                                //console.log($('#ad-display-photo').height());
-                                img.style.maxHeight = $('#ad-display-photo').height() + 'px';
-                                img.style.display = 'block';
-                                img.style.marginLeft = 'auto';
-                                img.style.marginRight = 'auto';
-                                img.style.right = "300px";
-                                //img.alt = alt;
+                                    img.id = 'photo-getting-tagged';
+                                    img.src = photo.large_url;
+                                    img.style.maxHeight = $('#ad-display-photo').height() + 'px';
+                                    img.style.display = 'block';
+                                    img.style.marginLeft = 'auto';
+                                    img.style.marginRight = 'auto';
+                                    img.style.right = "300px";
+                                    document.getElementById('ad-display-photo').appendChild(img);
 
-                                document.getElementById('ad-display-photo').appendChild(img);
-                            } catch(e) {
-                                console.log("Error:" + data.result);
+                                    // append the new photo to the library content
+                                    var library_img = document.createElement("img");
+                                    library_img.className = 'ad-library-photo';
+                                    library_img.src = photo.small_url;
+                                    document.getElementById('ad-library-content').appendChild(library_img);
+                                } catch(e) {
+                                    console.log("Error: " + data.data);
+                                }
+                            } else {
+                                console.log("Error: " + data.data);
                             }
-                        },
-                        error: function () {
-                            console.log("error");
                         }
                     });
                 });
@@ -145,6 +145,65 @@ jQuery(function($) {
                             console.log("completed submit-tag-ajax");
                         }
                     });
+                });
+
+                // store the id of the selected photo and enabled the buttons
+                var photoIdSelected;
+                $('.ad-library-photo').click(function(e) {
+                    console.log(e.target.name);
+                    $(e.target).addClass('ad-selected-photo');
+                    document.getElementById('ad-insert-from-library').removeAttribute('disabled');
+                    document.getElementById('ad-tag-from-library').removeAttribute('disabled');
+                    photoIdSelected = e.target.name;
+                });
+                // show the tag modal with the selected photo
+                $('#ad-tag-from-library').click(function(e) {
+                    if (!e.target.hasAttribute('disabled')) {
+                        $.ajax({
+                            type: 'GET',
+                            url: adentifyTagsData.admin_ajax_url,
+                            data: {
+                                'action': 'ad_get_photo',
+                                'photo_id': photoIdSelected //gerer erreur si photoIdSelected est vide/unselected
+                            },
+                            success: function(data) {
+                                $('#photo-getting-tagged').remove();
+                                $('#adentify-upload-modal').hide();
+                                $('#adentify-tag-modal').show();
+                                $('#__wp-uploader-id-3').focus();
+                                try {
+                                    var photo = JSON.parse(data.data);
+                                    var img = document.createElement("img");
+                                    img.id = 'photo-getting-tagged';
+                                    img.src = photo.large_url;
+                                    img.style.maxHeight = $('#ad-display-photo').height() + 'px';
+                                    img.style.display = 'block';
+                                    img.style.marginLeft = 'auto';
+                                    img.style.marginRight = 'auto';
+                                    img.style.right = "300px";
+                                    document.getElementById('ad-display-photo').appendChild(img);
+                                    photoIdSelected = undefined;
+                                    document.getElementById('ad-insert-from-library').setAttribute('disabled', 'disabled');
+                                    document.getElementById('ad-tag-from-library').setAttribute('disabled', 'disabled');
+                                } catch(e) {
+                                    console.log("Error: " + data.data);
+                                }
+                            }
+                        });
+                    }
+                });
+                $('#ad-insert-from-library').click(function(e) {
+                    if (!e.target.hasAttribute('disabled')) {
+                        if (photoIdSelected !== undefined) {
+                            window.send_to_editor('[adentify=' + photoIdSelected + ']');
+                            //$('.ad-library-photo[name=' + photoIdSelected + ']').removeClass('ad-selected-photo');
+                            photoIdSelected = undefined;
+                            document.getElementById('ad-insert-from-library').setAttribute('disabled', 'disabled');
+                            document.getElementById('ad-tag-from-library').setAttribute('disabled', 'disabled');
+                        }
+                        else
+                            console.log("you have to select a photo");
+                    }
                 });
             }
             else

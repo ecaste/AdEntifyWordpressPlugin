@@ -100,13 +100,13 @@
                     // TODO: Ajouter un switch suivant le type de tag + builder tag
                     var tag = {
                         'type': 'venue',
-                        'title': 'toto',
-                        'description': 'toto',
-                        'link': 'http://www.sss.com',
-                        'x_position': 0.5,
-                        'y_position': 0.5,
-                        'photo': 434,
-                        //'brand': 10,
+                       'title': 'toto',
+                       'description': 'toto',
+                       'link': 'http://www.sss.com',
+                       'x_position': 0.5,
+                       'y_position': 0.5,
+                       'photo': 434,
+                       //'brand': 10,
                         //'product': 10,
                         //'productType': 10,
                         'venue': 62

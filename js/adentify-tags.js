@@ -77,7 +77,7 @@
                                     var style = {
                                         'max-height': $('#ad-display-photo').height()
                                     };
-                                    $('#ad-display-photo').append('<img id="photo-getting-tagged" src="' + photo.large_url + '"/>');
+                                    $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
                                     $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
 
                                     // append the new photo to the library content
@@ -98,20 +98,25 @@
                 $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click(function(e) {
                     e.preventDefault();
                     // TODO: Ajouter un switch suivant le type de tag + builder tag
+
+                    //$('#ad-product-tag-form').serializeArray().map(function(item) { var obj = {}; obj[item.name] = item.value; return obj; });
+                    var tagForm = $('#' + $(this).context.form.id).serializeArray().map(function(item) { var obj = {}; obj[item.name] = item.value; return obj; });
+                    //console.log($(this).context.form.attributes['data-tag-type'].value);
                     var tag = {
-                        'type': 'venue',
-                       'title': 'toto',
-                       'description': 'toto',
-                       'link': 'http://www.sss.com',
-                       'x_position': 0.5,
-                       'y_position': 0.5,
-                       'photo': 434,
-                       //'brand': 10,
+                        'type': $(this).context.form.attributes['data-tag-type'].value,
+                        'title': tagForm[0].name,
+                        'description': tagForm[1].description,
+                        'link': tagForm[2].url,
+                        'photo': $('#photo-getting-tagged')[0].attributes['data-adentify-photo-id'].value,
+                        'x_position': 0.5,
+                        'y_position': 0.5,
+                        //'brand': 10,
                         //'product': 10,
                         //'productType': 10,
                         'venue': 62
                         //'person': 10
                     };
+                    console.log(tag);
                     $.ajax({
                         type: 'POST',
                         url: adentifyTagsData.admin_ajax_url,
@@ -161,7 +166,7 @@
                                     var style = {
                                         'max-height': $('#ad-display-photo').height()
                                     };
-                                    $('#ad-display-photo').append('<img id="photo-getting-tagged" src="' + photo.large_url + '"/>');
+                                    $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
                                     $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
                                     photoIdSelected = undefined;
                                     $('#ad-insert-from-library').attr('disabled', 'disabled');

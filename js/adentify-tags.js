@@ -6,6 +6,12 @@
         $('#adentify-upload-img').click(function(){
             if($('#adentify-upload-modal').html() === undefined)
             {
+                function removePhotoSelection() {
+                    $('.ad-library-photo-wrapper[data-adentify-photo-id=' + photoIdSelected +']').removeClass(selectedPhotoClassName);
+                    photoIdSelected = undefined;
+                    $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
+                }
+
                 // append the modals
                 $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
                 $('#adentify-upload-modal').html($('#adentify-uploader').html());
@@ -18,6 +24,7 @@
                         $('#ad-uploading-message').hide();
                     });
                     $('#adentify-tag-modal').hide();
+                    removePhotoSelection();
                 });
                 $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) {
                     if (e.which == 27) {
@@ -26,6 +33,7 @@
                             $('#ad-uploading-message').hide();
                         });
                         $('#adentify-tag-modal').hide();
+                        removePhotoSelection();
                     }
                 });
 
@@ -101,8 +109,7 @@
                                         }
                                         currentSelectedPhoto = $(this);
                                         currentSelectedPhoto.addClass(selectedPhotoClassName);
-                                        $('#ad-insert-from-library').removeAttr('disabled');
-                                        $('#ad-tag-from-library').removeAttr('disabled');
+                                        $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
                                         photoIdSelected = currentSelectedPhoto.attr('data-adentify-photo-id');
                                     });
                                 } catch(e) {
@@ -129,10 +136,10 @@
                         'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id'),
                         'x_position': 0.5,
                         'y_position': 0.5,
+                        'venue': 62
                         //'brand': 10,
                         //'product': 10,
                         //'productType': 10,
-                        'venue': 62
                         //'person': 10
                     };
                     console.log(tag);
@@ -160,8 +167,7 @@
                    }
                    currentSelectedPhoto = $(this);
                    currentSelectedPhoto.addClass(selectedPhotoClassName);
-                   $('#ad-insert-from-library').removeAttr('disabled');
-                   $('#ad-tag-from-library').removeAttr('disabled');
+                   $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
                    photoIdSelected = currentSelectedPhoto.attr('data-adentify-photo-id');
                 });
 
@@ -187,10 +193,7 @@
                                     };
                                     $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
                                     $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
-                                    $('.ad-library-photo-wrapper[data-adentify-photo-id=' + photoIdSelected +']').removeClass(selectedPhotoClassName);
-                                    photoIdSelected = undefined;
-                                    $('#ad-insert-from-library').attr('disabled', 'disabled');
-                                    $('#ad-tag-from-library').attr('disabled', 'disabled');
+                                    removePhotoSelection();
                                 } catch(e) {
                                     console.log("Error: " + data.data); // TODO gestion erreur
                                 }
@@ -202,10 +205,7 @@
                     if (!$(this).is('[disabled]')) {
                         if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
                             window.send_to_editor('[adentify=' + photoIdSelected + ']');
-                            $('.ad-library-photo-wrapper[data-adentify-photo-id=' + photoIdSelected +']').removeClass(selectedPhotoClassName);
-                            photoIdSelected = undefined;
-                            $('#ad-insert-from-library').attr('disabled', 'disabled');
-                            $('#ad-tag-from-library').attr('disabled', 'disabled');
+                            removePhotoSelection();
                             $('#adentify-upload-modal').hide();
                         }
                         else
@@ -213,11 +213,11 @@
                     }
                 });
                 $('#ad-back-to-library').click(function() {
-                    $('#ad-uploader-content').show();
-                    $('#ad-uploading-message').hide();
-                    $('#adentify-tag-modal').hide();
-                    $('#adentify-upload-modal').show();
+                    $('#ad-uploading-message, #adentify-tag-modal').hide();
+                    $('#ad-uploader-content, #adentify-upload-modal').show();
+                    $('#__wp-uploader-id-2').focus();
                 });
+
             }
             else
                 $('#adentify-upload-modal').show();

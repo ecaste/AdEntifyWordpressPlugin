@@ -25,6 +25,7 @@
                     });
                     $('#adentify-tag-modal').hide();
                     removePhotoSelection();
+                    $('.ad-tag-frame-content input').val('');
                 });
                 $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) {
                     if (e.which == 27) {
@@ -34,15 +35,16 @@
                         });
                         $('#adentify-tag-modal').hide();
                         removePhotoSelection();
+                        $('.ad-tag-frame-content input').val('');
                     }
                 });
 
                 // switch between the upload's tabs
-                $('#upload-file, #file-library').click(function(e){
+                $('#upload-file, #file-library').click(function(){
                     $('#upload-file, #file-library').removeClass('active');
-                    $(e.target).addClass('active');
+                    $(this).addClass('active');
                     $('#ad-uploader, #ad-library').hide();
-                    switch(e.target.id) {
+                    switch(this.id) {
                         case 'file-library':
                             $('#ad-library').show();
                             break;
@@ -54,20 +56,23 @@
                 });
 
                 // switch between the tag's tabs
-                $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').click(function(e){
+                $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').click(function(){
                     $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').removeClass('active');
-                    $(e.target).addClass('active');
+                    $(this).addClass('active');
                     $('.tag-form').hide();
-                    switch(e.target.id) {
+                    switch(this.id) {
                         case 'ad-tag-venue-tab':
                             $('#tag-venue').show();
+                            $('#tag-venue input').first().focus();
                             break;
                         case 'ad-tag-person-tab':
                             $('#tag-person').show();
+                            $('#tag-person input').first().focus();
                             break;
                         case 'ad-tag-product-tab':
                         default:
                             $('#tag-product').show();
+                            $('#tag-product input').first().focus();
                             break;
                     }
                 });
@@ -89,8 +94,9 @@
                             if (data.success) {
                                 $('#photo-getting-tagged').remove();
                                 $('#adentify-upload-modal').hide();
-                                $('#adentify-tag-modal').show();
-                                $('#__wp-uploader-id-3').focus();
+                                $('#adentify-tag-modal').show(0, function() {
+                                    $('#tag-product input').first().focus();
+                                });
                                 try {
                                     var photo = data.data;
                                     var style = {
@@ -151,7 +157,7 @@
                             'tag': tag
                         },
                         complete: function() {
-                            // TODO: Clean form ajout tag
+                            $('.ad-tag-frame-content input').val('');
                             console.log("completed submit-tag-ajax");
                         }
                     });
@@ -184,8 +190,9 @@
                             success: function(data) {
                                 $('#photo-getting-tagged').remove();
                                 $('#adentify-upload-modal').hide();
-                                $('#adentify-tag-modal').show();
-                                $('#__wp-uploader-id-3').focus();
+                                $('#adentify-tag-modal').show(0, function() {
+                                    $('#tag-product input').first().focus();
+                                });
                                 try {
                                     var photo = JSON.parse(data.data);
                                     var style = {

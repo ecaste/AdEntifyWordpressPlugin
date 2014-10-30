@@ -212,6 +212,12 @@
                             console.log("you have to select a photo"); // TODO: gestion erreur
                     }
                 });
+                $('#ad-back-to-library').click(function() {
+                    $('#ad-uploader-content').show();
+                    $('#ad-uploading-message').hide();
+                    $('#adentify-tag-modal').hide();
+                    $('#adentify-upload-modal').show();
+                });
             }
             else
                 $('#adentify-upload-modal').show();

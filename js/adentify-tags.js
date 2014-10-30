@@ -43,10 +43,10 @@
                 $('#upload-file, #file-library').click(function(){
                     $('#upload-file, #file-library').removeClass('active');
                     $(this).addClass('active');
-                    $('#ad-uploader, #ad-library').hide();
+                    $('#ad-uploader, #ad-library, #ad-tag-from-library, #ad-insert-from-library').hide();
                     switch(this.id) {
                         case 'file-library':
-                            $('#ad-library').show();
+                            $('#ad-library, #ad-tag-from-library, #ad-insert-from-library').show();
                             break;
                         case 'upload-file':
                         default:

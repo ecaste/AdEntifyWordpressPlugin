@@ -160,6 +160,9 @@
     margin-right: auto;
     right: 300px;
 }
+#ad-insert-from-library, #ad-tag-from-library {
+    display: none
+}
 /*
 .tag-text {
     font-family: 'robotoregular', "Helvetica Neue", "Arial", sans-serif;

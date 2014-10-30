@@ -79,7 +79,10 @@ class APIManager
      */
     public function postTag(Tag $tag)
     {
-        return $this->postAction('tag', $tag->serialize(array('_token' => $this->getCsrfToken('tag_item'))));
+        return $this->postAction('tag', array(
+            'tag' => $tag->serialize(array(
+                '_token' => $this->getCsrfToken('tag_item')
+            ))));
     }
 
     /**

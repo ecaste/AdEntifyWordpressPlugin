@@ -201,6 +201,7 @@
                         });
                     }
                 });
+                // insert a photo in the post editor
                 $('#ad-insert-from-library').click(function() {
                     if (!$(this).is('[disabled]')) {
                         if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
@@ -212,12 +213,12 @@
                             console.log("you have to select a photo"); // TODO: gestion erreur
                     }
                 });
+                // "back" button on the tag modal
                 $('#ad-back-to-library').click(function() {
                     $('#ad-uploading-message, #adentify-tag-modal').hide();
                     $('#ad-uploader-content, #adentify-upload-modal').show();
                     $('#__wp-uploader-id-2').focus();
                 });
-
             }
             else
                 $('#adentify-upload-modal').show();

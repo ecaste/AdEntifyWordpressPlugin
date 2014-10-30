@@ -14,45 +14,50 @@
                     <div class="ad-media-frame-content">
                         <div id="ad-uploader" class="uploader-inline">
                             <div class="uploader-inline-content no-upload-message">
-                                <div class="upload-ui">
-                                    <form role="form" enctype="multipart/form-data">
-                                        <input id="upload-img" type="file" accept="image/jpg, image/gif, image/png" name="ad-upload-img" style="display: none"/>
-                                        <h3 class="upload-instructions drop-instructions">Déposez vos fichiers n’importe où pour les mettre en ligne</h3>
-                                        <p class="upload-instructions drop-instructions">ou</p>
-                                        <a href="#" class="browser button button-hero" style="display: inline; position: relative; z-index: 1;" id="adentify-uploader-button">
-                                            Sélectionner des fichiers
-                                        </a>
-                                    </form>
-                                </div>
-                                <div class="upload-inline-status">
-                                    <div class="media-uploader-status" style="display: none;">
-                                        <h3>Mise en ligne</h3>
-                                        <a class="upload-dismiss-errors" href="#">Ignorer les erreurs</a>
-                                        <div class="media-progress-bar"><div>
-                                        </div></div>
-                                        <div class="upload-details">
+                                <h3 id="ad-uploading-message" class="upload-instructions drop-instructions" style="display: none">Uploading ...</h3>
+                                <div id="ad-uploader-content">
+                                    <div class="upload-ui">
+                                        <form role="form" enctype="multipart/form-data">
+                                            <input id="upload-img" type="file" accept="image/jpg, image/gif, image/png" name="ad-upload-img" style="display: none"/>
+                                            <h3 class="upload-instructions drop-instructions">Déposez vos fichiers n’importe où pour les mettre en ligne</h3>
+                                            <p class="upload-instructions drop-instructions">ou</p>
+                                            <a href="#" class="browser button button-hero" style="display: inline; position: relative; z-index: 1;" id="adentify-uploader-button">
+                                                Sélectionner des fichiers
+                                            </a>
+                                        </form>
+                                    </div>
+                                    <div class="upload-inline-status">
+                                        <div class="media-uploader-status" style="display: none;">
+                                            <h3>Mise en ligne</h3>
+                                            <a class="upload-dismiss-errors" href="#">Ignorer les erreurs</a>
+                                            <div class="media-progress-bar"><div>
+                                                </div></div>
+                                            <div class="upload-details">
                                             <span class="upload-count">
                                                 <span class="upload-index"></span> / <span class="upload-total"></span>
                                             </span>
-                                            <span class="upload-detail-separator">–</span>
-                                            <span class="upload-filename"></span>
+                                                <span class="upload-detail-separator">–</span>
+                                                <span class="upload-filename"></span>
+                                            </div>
+                                            <div class="upload-errors"></div>
                                         </div>
-                                        <div class="upload-errors"></div>
                                     </div>
-                                </div>
-                                <div class="post-upload-ui">
-                                    <p class="max-upload-size">Taille de fichier maximale pour la mise en ligne&nbsp;: ?? MB.</p>
+                                    <div class="post-upload-ui">
+                                        <p class="max-upload-size">Taille de fichier maximale pour la mise en ligne&nbsp;: ?? MB.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div id="ad-library" style="display:none">
                             <div id="ad-library-content">
-                                {% for photo in photos %}
-                                    <div class="ad-library-photo-wrapper" data-adentidfy-photo-id="{{ photo.adentify_photo_id }}">
-                                        <img tabindex="0" class="ad-library-photo" data-adentify-photo-id="{{ photo.adentify_photo_id }}" src="{{ photo.thumb_url }}" />
-                                    </div>
-                                {% endfor %}
+                                <ul id="ad-library-list">
+                                    {% for photo in photos %}
+                                        <li class="ad-library-photo-thumbnail">
+                                            <div class="ad-library-photo-wrapper" data-adentify-photo-id="{{ photo.adentify_photo_id }}" style="background-image: url({{ photo.thumb_url }})"></div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                         </div>
                     </div>

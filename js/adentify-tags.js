@@ -13,12 +13,18 @@
 
                 // hide the modals
                 $('#adentify-modal-backdrop, #adentify-modal-backdrop2, #adentify-modal-close, #adentify-modal-close2').click(function(){
-                    $('#adentify-upload-modal').hide();
+                    $('#adentify-upload-modal').hide(0, function() {
+                        $('#ad-uploader-content').show();
+                        $('#ad-uploading-message').hide();
+                    });
                     $('#adentify-tag-modal').hide();
                 });
                 $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) {
                     if (e.which == 27) {
-                        $('#adentify-upload-modal').hide();
+                        $('#adentify-upload-modal').hide(0, function() {
+                            $('#ad-uploader-content').show();
+                            $('#ad-uploading-message').hide();
+                        });
                         $('#adentify-tag-modal').hide();
                     }
                 });
@@ -66,6 +72,11 @@
                         formData: {
                             'action': 'ad_upload'
                         },
+                        add: function (e, data) {
+                            $('#ad-uploader-content').hide();
+                            $('#ad-uploading-message').show();
+                            data.submit();
+                        },
                         success: function (data) {
                             if (data.success) {
                                 $('#photo-getting-tagged').remove();
@@ -81,9 +92,19 @@
                                     $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
 
                                     // append the new photo to the library content
-                                    var img = '<img tabindex="0" class="ad-library-photo" data-adentify-photo-id="' + photo.id + '" src="' + photo.small_url + '" />';
-                                    var wrapper = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '">' + img + '</div>';
-                                    $('#ad-library-content').append(wrapper);
+                                    var thumbnail = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
+                                    var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
+                                    $('#ad-library-list').append(wrapper);
+                                    $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
+                                        if (currentSelectedPhoto) {
+                                            currentSelectedPhoto.removeClass(selectedPhotoClassName);
+                                        }
+                                        currentSelectedPhoto = $(this);
+                                        currentSelectedPhoto.addClass(selectedPhotoClassName);
+                                        $('#ad-insert-from-library').removeAttr('disabled');
+                                        $('#ad-tag-from-library').removeAttr('disabled');
+                                        photoIdSelected = currentSelectedPhoto.attr('data-adentify-photo-id');
+                                    });
                                 } catch(e) {
                                     console.log("Error: " + data.data); // TODO : gestion erreur
                                 }
@@ -99,15 +120,13 @@
                     e.preventDefault();
                     // TODO: Ajouter un switch suivant le type de tag + builder tag
 
-                    //$('#ad-product-tag-form').serializeArray().map(function(item) { var obj = {}; obj[item.name] = item.value; return obj; });
                     var tagForm = $('#' + $(this).context.form.id).serializeArray().map(function(item) { var obj = {}; obj[item.name] = item.value; return obj; });
-                    //console.log($(this).context.form.attributes['data-tag-type'].value);
                     var tag = {
                         'type': $(this).context.form.attributes['data-tag-type'].value,
                         'title': tagForm[0].name,
                         'description': tagForm[1].description,
                         'link': tagForm[2].url,
-                        'photo': $('#photo-getting-tagged')[0].attributes['data-adentify-photo-id'].value,
+                        'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id'),
                         'x_position': 0.5,
                         'y_position': 0.5,
                         //'brand': 10,
@@ -135,7 +154,7 @@
                 var photoIdSelected;
                 var currentSelectedPhoto = null;
                 var selectedPhotoClassName = 'ad-selected-photo';
-                $('.ad-library-photo').on('click', function() {
+                $('.ad-library-photo-wrapper').on('click', function() {
                    if (currentSelectedPhoto) {
                       currentSelectedPhoto.removeClass(selectedPhotoClassName);
                    }
@@ -168,6 +187,7 @@
                                     };
                                     $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
                                     $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
+                                    $('.ad-library-photo-wrapper[data-adentify-photo-id=' + photoIdSelected +']').removeClass(selectedPhotoClassName);
                                     photoIdSelected = undefined;
                                     $('#ad-insert-from-library').attr('disabled', 'disabled');
                                     $('#ad-tag-from-library').attr('disabled', 'disabled');
@@ -182,7 +202,7 @@
                     if (!$(this).is('[disabled]')) {
                         if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
                             window.send_to_editor('[adentify=' + photoIdSelected + ']');
-                            $('.ad-library-photo[data-adentify-photo-id=' + photoIdSelected + ']').removeClass(selectedPhotoClassName);
+                            $('.ad-library-photo-wrapper[data-adentify-photo-id=' + photoIdSelected +']').removeClass(selectedPhotoClassName);
                             photoIdSelected = undefined;
                             $('#ad-insert-from-library').attr('disabled', 'disabled');
                             $('#ad-tag-from-library').attr('disabled', 'disabled');

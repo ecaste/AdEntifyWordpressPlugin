@@ -6,6 +6,14 @@ var AdEntify = {
    tag: null,
    tags: null,
 
+   openModal: function() {
+
+   },
+
+   addTag: function() {
+
+   },
+
    init: function($) {
       $('#adentify-upload-img').click(function(){
          if ($('#adentify-upload-modal').html() === undefined)

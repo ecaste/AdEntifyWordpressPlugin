@@ -209,37 +209,52 @@ var AdEntify = {
                photoIdSelected = currentSelectedPhoto.attr('data-adentify-photo-id');
             });
 
-            // show the tag modal with the selected photo
-            $('#ad-tag-from-library').click(function(e) {
-               if (!$(this).is('[disabled]') && typeof photoIdSelected !== 'undefined' && photoIdSelected) {
-                  $.ajax({
-                     type: 'GET',
-                     url: adentifyTagsData.admin_ajax_url,
-                     data: {
-                        'action': 'ad_get_photo',
-                        'photo_id': photoIdSelected
-                     },
-                     success: function(data) {
-                        $('#photo-getting-tagged').remove();
-                        $('#adentify-upload-modal').hide();
-                        $('#adentify-tag-modal').show(0, function() {
-                           $('#tag-product input').first().focus();
-                        });
-                        try {
-                           var photo = JSON.parse(data.data);
-                           var style = {
-                              'max-height': $('#ad-display-photo').height()
-                           };
-                           $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
-                           $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
-                           removePhotoSelection();
-                        } catch(e) {
-                           console.log("Error: " + data.data); // TODO gestion erreur
-                        }
+             // show the tag modal with the selected photo
+             $('#ad-tag-from-library').click(function(e) {
+                 if (!$(this).is('[disabled]') && typeof photoIdSelected !== 'undefined' && photoIdSelected) {
+                     $.ajax({
+                         type: 'GET',
+                         url: adentifyTagsData.admin_ajax_url,
+                         data: {
+                             'action': 'ad_get_photo',
+                             'photo_id': photoIdSelected
+                         },
+                         success: function(data) {
+                             $('#photo-getting-tagged').remove();
+                             $('#adentify-upload-modal').hide();
+                             $('#adentify-tag-modal').show(0, function() {
+                                 $('#tag-product input').first().focus();
+                             });
+                             try {
+                                 var photo = JSON.parse(data.data);
+                                 var style = {
+                                     'max-height': $('#ad-display-photo').height()
+                                 };
+                                 $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
+                                 $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
+                                 removePhotoSelection(1);
+                             } catch(e) {
+                                 console.log("Error: " + data.data); // TODO gestion erreur
+                             }
+                         }
+                     });
+                 }
+             });
+
+             // insert a photo in the post editor
+             $('#ad-insert-from-library, #ad-insert-after-tag').click(function() {
+                 if (!$(this).is('[disabled]')) {
+                     if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
+                     //if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
+                         window.send_to_editor('[adentify=' + photoIdSelected + ']');
+                         removePhotoSelection(0);
+                         $('#adentify-upload-modal, #adentify-tag-modal').hide();
                      }
-                  });
-               }
-            });
+                     else
+                        console.log("you have to select a photo"); // TODO: gestion erreur
+                     }
+               });
+
 
             // insert a photo in the post editor
             $('#ad-insert-from-library').click(function() {

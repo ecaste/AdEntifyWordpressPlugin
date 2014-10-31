@@ -4,10 +4,11 @@
 var AdEntify = {
 
    tag: null,
-   tags: null,
+   tags: [],
    photoIdSelected: null,
    currentSelectedPhoto: null,
    selectedPhotoClassName: 'ad-selected-photo',
+   currentTagIndex: null,
 
    /*
     * Events handlers
@@ -193,14 +194,14 @@ var AdEntify = {
    },
 
    openPhotoModal: function(e) {
-       var that = this;
+      var that = this;
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
          $.ajax({
             type: 'GET',
             url: adentifyTagsData.admin_ajax_url,
             data: {
                'action': 'ad_get_photo',
-               'photo_id': this.photoIdSelected
+               'photo_id': that.photoIdSelected
             },
             success: function(data) {
                $('#photo-getting-tagged').remove();
@@ -211,7 +212,7 @@ var AdEntify = {
                try {
                   var photo = JSON.parse(data.data);
                   var style = {
-                     'max-height': $('#ad-display-photo').height()
+                     'max-height': 500//$('#ad-display-photo').height() TODO: fix it
                   };
                   $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
                     + '" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
@@ -235,59 +236,71 @@ var AdEntify = {
          var yPosition = (e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY) / e.currentTarget.clientHeight;
 
          // Remove tags aren't persisted
-         var that = this;
-         this.model.get('tags').each(function(tag) {
-            if (tag.has('tempTag')) {
-               that.model.get('tags').remove(tag);
+         if (this.tags.length > 0) {
+            for (i = 0; i < this.tags.length; i++) {
+               if (typeof this.tags[i].temp !== 'undefined')
+                  this.tags.splice(i--, 1);
             }
-         });
+            this.removeTempTagsFromDOM(e.target);
+         }
 
-         var tag = new Tag.Model();
-         tag.set('x_position', xPosition);
-         tag.set('y_position', yPosition);
-         tag.set('cssClass', 'new-tag');
-         tag.set('tagIcon', this.currentTag ? this.currentTag.get('tagIcon') : 'glyphicon glyphicon-tag')
-         tag.set('tempTag', true);
-         this.model.get('tags').add(tag);
-         this.model.setup();
-         this.currentTag = tag;
+         var tag = {
+            'x_position': xPosition,
+            'y_position': yPosition,
+            'temp': true
+         };
 
-         app.trigger('photo:tagAdded', tag);
+         this.currentTagIndex = this.tags.push(tag) - 1;
+         this.renderTag(e.target, tag);
       }
+   },
+
+   renderTag: function(photoOverlay, tag) {
+      $(photoOverlay).find('.tags-container').append('<div class="tag" data-temp-tag="true" style="left: ' + (tag.x_position * 100) + '%; ' +
+         'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;"></div>');
+   },
+
+   removeTempTagsFromDOM: function(photoOverlay) {
+      $(photoOverlay).find('.tags-container .tag[data-temp-tag]').remove();
    },
 
    postTag: function(e) {
       e.preventDefault();
-      // TODO: Ajouter un switch suivant le type de tag + builder tag
 
-      var tagForm = $('#' + $(this).context.form.id).serializeObject();
-      var tag = {
-         'type': $(this).context.form.attributes['data-tag-type'].value,
-         'title': tagForm.name,
-         'description': tagForm.description,
-         'link': tagForm.url,
-         'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id'),
-         'x_position': 0.5,
-         'y_position': 0.5,
-         'venue': 62
-         //'brand': 10,
-         //'product': 10,
-         //'productType': 10,
-         //'person': 10
-      };
-      console.log(tag);return;
-      $.ajax({
-         type: 'POST',
-         url: adentifyTagsData.admin_ajax_url,
-         data: {
-            'action': 'ad_tag',
-            'tag': tag
-         },
-         complete: function() {
-            $('.ad-tag-frame-content input').val('');
-            console.log("completed submit-tag-ajax");
-         }
-      });
+      // Get data from form
+      var tagForm = $('#' + $(e.target).context.form.id).serializeObject();
+
+      if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
+         var tag = this.tags[this.currentTagIndex];
+         var data = {
+            'type': $(e.target).context.form.attributes['data-tag-type'].value,
+            'title': tagForm.name,
+            'description': tagForm.description,
+            'link': tagForm.url,
+            'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id'),
+            'venue': 62
+            //'brand': 10,
+            //'product': 10,
+            //'productType': 10,
+            //'person': 10
+         };
+         $.extend(tag, data);
+         $.ajax({
+            type: 'POST',
+            url: adentifyTagsData.admin_ajax_url,
+            data: {
+               'action': 'ad_tag',
+               'tag': tag
+            },
+            complete: function() {
+               $('.ad-tag-frame-content input').val('');
+               console.log("completed submit-tag-ajax");
+            }
+         });
+      } else {
+         alert('Vous devez tout d\'abord ajouter un tag sur l\'image');
+         // TODO: gestion erreur
+      }
    },
 
    insertPhotoInPostEditor: function(e) {

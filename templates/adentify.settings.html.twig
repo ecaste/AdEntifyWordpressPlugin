@@ -51,6 +51,22 @@
                     </fieldset>
                 </td>
             </tr>
+            <tr>
+                <th scope="row">Tags shape</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Choose your tags shape</span>
+                        </legend>
+                        <label for="tagShape">
+                            <input type="radio" name="tagShape" value="shape1" {{ (tagShapeVal == 'shape1') ? 'checked' : null }}> Shape1 &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="tagShape" value="shape2" {{ (tagShapeVal == 'shape2') ? 'checked' : null }}> Shape2 &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="tagShape" value="shape3" {{ (tagShapeVal == 'shape3') ? 'checked' : null }}> Shape3 &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="tagShape" value="shape4" {{ (tagShapeVal == 'shape4') ? 'checked' : null }}> Shape4<br>
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
         </table>
         <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save the modifications"  /></p>
     </form>

@@ -36,7 +36,9 @@ define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
-    'TAGS_VISIBILITY' => 'tagsVisibility')));
+    'TAGS_VISIBILITY' => 'tagsVisibility',
+    'TAGS_SHAPE' => 'tagShape'
+)));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
 define( 'ADENTIFY_ADMIN_URL', admin_url('admin-ajax.php'));

@@ -9,7 +9,9 @@ var AdEntify = {
    currentSelectedPhoto: null,
    selectedPhotoClassName: 'ad-selected-photo',
 
-   // Events handlers
+   /*
+    * Events handlers
+    */
    clickOnAdEntifyButton: function() {
       if ($('#adentify-upload-modal').html() === undefined) {
          // render modals
@@ -20,72 +22,6 @@ var AdEntify = {
       else
          $('#adentify-upload-modal').show();
 
-      $('#__wp-uploader-id-2').focus();
-   },
-
-   setupEventHandlers: function() {
-
-      var that = this;
-
-      // hide the modals
-      $('#adentify-modal-backdrop, #adentify-modal-backdrop2, #adentify-modal-close, #adentify-modal-close2').click($.proxy(this.closeModals, this));
-
-      // Close modals on ECHAP
-      $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) { if (e.which == 27) that.closeModals(); });
-
-      // switch between the upload's tabs
-      $('#upload-file, #file-library').click($.proxy(this.clickOnUploadTab, this));
-
-      // switch between the tag's tabs
-      $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').click($.proxy(this.clickOnTagTab, this));
-
-      // upload the image
-      $('#adentify-uploader-button').click($.proxy(this.clickOnUploaderButton, this));
-
-      // Add tag
-      $('.ad-media-frame-content .photo-overlay').click($.proxy(this.addTag, this));
-
-      // post tag
-      $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.postTag, this));
-
-      // Store the id of the selected photo and enabled the buttons
-      $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
-
-      // show the tag modal with the selected photo
-      $('#ad-tag-from-library').click($.proxy(this.openPhotoModal, this));
-
-      // insert a photo in the post editor
-      $('#ad-insert-from-library, #ad-insert-after-tag').click($.proxy(this.insertPhotoInPostEditor, this));
-
-      // "back" button on the tag modal
-      $('#ad-back-to-library').click($.proxy(this.backToMainModal, this));
-   },
-
-   removePhotoSelection: function() {
-      $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
-      this.photoIdSelected = undefined;
-      $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
-   },
-
-   renderModals: function() {
-      $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
-      $('#adentify-upload-modal').html($('#adentify-uploader').html());
-      $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
-   },
-
-   closeModals: function() {
-      $('#adentify-upload-modal').hide(0, function() {
-         $('#ad-uploader-content').show();
-         $('#ad-uploading-message').hide();
-      });
-      $('#adentify-tag-modal').hide();
-      this.removePhotoSelection();
-      $('.ad-tag-frame-content input').val('');
-   },
-
-   backToMainModal: function() {
-      $('#ad-uploading-message, #adentify-tag-modal').hide();
-      $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
    },
 
@@ -183,6 +119,77 @@ var AdEntify = {
       this.currentSelectedPhoto.addClass(this.selectedPhotoClassName);
       $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
       this.photoIdSelected = this.currentSelectedPhoto.attr('data-adentify-photo-id');
+   },
+
+   /*
+    * Setup event handlers
+    */
+   setupEventHandlers: function() {
+      var that = this;
+
+      // hide the modals
+      $('#adentify-modal-backdrop, #adentify-modal-backdrop2, #adentify-modal-close, #adentify-modal-close2').click($.proxy(this.closeModals, this));
+
+      // Close modals on ECHAP
+      $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) { if (e.which == 27) that.closeModals(); });
+
+      // switch between the upload's tabs
+      $('#upload-file, #file-library').click($.proxy(this.clickOnUploadTab, this));
+
+      // switch between the tag's tabs
+      $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').click($.proxy(this.clickOnTagTab, this));
+
+      // upload the image
+      $('#adentify-uploader-button').click($.proxy(this.clickOnUploaderButton, this));
+
+      // Add tag
+      $('.ad-media-frame-content .photo-overlay').click($.proxy(this.addTag, this));
+
+      // post tag
+      $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.postTag, this));
+
+      // Store the id of the selected photo and enabled the buttons
+      $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
+
+      // show the tag modal with the selected photo
+      $('#ad-tag-from-library').click($.proxy(this.openPhotoModal, this));
+
+      // insert a photo in the post editor
+      $('#ad-insert-from-library, #ad-insert-after-tag').click($.proxy(this.insertPhotoInPostEditor, this));
+
+      // "back" button on the tag modal
+      $('#ad-back-to-library').click($.proxy(this.backToMainModal, this));
+   },
+
+   /*
+    * Other methods
+    */
+   removePhotoSelection: function() {
+      $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
+      this.photoIdSelected = undefined;
+      $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
+   },
+
+   renderModals: function() {
+      $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
+      $('#adentify-upload-modal').html($('#adentify-uploader').html());
+      $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
+   },
+
+   closeModals: function() {
+      $('#adentify-upload-modal').hide(0, function() {
+         $('#ad-uploader-content').show();
+         $('#ad-uploading-message').hide();
+      });
+      $('#adentify-tag-modal').hide();
+      this.removePhotoSelection();
+      $('.ad-tag-frame-content input').val('');
+   },
+
+   backToMainModal: function() {
+      $('#ad-uploading-message, #adentify-tag-modal').hide();
+      $('#ad-uploader-content, #adentify-upload-modal').show();
+      $('#__wp-uploader-id-2').focus();
    },
 
    openPhotoModal: function(e) {
@@ -289,12 +296,20 @@ var AdEntify = {
       }
    },
 
+   /*
+    * Init
+    * */
    init: function() {
-      $('#adentify-upload-img').click(this.clickOnAdEntifyButton());
+      var that = this;
+      // Listen click event on AdEntify button
+      $('#adentify-upload-img').click(function() {
+         that.clickOnAdEntifyButton();
+      });
    }
 };
 
 jQuery(document).ready(function($) {
+   // Helpers
    $.fn.serializeObject = function()
    {
       var o = {};
@@ -311,5 +326,6 @@ jQuery(document).ready(function($) {
       });
       return o;
    };
+
    AdEntify.init();
 });

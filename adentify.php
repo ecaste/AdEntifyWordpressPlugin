@@ -165,8 +165,16 @@ function wptuts_styles_with_the_lot()
     // For either a plugin or a theme, you can then enqueue the script:
     wp_enqueue_script( 'adentify-tags-js' );
 }
+function wptuts_admin_styles_with_the_lot() {
+    // Register the style like this for a plugin:
+    wp_register_style( 'adentify-admin-style', plugins_url( '/css/adentify.admin.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+
+    // For either a plugin or a theme, you can then enqueue the style:
+    wp_enqueue_style( 'adentify-admin-style' );
+}
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+add_action( 'admin_enqueue_scripts', 'wptuts_admin_styles_with_the_lot' );
 
 function adentify_register_attachments_tax()
 {

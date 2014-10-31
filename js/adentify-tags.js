@@ -6,9 +6,10 @@
         $('#adentify-upload-img').click(function(){
             if($('#adentify-upload-modal').html() === undefined)
             {
-                function removePhotoSelection() {
+                function removePhotoSelection(needId) {
                     $('.ad-library-photo-wrapper[data-adentify-photo-id=' + photoIdSelected +']').removeClass(selectedPhotoClassName);
-                    photoIdSelected = undefined;
+                    if (needId === 0)
+                        photoIdSelected = undefined;
                     $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
                 }
 
@@ -24,7 +25,7 @@
                         $('#ad-uploading-message').hide();
                     });
                     $('#adentify-tag-modal').hide();
-                    removePhotoSelection();
+                    removePhotoSelection(0);
                     $('.ad-tag-frame-content input').val('');
                 });
                 $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) {
@@ -34,7 +35,7 @@
                             $('#ad-uploading-message').hide();
                         });
                         $('#adentify-tag-modal').hide();
-                        removePhotoSelection();
+                        removePhotoSelection(0);
                         $('.ad-tag-frame-content input').val('');
                     }
                 });
@@ -200,7 +201,7 @@
                                     };
                                     $('#ad-display-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
                                     $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
-                                    removePhotoSelection();
+                                    removePhotoSelection(1);
                                 } catch(e) {
                                     console.log("Error: " + data.data); // TODO gestion erreur
                                 }
@@ -209,12 +210,13 @@
                     }
                 });
                 // insert a photo in the post editor
-                $('#ad-insert-from-library').click(function() {
+                $('#ad-insert-from-library, #ad-insert-after-tag').click(function() {
                     if (!$(this).is('[disabled]')) {
                         if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
+                        //if (typeof photoIdSelected !== "undefined" && photoIdSelected) {
                             window.send_to_editor('[adentify=' + photoIdSelected + ']');
-                            removePhotoSelection();
-                            $('#adentify-upload-modal').hide();
+                            removePhotoSelection(0);
+                            $('#adentify-upload-modal, #adentify-tag-modal').hide();
                         }
                         else
                             console.log("you have to select a photo"); // TODO: gestion erreur

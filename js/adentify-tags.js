@@ -321,9 +321,12 @@ var AdEntify = {
    init: function() {
       var that = this;
       // Listen click event on AdEntify button
-      $('#adentify-upload-img').click(function() {
-         that.clickOnAdEntifyButton();
-      });
+      var adentifyButton = $('#adentify-upload-img');
+      if (adentifyButton.length) {
+	 adentifyButton.click(function() {
+	    that.clickOnAdEntifyButton();
+	 });
+      }
    }
 };
 

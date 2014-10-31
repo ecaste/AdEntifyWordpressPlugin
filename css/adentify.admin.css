@@ -1,11 +1,11 @@
-.ad-media-frame-content {
+/*.ad-media-frame-content {
     position: relative;
-}
+}*/
     .ad-media-frame-content .photo-overlay {
         cursor: pointer;
         position: absolute;
-        left: 0px;
-        top: 0px;
+        /*left: 0px;*/
+        /*top: 0px;*/
         width: 100%;
         height: 100%;
     }

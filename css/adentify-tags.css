@@ -126,12 +126,10 @@
     overflow: auto;
     background: #f3f3f3;
     text-align: center;
-    /*border-top: 1px solid #ddd;*/
-    /*border-bottom: 1px solid #ddd;*/
 }
-#ad-display-photo {
+/*#ad-display-photo {
     right: 500px;
-}
+}*/
 .form-control {
     width: 70%;
     margin-bottom: 10px;
@@ -155,13 +153,16 @@
     border: #94B8FF 3px solid;
 }
 .ad-photo-getting-tagged {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    right: 300px;
+    /*display: block;*/
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    /*right: 300px;*/
 }
 #ad-insert-from-library, #ad-tag-from-library {
-    display: none
+    display: none;
+}
+#ad-wrapper-tag-photo {
+    position: absolute;
 }
 /*
 .tag-text {

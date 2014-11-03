@@ -275,9 +275,8 @@ var AdEntify = {
 
    brandFormatResult: function(brand) {
       var markup = '<div class="row-fluid">' +
-         brand.medium_logo_url ? '<div class="span2"><img src="' + brand.medium_logo_url + '" /></div>' : '' +
-         '<div class="span10">' +
-         brand.name + '</div>';
+         (brand.medium_logo_url ? '<div class="span2"><img class="small-logo" src="' + brand.medium_logo_url + '" /></div>' : '') +
+         '<div class="span10">' + brand.name + '</div>';
 
       markup += '</div></div>';
 

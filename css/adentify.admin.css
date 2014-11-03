@@ -16,3 +16,10 @@
         background: red;
         border-radius: 100%;
     }
+
+    .select2-drop {
+        z-index: 999999!important;
+    }
+    .select2-drop .small-logo {
+        max-height: 20px;
+    }

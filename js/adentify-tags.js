@@ -199,35 +199,93 @@ var AdEntify = {
          $.ajax({
             type: 'GET',
             url: adentifyTagsData.admin_ajax_url,
+            dataType: 'json',
             data: {
                'action': 'ad_get_photo',
                'photo_id': that.photoIdSelected
             },
             success: function(data) {
-               $('#photo-getting-tagged').remove();
-               $('#adentify-upload-modal').hide();
-               $('#adentify-tag-modal').show(0, function() {
-                  $('#tag-product input').first().focus();
-               });
-               try {
-                  var photo = JSON.parse(data.data);
-                  var style = {
-                     'max-height': 500//$('#ad-display-photo').height() TODO: fix it
-                  };
-                  $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
-                    + '" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
-                    + '" src="' + photo.large_url + '"/>');
-                   setTimeout(function() {
-                       $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
-                   }, 500);
-                  that.removePhotoSelection(1);
-               } catch(e) {
-                   console.log(e);
-                  console.log("Error: " + data.data); // TODO gestion erreur
+               if (typeof data.data !== 'undefined') {
+                  $('#photo-getting-tagged').remove();
+                  $('#adentify-upload-modal').hide();
+                  $('#adentify-tag-modal').show(0, function() {
+                     $('#tag-product input').first().focus();
+                  });
+                  that.setupSelect2Js();
+                  try {
+                     var photo = JSON.parse(data.data);
+                     var style = {
+                        'max-height': 500//$('#ad-display-photo').height() TODO: fix it
+                     };
+                     $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
+                     + '" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
+                     + '" src="' + photo.large_url + '"/>');
+                     setTimeout(function() {
+                        $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
+                     }, 500);
+                     that.removePhotoSelection(1);
+                  } catch(e) {
+                     console.log(e);
+                     console.log("Error: " + data.data); // TODO gestion erreur
+                  }
+               } else {
+                  alert('Impossible de récupérer la photo.');
+                  // TOOD: gestion erreur
                }
             }
          });
       }
+   },
+
+   setupSelect2Js: function() {
+      $("#brand-name").select2({
+         placeholder: "Search for a brand",
+         minimumInputLength: 1,
+         ajax: {
+            url: adentifyTagsData.adentify_api_brand_search_url,
+            dataType: 'json',
+            quietMillis: 250,
+            data: function (term, page) {
+               return {
+                  query: term
+               };
+            },
+            results: function (data, page) {
+               return { results: data.data };
+            },
+            cache: true
+         },
+         initSelection: function(element, callback) {
+            // the input tag has a value attribute preloaded that points to a preselected repository's id
+            // this function resolves that id attribute to an object that select2 can render
+            // using its formatResult renderer - that way the repository name is shown preselected
+            var id = $(element).val();
+            if (id !== "") {
+               $.ajax(adentifyTagsData.adentify_api_brand_get_url + id, {
+                  dataType: "json"
+               }).done(function(data) { callback(data); });
+            }
+         },
+         formatResult: this.brandFormatResult, // omitted for brevity, see the source of this page
+         formatSelection: this.brandFormatSelection,  // omitted for brevity, see the source of this page
+         dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+         escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+      });
+   },
+
+   brandFormatResult: function(brand) {
+      var markup = '<div class="row-fluid">' +
+         brand.medium_logo_url ? '<div class="span2"><img src="' + brand.medium_logo_url + '" /></div>' : '' +
+         '<div class="span10">' +
+         brand.name + '</div>';
+
+      markup += '</div></div>';
+
+      return markup;
+   },
+
+   brandFormatSelection: function(brand) {
+      return brand.name;
    },
 
    addTag: function(e) {
@@ -315,17 +373,42 @@ var AdEntify = {
       }
    },
 
+   createCORSRequest: function(method, url) {
+      var xhr = new XMLHttpRequest();
+      if ("withCredentials" in xhr) {
+         // XHR for Chrome/Firefox/Opera/Safari.
+         xhr.open(method, url, true);
+      } else if (typeof XDomainRequest != "undefined") {
+         // XDomainRequest for IE.
+         xhr = new XDomainRequest();
+         xhr.open(method, url);
+      } else {
+         // CORS not supported.
+         xhr = null;
+      }
+      return xhr;
+   },
+
    /*
     * Init
     * */
    init: function() {
+      /*var xhr = this.createCORSRequest('GET', 'https://local.adentify.com/api/v1/brand/search?query=ad');
+      if (xhr) {
+         *//*xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");*//*
+         xhr.setRequestHeader('X-Custom-Header', 'value');
+         console.log(xhr.send());
+
+         *//*xhr.send('tagId=' + jQuery(this).data('tag-id') + '&statType=hover');*//*
+      }*/
+
       var that = this;
       // Listen click event on AdEntify button
       var adentifyButton = $('#adentify-upload-img');
       if (adentifyButton.length) {
-	 adentifyButton.click(function() {
-	    that.clickOnAdEntifyButton();
-	 });
+         adentifyButton.click(function() {
+            that.clickOnAdEntifyButton();
+         });
       }
    }
 };

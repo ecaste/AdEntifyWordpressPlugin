@@ -159,7 +159,9 @@ function wptuts_styles_with_the_lot()
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
     wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
-        'admin_ajax_url' => ADENTIFY_ADMIN_URL
+        'admin_ajax_url' => ADENTIFY_ADMIN_URL,
+        'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
+        'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/')
     ));
 
     // For either a plugin or a theme, you can then enqueue the script:
@@ -171,6 +173,12 @@ function wptuts_admin_styles_with_the_lot() {
 
     // For either a plugin or a theme, you can then enqueue the style:
     wp_enqueue_style( 'adentify-admin-style' );
+
+    // SELECT2.js
+    wp_register_style( 'adentify-select2-style', plugins_url( '/js/vendor/select2/select2.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+    wp_enqueue_style( 'adentify-select2-style' );
+    wp_register_script( 'adentify-select2-js', plugins_url( '/js/vendor/select2/select2.min.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-select2-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );

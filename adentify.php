@@ -164,6 +164,10 @@ function wptuts_styles_with_the_lot()
 
     // Register the script like this for a plugin:
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.min.js', '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.ui.widget.js', plugins_url( '/js/vendor/jquery.ui.widget.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.iframe-transport.js', plugins_url( '/js/vendor/jquery.iframe-transport.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.fileupload.js', plugins_url( '/js/vendor/jquery.fileupload.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
     wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
@@ -172,6 +176,11 @@ function wptuts_styles_with_the_lot()
 
     // For either a plugin or a theme, you can then enqueue the script:
     wp_enqueue_script( 'adentify-tags-js' );
+    wp_enqueue_script( 'jquery.min.js' );
+    wp_enqueue_script( 'jquery.ui.widget.js' );
+    wp_enqueue_script( 'jquery.iframe-transport.js' );
+    wp_enqueue_script( 'jquery.fileupload.js' );
+
 }
 function wptuts_admin_styles_with_the_lot() {
     // Register the style like this for a plugin:

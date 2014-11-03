@@ -63,7 +63,8 @@ var AdEntify = {
    },
 
    clickOnUploaderButton: function(e) {
-      $('#upload-img').click().fileupload({
+       var that = this;
+       $('#upload-img').click().fileupload({
          datatype: 'json',
          url: adentifyTagsData.admin_ajax_url,
          formData: {
@@ -83,6 +84,7 @@ var AdEntify = {
                });
                try {
                   var photo = data.data;
+                  that.photoIdSelected = photo.id;
                   $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
                   + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                   + '" src="' + photo.large_url + '"/>');
@@ -95,13 +97,13 @@ var AdEntify = {
                   var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
                   $('#ad-library-list').append(wrapper);
                   $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
-                     if (this.currentSelectedPhoto) {
-                        this.currentSelectedPhoto.removeClass(this.selectedPhotoClassName);
+                     if (that.currentSelectedPhoto) {
+                        that.currentSelectedPhoto.removeClass(that.selectedPhotoClassName);
                      }
-                     this.currentSelectedPhoto = $(this);
-                     this.currentSelectedPhoto.addClass(this.selectedPhotoClassName);
+                     that.currentSelectedPhoto = $(this);
+                     that.currentSelectedPhoto.addClass(that.selectedPhotoClassName);
                      $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
-                     this.photoIdSelected = this.currentSelectedPhoto.attr('data-adentify-photo-id');
+                     that.photoIdSelected = that.currentSelectedPhoto.attr('data-adentify-photo-id');
                   });
                } catch(e) {
                   console.log("Error: " + data.data); // TODO : gestion erreur
@@ -166,9 +168,10 @@ var AdEntify = {
    /*
     * Other methods
     */
-   removePhotoSelection: function() {
+   removePhotoSelection: function(needId) {
       $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
-      this.photoIdSelected = undefined;
+      if (needId === 0)
+         this.photoIdSelected = undefined;
       $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
    },
 
@@ -184,7 +187,7 @@ var AdEntify = {
          $('#ad-uploading-message').hide();
       });
       $('#adentify-tag-modal').hide();
-      this.removePhotoSelection();
+      this.removePhotoSelection(0);
       $('.ad-tag-frame-content input').val('');
    },
 
@@ -305,8 +308,8 @@ var AdEntify = {
       if (!$(e.target).is('[disabled]')) {
          if (typeof this.photoIdSelected !== "undefined" && this.photoIdSelected) {
             window.send_to_editor('[adentify=' + this.photoIdSelected + ']');
-            this.removePhotoSelection();
-            $('#adentify-upload-modal').hide();
+            this.removePhotoSelection(0);
+            $('#adentify-upload-modal, #adentify-tag-modal').hide();
          }
          else
             console.log("you have to select a photo"); // TODO: gestion erreur

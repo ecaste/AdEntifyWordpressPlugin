@@ -10,8 +10,8 @@
             /* Tag icon styles */
             .adentify-container .tags .tag .tag-icon {
                 background: url('../images/tag-background.png') no-repeat;
-                width: 35px;
-                height: 36px;
+                width: 30px;
+                height: 30px;
                 opacity: 0;
                 transition: opacity .1s linear;
             }
@@ -162,7 +162,12 @@
     display: none;
 }
 #ad-wrapper-tag-photo {
+    position: relative;
+    left: -50%;
+}
+#ad-wrapper-2 {
     position: absolute;
+    left: 37%;
 }
 .ad-radio-button {
     display: inline-block;

@@ -83,11 +83,12 @@ var AdEntify = {
                });
                try {
                   var photo = data.data;
-                  var style = {
-                     'max-height': $('#ad-display-photo').height()
-                  };
-                  $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
-                  $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
+                  $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
+                  + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
+                  + '" src="' + photo.large_url + '"/>');
+                  setTimeout(function() {
+                      $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
+                  }, 500);
 
                   // append the new photo to the library content
                   var thumbnail = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
@@ -211,11 +212,8 @@ var AdEntify = {
                });
                try {
                   var photo = JSON.parse(data.data);
-                  var style = {
-                     'max-height': 500//$('#ad-display-photo').height() TODO: fix it
-                  };
                   $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
-                    + '" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
+                    + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                     + '" src="' + photo.large_url + '"/>');
                    setTimeout(function() {
                        $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());

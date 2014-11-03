@@ -14,7 +14,12 @@
                     <div class="ad-media-frame-content">
                         <div id="ad-uploader" class="uploader-inline">
                             <div class="uploader-inline-content no-upload-message">
-                                <h3 id="ad-uploading-message" class="upload-instructions drop-instructions" style="display: none">Uploading ...</h3>
+                                <div id="ad-uploading-message" class="loading-gif-container" style="display: none;">
+                                    <h3 class="upload-instructions drop-instructions">Uploading</h3>
+                                    <div class="loader rotate">
+                                        <div class="loading-gif"></div>
+                                    </div>
+                                </div>
                                 <div id="ad-uploader-content">
                                     <div class="upload-ui">
                                         <form role="form" enctype="multipart/form-data">

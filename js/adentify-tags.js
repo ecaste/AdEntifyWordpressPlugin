@@ -269,7 +269,7 @@ var AdEntify = {
       e.preventDefault();
 
       // Get data from form
-      var tagForm = $('#' + $(e.target).context.form.id).serializeObject();
+      var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
 
       if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
          var tag = this.tags[this.currentTagIndex];
@@ -285,6 +285,8 @@ var AdEntify = {
             //'productType': 10,
             //'person': 10
          };
+         $('.submit-tag').hide();
+         $('.ad-posting-tag').show();
          $.extend(tag, data);
          $.ajax({
             type: 'POST',
@@ -294,6 +296,8 @@ var AdEntify = {
                'tag': tag
             },
             complete: function() {
+               $('.submit-tag').show();
+               $('.ad-posting-tag').hide();
                $('.ad-tag-frame-content input').val('');
                console.log("completed submit-tag-ajax");
             }

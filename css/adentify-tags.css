@@ -227,3 +227,37 @@
     padding: 10px 0px 10px 50px;
     border: 0px;
 }*/
+
+
+/* Loading */
+.loading-gif-container {
+    margin: 30px auto;
+    text-align: center;
+}
+.loading-gif-container-nomargin {
+    margin: auto;
+    text-align: center;
+}
+.loading-gif {
+    background: url('../images/loading.gif') no-repeat;
+    width: 24px;
+    height: 24px;
+    margin: 0px auto 10px auto;
+}
+.loader{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rotate {
+    -webkit-animation: rotate 1.2s linear infinite;
+    -moz-animation: rotate 1.2s linear infinite;
+    -ms-animation: rotate 1.2s linear infinite;
+    -o-animation: rotate 1.2s linear infinite;
+    animation: rotate 1.2s linear infinite;
+}
+@-webkit-keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
+@-moz-keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
+@-ms-keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
+@-o-keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
+@keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }

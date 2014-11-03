@@ -164,6 +164,9 @@
 #ad-wrapper-tag-photo {
     position: absolute;
 }
+.ad-radio-button {
+    display: inline-block;
+}
 /*
 .tag-text {
     font-family: 'robotoregular', "Helvetica Neue", "Arial", sans-serif;

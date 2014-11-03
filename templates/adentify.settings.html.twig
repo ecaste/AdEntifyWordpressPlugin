@@ -44,9 +44,11 @@
                         <legend class="screen-reader-text">
                             <span>Display tags mode</span>
                         </legend>
-                        <label for="tagsVisibility">
-                            <input type="radio" name="tagsVisibility" value="always-visible" {{ (tagsVisibilityVal == 'always-visible') ? 'checked' : null }}> Tags always visible &nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="tagsVisibility" value="visible-on-hover" {{ (tagsVisibilityVal == 'visible-on-hover') ? 'checked' : null }}> Tags only visible on hover<br>
+                        <label for="always-visible">
+                            <input type="radio" name="tagsVisibility" id="always-visible" value="always-visible" {{ (tagsVisibilityVal == 'always-visible') ? 'checked' : null }}> Tags always visible &nbsp;&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="visible-on-hover">
+                            <input type="radio" name="tagsVisibility" id="visible-on-hover" value="visible-on-hover" {{ (tagsVisibilityVal == 'visible-on-hover') ? 'checked' : null }}> Tags only visible on hover<br>
                         </label>
                     </fieldset>
                 </td>
@@ -58,11 +60,37 @@
                         <legend class="screen-reader-text">
                             <span>Choose your tags shape</span>
                         </legend>
-                        <label for="tagShape">
-                            <input type="radio" name="tagShape" value="shape1" {{ (tagShapeVal == 'shape1') ? 'checked' : null }}> Shape1 &nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="tagShape" value="shape2" {{ (tagShapeVal == 'shape2') ? 'checked' : null }}> Shape2 &nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="tagShape" value="shape3" {{ (tagShapeVal == 'shape3') ? 'checked' : null }}> Shape3 &nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="tagShape" value="shape4" {{ (tagShapeVal == 'shape4') ? 'checked' : null }}> Shape4<br>
+                        <label for="tagShape1">
+                            <input type="radio" name="tagShape" id="tagShape1" classs="tagShape1" value="tagShape1" {{ (tagShapeVal == 'tagShape1') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape1</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape2">
+                            <input type="radio" name="tagShape" id="tagShape2" classs="tagShape2" value="tagShape2" {{ (tagShapeVal == 'tagShape2') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape2</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape3">
+                            <input type="radio" name="tagShape" id="tagShape3" classs="tagShape3" value="tagShape3" {{ (tagShapeVal == 'tagShape3') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape3</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape4">
+                            <input type="radio" name="tagShape" id="tagShape4" classs="tagShape4" value="tagShape4" {{ (tagShapeVal == 'tagShape4') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape4</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape5">
+                            <input type="radio" name="tagShape" id="tagShape5" classs="tagShape5" value="tagShape5" {{ (tagShapeVal == 'tagShape5') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape5</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape6">
+                            <input type="radio" name="tagShape" id="tagShape6" classs="tagShape6" value="tagShape6" {{ (tagShapeVal == 'tagShape6') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape6</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape7">
+                            <input type="radio" name="tagShape" id="tagShape7" classs="tagShape7" value="tagShape7" {{ (tagShapeVal == 'tagShape7') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape7</div>&nbsp;&nbsp;&nbsp;
+                        </label>
+                        <label for="tagShape8">
+                            <input type="radio" name="tagShape" id="tagShape8" classs="tagShape8" value="tagShape8" {{ (tagShapeVal == 'tagShape8') ? 'checked' : null }}>
+                            <div class="ad-radio-button">Shape8</div>&nbsp;&nbsp;&nbsp;
                         </label>
                     </fieldset>
                 </td>

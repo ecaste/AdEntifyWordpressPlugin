@@ -121,11 +121,16 @@ function adentify_plugin_settings() {
             update_option($key, $settings[$key]);
         }
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
+
+        wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+            'admin_ajax_url' => ADENTIFY_ADMIN_URL,
+            'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+        ));
     }
     foreach($settings as $key => $value)
     {
-        $twig_variable[$key.'Val'] = $value;
-        $twig_variable[$key] = $key;
+        $parameters[$key.'Val'] = $value;
+        $parameters[$key] = $key;
     }
 
     if (!APIManager::getInstance()->getAccessToken())
@@ -161,7 +166,8 @@ function wptuts_styles_with_the_lot()
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
     wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
-        'admin_ajax_url' => ADENTIFY_ADMIN_URL
+        'admin_ajax_url' => ADENTIFY_ADMIN_URL,
+        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
 
     // For either a plugin or a theme, you can then enqueue the script:

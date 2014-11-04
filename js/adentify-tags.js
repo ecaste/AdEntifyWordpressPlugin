@@ -179,6 +179,7 @@ var AdEntify = {
       $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
       $('#adentify-upload-modal').html($('#adentify-uploader').html());
       $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
+      $('#ad-tag-from-library, #ad-insert-from-library, #ad-uploading-message').hide();
    },
 
    closeModals: function() {
@@ -199,6 +200,7 @@ var AdEntify = {
 
    openPhotoModal: function(e) {
       var that = this;
+      $('#ad-tag-from-library-loading, #ad-uploading-message').show();
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
          $.ajax({
             type: 'GET',
@@ -226,6 +228,9 @@ var AdEntify = {
                    console.log(e);
                   console.log("Error: " + data.data); // TODO gestion erreur
                }
+            },
+            complete: function() {
+               $('#ad-tag-from-library-loading').hide();
             }
          });
       }
@@ -286,7 +291,7 @@ var AdEntify = {
             //'person': 10
          };
          $('.submit-tag').hide();
-         $('.ad-posting-tag').show();
+         $('#ad-posting-tag, #ad-uploading-message').show();
          $.extend(tag, data);
          $.ajax({
             type: 'POST',
@@ -297,7 +302,7 @@ var AdEntify = {
             },
             complete: function() {
                $('.submit-tag').show();
-               $('.ad-posting-tag').hide();
+               $('#ad-posting-tag').hide();
                $('.ad-tag-frame-content input').val('');
                console.log("completed submit-tag-ajax");
             }

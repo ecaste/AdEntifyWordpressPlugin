@@ -81,8 +81,13 @@
                                 </div>
                             </div>
                             <div class="media-toolbar-primary search-form">
-                                <a tabindex="0" id="ad-tag-from-library" href="#" class="button media-button button-primary button-large media-button-insert" disabled="disabled">Ajouter un tag</a>
-                                <a tabindex="0" id="ad-insert-from-library" href="#" class="button media-button button-primary button-large media-button-insert" disabled="disabled">Insérer dans l’article</a>
+                                <div id="ad-uploading-message" class="loading-gif-container" style="">
+                                    <div class="loader rotate">
+                                        <div id="ad-tag-from-library-loading" class="loading-gif"></div>
+                                    </div>
+                                </div>
+                                <div id="ad-tag-from-library" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Ajouter un tag</div>
+                                <div id="ad-insert-from-library" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Insérer dans l’article</div>
                             </div>
                         </div>
                     </div>

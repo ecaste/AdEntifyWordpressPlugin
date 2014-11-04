@@ -192,7 +192,9 @@
     /*right: 300px;*/
 }
 #ad-insert-from-library, #ad-tag-from-library {
-    display: none;
+    display: inline-block;
+    margin-top: 15px;
+    margin-left: 10px;
 }
 #ad-wrapper-tag-photo {
     position: relative;
@@ -227,18 +229,17 @@
     padding: 10px 0px 10px 50px;
     border: 0px;
 }*/
-
-
 /* Loading */
 .loading-gif-container {
-    margin: 30px auto;
-    text-align: center;
+    margin-top: 17px;
+    display: inline-block;
 }
 .loading-gif-container-nomargin {
     margin: auto;
     text-align: center;
 }
 .loading-gif {
+    /*display: none;*/
     background: url('../images/loading.gif') no-repeat;
     width: 24px;
     height: 24px;

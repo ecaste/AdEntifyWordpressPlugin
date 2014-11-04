@@ -329,6 +329,8 @@ var AdEntify = {
 
       this.setupAutocomplete('#person-name', 'Search for a person', function(item) { return that.genericFormatResult(item, null, [ 'firstname', 'lastname' ]); },
          function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url, adentifyTagsData.adentify_api_person_get_url);
+
+      // TODO: Hide select2 dropdown on tab changed
    },
 
    genericFormatResult: function(item, imageKey, nameKey) {
@@ -337,7 +339,7 @@ var AdEntify = {
       var markup = '<div class="row-fluid">' +
          (typeof item[imageKey] !== 'undefined' ? '<div class="span2"><img class="small-logo" src="' + item[imageKey] + '" /></div>' : '');
 
-      markup += '<div class="span10">' + (nameKey instanceof Array ? this.explode(item, nameKey) : item[nameKey]) + '</div>';
+      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implode(item, nameKey) : item[nameKey]) + '</div>';
       markup += '</div></div>';
 
       return markup;
@@ -346,17 +348,17 @@ var AdEntify = {
    genericFormatSelection: function(item, key) {
       key = key || 'name';
       if (key instanceof Array) {
-         return this.explode(item, key);
+         return this.implode(item, key);
       } else
          return item[key];
    },
 
-   explode: function(object, keys) {
-      var explodedArray = [];
+   implode: function(object, keys) {
+      var implodedString = [];
       keys.forEach(function(key) {
-         explodedArray.push(object[key]);
+         implodedString.push(object[key]);
       });
-      return explodedArray.join(' ');
+      return implodedString.join(' ');
    },
 
    addTag: function(e) {
@@ -423,6 +425,7 @@ var AdEntify = {
          // Get data from form
          var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
          var tag = this.tags[this.currentTagIndex];
+
          var properties = {
             'type': $(e.target).context.form.attributes['data-tag-type'].value,
             'title': tagForm.name,

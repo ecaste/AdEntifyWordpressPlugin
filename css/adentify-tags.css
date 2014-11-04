@@ -15,9 +15,9 @@
                 opacity: 0;
                 transition: opacity .1s linear;
             }
-            .tagShape input[type=radio] {
-                display:none;
-            }
+            /*.tagShape input[type=radio] {*/
+                /*display:none;*/
+            /*}*/
             .tagShape input[type=radio]:checked + div{
                 outline: solid 2px #2ea2cc;
             }
@@ -153,17 +153,11 @@
     top: 50px;
     left: 0px;
     right: 0;
-    /*bottom: 0px;*/
-    /*height: 100%;*/
-    /*width: 100%;*/
     margin: 0;
     overflow: auto;
     background: #f3f3f3;
     text-align: center;
 }
-/*#ad-display-photo {
-    right: 500px;
-}*/
 .form-control {
     width: 70%;
     margin-bottom: 10px;
@@ -185,12 +179,6 @@
 .ad-selected-photo {
     outline: #2ea2cc 3px solid;
 }
-.ad-photo-getting-tagged {
-    /*display: block;*/
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
-    /*right: 300px;*/
-}
 #ad-insert-from-library, #ad-tag-from-library {
     display: inline-block;
     margin-top: 15px;
@@ -210,28 +198,7 @@
 #ad-tag-from-library-loading {
     display: none;
 }
-/*
-.tag-text {
-    font-family: 'robotoregular', "Helvetica Neue", "Arial", sans-serif;
-    font-size: 16px;
-    padding: 10px;
-}
-.tag-text .add-tag-info {
-    font-size: 16px;
-}
-.tag-text .add-tag-info span {
-    font-size: 16px;
-}
-.tag-text .add-tag-info li {
-    margin: 10px 0px;
-}
-.pacifico-adentify {
-    font-size: 32px;
-    color: #2c2c2e;
-    font-family: 'pacificoregular', "Helvetica Neue", "Arial", sans-serif;
-    padding: 10px 0px 10px 50px;
-    border: 0px;
-}*/
+
 /* Loading */
 .loading-gif-container {
     margin-top: 17px;

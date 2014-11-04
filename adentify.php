@@ -58,6 +58,7 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
 
+//APIManager::getInstance()->revokeAccessToken();
 function filter_function_name( $content, $post_id ) {
 
     preg_match('/\[adentify=(.+)\]/i', $content, $matches);
@@ -132,9 +133,6 @@ function adentify_plugin_settings() {
         $parameters[$key.'Val'] = $value;
         $parameters[$key] = $key;
     }
-
-    if (!APIManager::getInstance()->getAccessToken())
-        $parameters['authorization_url'] = APIManager::getInstance()->getAuthorizationUrl();
 
     echo Twig::render('adentify.settings.html.twig', $parameters);
 }
@@ -335,3 +333,12 @@ function ad_get_photo() {
     wp_send_json_success(sprintf(APIManager::getInstance()->getPhoto($_GET['photo_id'])));
 }
 add_action( 'wp_ajax_ad_get_photo', 'ad_get_photo' );
+
+function ad_admin_notice() {
+    if (!APIManager::getInstance()->getAccessToken() && !array_key_exists('code', $_GET))
+        echo Twig::render('admin\notices.html.twig', array(
+            'authorization_url' => APIManager::getInstance()->getAuthorizationUrl()
+        ));
+}
+add_action( 'admin_notices', 'ad_admin_notice' );
+

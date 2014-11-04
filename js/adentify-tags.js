@@ -230,7 +230,7 @@ var AdEntify = {
                   try {
                      var photo = JSON.parse(data.data);
                      $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
-                     + '" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
+                     + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                      + '" src="' + photo.large_url + '"/>');
                      setTimeout(function() {
                         $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
@@ -241,7 +241,7 @@ var AdEntify = {
                      console.log("Error: " + data.data); // TODO gestion erreur
                   }
                } else {
-                  alert('Impossible de récupérer la photo.');
+                  alert('Impossible de rï¿½cupï¿½rer la photo.');
                   // TOOD: gestion erreur
                }
             },

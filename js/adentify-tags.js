@@ -199,9 +199,17 @@ var AdEntify = {
       $('.ad-tag-frame-content input').val('');
    },
 
+   startLoading: function() {
+      $('#ad-tag-from-library-loading, #ad-uploading-message').show();
+   },
+
+   stopLoading: function() {
+      $('#ad-tag-from-library-loading').hide();
+   },
+
    openPhotoModal: function(e) {
       var that = this;
-      $('#ad-tag-from-library-loading, #ad-uploading-message').show();
+      this.startLoading();
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
          $.ajax({
             type: 'GET',
@@ -238,7 +246,7 @@ var AdEntify = {
                }
             },
             complete: function() {
-               $('#ad-tag-from-library-loading').hide();
+               that.stopLoading();
             }
          });
       }

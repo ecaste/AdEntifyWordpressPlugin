@@ -72,7 +72,7 @@ var AdEntify = {
          },
          add: function (e, data) {
             $('#ad-uploader-content').hide();
-            $('#ad-uploading-message').show();
+            that.startLoading('uploading-message');
             data.submit();
          },
          success: function (data) {
@@ -111,7 +111,10 @@ var AdEntify = {
             } else {
                console.log("Error: " + data.data); // TODO : gestion erreur
             }
-         }
+         },
+          complete: function() {
+             that.stopLoading('uploading-message');
+          }
       });
    },
 
@@ -179,37 +182,60 @@ var AdEntify = {
       $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
       $('#adentify-upload-modal').html($('#adentify-uploader').html());
       $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
-      $('#ad-tag-from-library, #ad-insert-from-library, #ad-uploading-message').hide();
+      $('#ad-tag-from-library, #ad-insert-from-library').hide();
+      this.stopLoading('uploading-message');
    },
 
    closeModals: function() {
       $('#adentify-upload-modal').hide(0, function() {
-         $('#ad-uploader-content').show();
-         $('#ad-uploading-message').hide();
+         //$('#ad-uploader-content').show();
       });
       $('#adentify-tag-modal').hide();
+      //this.stopLoading('uploading-message');
       this.removePhotoSelection(0);
       $('.ad-tag-frame-content input').val('');
    },
 
    backToMainModal: function() {
-      $('#ad-uploading-message, #adentify-tag-modal').hide();
+      $('#adentify-tag-modal').hide();
       $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
       $('.ad-tag-frame-content input').val('');
    },
 
-   startLoading: function() {
-      $('#ad-tag-from-library-loading, #ad-uploading-message').show();
+   startLoading: function(loader) {
+      switch (loader) {
+         case 'tag-from-library':
+            $('#ad-tag-from-library-loading').show();
+            break;
+         case 'uploading-message':
+            $('#ad-uploading-message').show();
+            break;
+         case 'posting-tag':
+         default:
+            $('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').show();
+            break;
+      }
    },
 
-   stopLoading: function() {
-      $('#ad-tag-from-library-loading').hide();
+   stopLoading: function(loader) {
+      switch (loader) {
+         case 'tag-from-library':
+            $('#ad-tag-from-library-loading').hide();
+            break;
+         case 'uploading-message':
+            $('#ad-uploading-message').hide();
+            break;
+         case 'posting-tag':
+         default:
+            $('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').hide();
+            break;
+      }
    },
 
    openPhotoModal: function(e) {
       var that = this;
-      this.startLoading();
+      that.startLoading('tag-from-library');
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
          $.ajax({
             type: 'GET',
@@ -229,6 +255,7 @@ var AdEntify = {
                   that.setupSelect2Js();
                   try {
                      var photo = JSON.parse(data.data);
+
                      $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
                      + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                      + '" src="' + photo.large_url + '"/>');
@@ -246,7 +273,7 @@ var AdEntify = {
                }
             },
             complete: function() {
-               that.stopLoading();
+               that.stopLoading('tag-from-library');
             }
          });
       }
@@ -389,6 +416,7 @@ var AdEntify = {
 
       // Get data from form
       var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
+      var that = this;
 
       if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
          var tag = this.tags[this.currentTagIndex];
@@ -405,7 +433,7 @@ var AdEntify = {
             //'person': 10
          };
          $('.submit-tag').hide();
-         $('#ad-posting-tag, #ad-uploading-message').show();
+         that.startLoading('posting-tag');
          $.extend(tag, data);
          $.ajax({
             type: 'POST',
@@ -416,7 +444,7 @@ var AdEntify = {
             },
             complete: function() {
                $('.submit-tag').show();
-               $('#ad-posting-tag').hide();
+               that.stopLoading('posting-tag');
                $('.ad-tag-frame-content input').val('');
                console.log("completed submit-tag-ajax");
             }

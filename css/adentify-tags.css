@@ -207,6 +207,9 @@
 .ad-radio-button {
     display: inline-block;
 }
+#ad-tag-from-library-loading {
+    display: none;
+}
 /*
 .tag-text {
     font-family: 'robotoregular', "Helvetica Neue", "Arial", sans-serif;

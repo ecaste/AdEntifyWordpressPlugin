@@ -22,32 +22,34 @@
                 outline: solid 2px #2ea2cc;
             }
             .tagShape .tagShape1, .tagShape2, .tagShape3, .tagShape4, .tagShape5, .tagShape6, .tagShape7, .tagShape8 {
+                border-radius: 0%!important;
+                margin: 0!important;
                 width: 30px;
                 height: 30px;
             }
             .tagShape1 {
-                background: url('../images/tagShape1.png') no-repeat;
+                background: url('../images/tagShape1.png') no-repeat!important;
             }
             .tagShape2 {
-                background: url('../images/tagShape2.png') no-repeat;
+                background: url('../images/tagShape2.png') no-repeat!important;
             }
             .tagShape3 {
-                background: url('../images/tagShape3.png') no-repeat;
+                background: url('../images/tagShape3.png') no-repeat!important;
             }
             .tagShape4 {
-                background: url('../images/tagShape4.png') no-repeat;
+                background: url('../images/tagShape4.png') no-repeat!important;
             }
             .tagShape5 {
-                background: url('../images/tagShape5.png') no-repeat;
+                background: url('../images/tagShape5.png') no-repeat!important;
             }
             .tagShape6 {
-                background: url('../images/tagShape6.png') no-repeat;
+                background: url('../images/tagShape6.png') no-repeat!important;
             }
             .tagShape7 {
-                background: url('../images/tagShape7.png') no-repeat;
+                background: url('../images/tagShape7.png') no-repeat!important;
             }
             .tagShape8 {
-                background: url('../images/tagShape8.png') no-repeat;
+                background: url('../images/tagShape8.png') no-repeat!important;
             }
             /* END : Tag icon styles */
             .adentify-container:hover .tag .tag-icon {

@@ -400,7 +400,7 @@ var AdEntify = {
    },
 
    renderTag: function(photoOverlay, tag) {
-      $(photoOverlay).find('.tags-container').append('<div class="tag" data-temp-tag="true" style="left: ' + (tag.x_position * 100) + '%; ' +
+      $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape + ' tag" data-temp-tag="true" style="left: ' + (tag.x_position * 100) + '%; ' +
          'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;"></div>');
    },
 

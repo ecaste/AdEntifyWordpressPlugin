@@ -171,8 +171,8 @@ function wptuts_styles_with_the_lot()
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
         'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/'),
-	'adentify_api_product_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'product/search'),
-	'adentify_api_product_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'products/'),
+	    'adentify_api_product_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'product/search'),
+	    'adentify_api_product_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'products/'),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
 

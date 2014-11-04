@@ -133,9 +133,6 @@ function adentify_plugin_settings() {
         $parameters[$key] = $key;
     }
 
-    if (!APIManager::getInstance()->getAccessToken())
-        $parameters['authorization_url'] = APIManager::getInstance()->getAuthorizationUrl();
-
     echo Twig::render('adentify.settings.html.twig', $parameters);
 }
 
@@ -266,8 +263,18 @@ function adentify_activated() {
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
+
+    add_option('adentify_plugin_redirect', true);
 }
 register_activation_hook( __FILE__, 'adentify_activated' );
+
+function adentify_redirect() {
+    if (get_option('adentify_plugin_redirect', false)) {
+        delete_option('adentify_plugin_redirect');
+        wp_redirect(ADENTIFY_REDIRECT_URI);
+    }
+}
+add_action('admin_init', 'adentify_redirect');
 
 function ad_upload() {
     if (APIManager::getInstance()->getAccessToken())
@@ -340,3 +347,12 @@ function ad_get_photo() {
     wp_send_json_success(sprintf(APIManager::getInstance()->getPhoto($_GET['photo_id'])));
 }
 add_action( 'wp_ajax_ad_get_photo', 'ad_get_photo' );
+
+function ad_admin_notice() {
+    if (!APIManager::getInstance()->getAccessToken() && !array_key_exists('code', $_GET))
+        echo Twig::render('admin\notices.html.twig', array(
+            'authorization_url' => APIManager::getInstance()->getAuthorizationUrl()
+        ));
+}
+add_action( 'admin_notices', 'ad_admin_notice' );
+

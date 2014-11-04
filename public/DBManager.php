@@ -40,4 +40,12 @@ class DBManager
             )
         );
     }
+
+    public function getPhotos()
+    {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . ADENTIFY_SQL_TABLE_PHOTOS;
+        return $wpdb->get_results("SELECT adentify_photo_id, thumb_url FROM $table_name");
+    }
 } 

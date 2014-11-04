@@ -56,7 +56,6 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
 
-
 add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
 
@@ -140,7 +139,9 @@ function adentify_button($editor_id = 'content') {
         esc_attr__( 'Upload images with AdEntify plugin' ),
         'AdEntify'
     );
-    echo Twig::render('admin\modals\upload.modal.html.twig', array());
+    echo Twig::render('admin\modals\upload.modal.html.twig', array(
+        'photos' => DBManager::getInstance()->getPhotos()
+    ));
     echo Twig::render('admin\modals\tag.modal.html.twig', array());
 }
 add_action( 'media_buttons', 'adentify_button' );
@@ -158,14 +159,30 @@ function wptuts_styles_with_the_lot()
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
     wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
-        'admin_ajax_url' => ADENTIFY_ADMIN_URL
+        'admin_ajax_url' => ADENTIFY_ADMIN_URL,
+        'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
+        'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/')
     ));
 
     // For either a plugin or a theme, you can then enqueue the script:
     wp_enqueue_script( 'adentify-tags-js' );
 }
+function wptuts_admin_styles_with_the_lot() {
+    // Register the style like this for a plugin:
+    wp_register_style( 'adentify-admin-style', plugins_url( '/css/adentify.admin.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+
+    // For either a plugin or a theme, you can then enqueue the style:
+    wp_enqueue_style( 'adentify-admin-style' );
+
+    // SELECT2.js
+    wp_register_style( 'adentify-select2-style', plugins_url( '/js/vendor/select2/select2.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+    wp_enqueue_style( 'adentify-select2-style' );
+    wp_register_script( 'adentify-select2-js', plugins_url( '/js/vendor/select2/select2.min.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-select2-js' );
+}
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
+add_action( 'admin_enqueue_scripts', 'wptuts_admin_styles_with_the_lot' );
 
 function adentify_register_attachments_tax()
 {
@@ -228,9 +245,7 @@ function adentify_activated() {
 }
 register_activation_hook( __FILE__, 'adentify_activated' );
 
-
 function ad_upload() {
-    exit();
     if (APIManager::getInstance()->getAccessToken())
     {
         // upload the file in the upload folder
@@ -274,25 +289,30 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($photo = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->json())
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->json())
             {
-                echo(json_encode($photo));
-                exit();
+                $photo->setSmallUrl($result['small_url']);
+                $photo->setId($result['id']);
+                DBManager::getInstance()->insertPhoto($photo, $attach_id);
+                wp_send_json_success($result);
             }
             else
-                echo "Unknown error</BR>";
+                wp_send_json_error("unknown error");
         }
     }
     else
-        echo "status code: 401 Unauthorized</BR>";
-    exit();
+        wp_send_json_error("status code: 401 Unauthorized");
 }
 add_action( 'wp_ajax_ad_upload', 'ad_upload' );
 
 function ad_tag() {
-//    print_r($_POST);
     $tag = Tag::loadPost($_POST['tag']);
     echo APIManager::getInstance()->postTag($tag)->getBody();
     exit();
 }
 add_action( 'wp_ajax_ad_tag', 'ad_tag' );
+
+function ad_get_photo() {
+    wp_send_json_success(sprintf(APIManager::getInstance()->getPhoto($_GET['photo_id'])));
+}
+add_action( 'wp_ajax_ad_get_photo', 'ad_get_photo' );

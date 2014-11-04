@@ -36,7 +36,9 @@ define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
-    'TAGS_VISIBILITY' => 'tagsVisibility')));
+    'TAGS_VISIBILITY' => 'tagsVisibility',
+    'TAGS_SHAPE' => 'tagShape'
+)));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
 define( 'ADENTIFY_ADMIN_URL', admin_url('admin-ajax.php'));
@@ -119,11 +121,16 @@ function adentify_plugin_settings() {
             update_option($key, $settings[$key]);
         }
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
+
+        wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+            'admin_ajax_url' => ADENTIFY_ADMIN_URL,
+            'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+        ));
     }
     foreach($settings as $key => $value)
     {
-        $twig_variable[$key.'Val'] = $value;
-        $twig_variable[$key] = $key;
+        $parameters[$key.'Val'] = $value;
+        $parameters[$key] = $key;
     }
 
     if (!APIManager::getInstance()->getAccessToken())
@@ -157,15 +164,25 @@ function wptuts_styles_with_the_lot()
 
     // Register the script like this for a plugin:
     wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.min.js', '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.ui.widget.js', plugins_url( '/js/vendor/jquery.ui.widget.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.iframe-transport.js', plugins_url( '/js/vendor/jquery.iframe-transport.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'jquery.fileupload.js', plugins_url( '/js/vendor/jquery.fileupload.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
     wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
-        'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/')
+        'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/'),
+        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
 
     // For either a plugin or a theme, you can then enqueue the script:
     wp_enqueue_script( 'adentify-tags-js' );
+    wp_enqueue_script( 'jquery.min.js' );
+    wp_enqueue_script( 'jquery.ui.widget.js' );
+    wp_enqueue_script( 'jquery.iframe-transport.js' );
+    wp_enqueue_script( 'jquery.fileupload.js' );
+
 }
 function wptuts_admin_styles_with_the_lot() {
     // Register the style like this for a plugin:

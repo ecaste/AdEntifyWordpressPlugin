@@ -14,7 +14,12 @@
                     <div class="ad-media-frame-content">
                         <div id="ad-uploader" class="uploader-inline">
                             <div class="uploader-inline-content no-upload-message">
-                                <h3 id="ad-uploading-message" class="upload-instructions drop-instructions" style="display: none">Uploading ...</h3>
+                                <div id="ad-uploading-message" class="loading-gif-container" style="display: none;">
+                                    <h3 class="upload-instructions drop-instructions">Uploading</h3>
+                                    <div class="loader rotate">
+                                        <div class="loading-gif"></div>
+                                    </div>
+                                </div>
                                 <div id="ad-uploader-content">
                                     <div class="upload-ui">
                                         <form role="form" enctype="multipart/form-data">
@@ -76,8 +81,13 @@
                                 </div>
                             </div>
                             <div class="media-toolbar-primary search-form">
-                                <a tabindex="0" id="ad-tag-from-library" href="#" class="button media-button button-primary button-large media-button-insert" disabled="disabled">Ajouter un tag</a>
-                                <a tabindex="0" id="ad-insert-from-library" href="#" class="button media-button button-primary button-large media-button-insert" disabled="disabled">Insérer dans l’article</a>
+                                <div id="ad-uploading-message" class="loading-gif-container" style="">
+                                    <div class="loader rotate">
+                                        <div id="ad-tag-from-library-loading" class="loading-gif"></div>
+                                    </div>
+                                </div>
+                                <div id="ad-tag-from-library" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Ajouter un tag</div>
+                                <div id="ad-insert-from-library" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Insérer dans l’article</div>
                             </div>
                         </div>
                     </div>
@@ -94,7 +104,3 @@
         <div id="adentify-modal-backdrop" class="ad-media-modal-backdrop"></div>
     </div>
 </script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="../wp-content/plugins/adentify/js/vendor/jquery.ui.widget.js"></script>
-<script src="../wp-content/plugins/adentify/js/vendor/jquery.iframe-transport.js"></script>
-<script src="../wp-content/plugins/adentify/js/vendor/jquery.fileupload.js"></script>

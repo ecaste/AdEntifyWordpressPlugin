@@ -63,7 +63,8 @@ var AdEntify = {
    },
 
    clickOnUploaderButton: function(e) {
-      $('#upload-img').click().fileupload({
+       var that = this;
+       $('#upload-img').click().fileupload({
          datatype: 'json',
          url: adentifyTagsData.admin_ajax_url,
          formData: {
@@ -83,24 +84,26 @@ var AdEntify = {
                });
                try {
                   var photo = data.data;
-                  var style = {
-                     'max-height': $('#ad-display-photo').height()
-                  };
-                  $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" data-adentify-photo-id="' + photo.id + '" src="' + photo.large_url + '"/>');
-                  $('#photo-getting-tagged').css(style).addClass('ad-photo-getting-tagged');
+                  that.photoIdSelected = photo.id;
+                  $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
+                  + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
+                  + '" src="' + photo.large_url + '"/>');
+                  setTimeout(function() {
+                      $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
+                  }, 500);
 
                   // append the new photo to the library content
                   var thumbnail = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
                   var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
                   $('#ad-library-list').append(wrapper);
                   $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
-                     if (this.currentSelectedPhoto) {
-                        this.currentSelectedPhoto.removeClass(this.selectedPhotoClassName);
+                     if (that.currentSelectedPhoto) {
+                        that.currentSelectedPhoto.removeClass(that.selectedPhotoClassName);
                      }
-                     this.currentSelectedPhoto = $(this);
-                     this.currentSelectedPhoto.addClass(this.selectedPhotoClassName);
+                     that.currentSelectedPhoto = $(this);
+                     that.currentSelectedPhoto.addClass(that.selectedPhotoClassName);
                      $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
-                     this.photoIdSelected = this.currentSelectedPhoto.attr('data-adentify-photo-id');
+                     that.photoIdSelected = that.currentSelectedPhoto.attr('data-adentify-photo-id');
                   });
                } catch(e) {
                   console.log("Error: " + data.data); // TODO : gestion erreur
@@ -165,9 +168,10 @@ var AdEntify = {
    /*
     * Other methods
     */
-   removePhotoSelection: function() {
+   removePhotoSelection: function(needId) {
       $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
-      this.photoIdSelected = undefined;
+      if (needId === 0)
+         this.photoIdSelected = undefined;
       $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
    },
 
@@ -175,6 +179,7 @@ var AdEntify = {
       $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
       $('#adentify-upload-modal').html($('#adentify-uploader').html());
       $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
+      $('#ad-tag-from-library, #ad-insert-from-library, #ad-uploading-message').hide();
    },
 
    closeModals: function() {
@@ -183,7 +188,7 @@ var AdEntify = {
          $('#ad-uploading-message').hide();
       });
       $('#adentify-tag-modal').hide();
-      this.removePhotoSelection();
+      this.removePhotoSelection(0);
       $('.ad-tag-frame-content input').val('');
    },
 
@@ -191,10 +196,12 @@ var AdEntify = {
       $('#ad-uploading-message, #adentify-tag-modal').hide();
       $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
+      $('.ad-tag-frame-content input').val('');
    },
 
    openPhotoModal: function(e) {
       var that = this;
+      $('#ad-tag-from-library-loading, #ad-uploading-message').show();
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
          $.ajax({
             type: 'GET',
@@ -214,9 +221,6 @@ var AdEntify = {
                   that.setupSelect2Js();
                   try {
                      var photo = JSON.parse(data.data);
-                     var style = {
-                        'max-height': 500//$('#ad-display-photo').height() TODO: fix it
-                     };
                      $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
                      + '" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                      + '" src="' + photo.large_url + '"/>');
@@ -232,6 +236,9 @@ var AdEntify = {
                   alert('Impossible de récupérer la photo.');
                   // TOOD: gestion erreur
                }
+            },
+            complete: function() {
+               $('#ad-tag-from-library-loading').hide();
             }
          });
       }
@@ -325,7 +332,7 @@ var AdEntify = {
       e.preventDefault();
 
       // Get data from form
-      var tagForm = $('#' + $(e.target).context.form.id).serializeObject();
+      var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
 
       if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
          var tag = this.tags[this.currentTagIndex];
@@ -341,6 +348,8 @@ var AdEntify = {
             //'productType': 10,
             //'person': 10
          };
+         $('.submit-tag').hide();
+         $('#ad-posting-tag, #ad-uploading-message').show();
          $.extend(tag, data);
          $.ajax({
             type: 'POST',
@@ -350,6 +359,8 @@ var AdEntify = {
                'tag': tag
             },
             complete: function() {
+               $('.submit-tag').show();
+               $('#ad-posting-tag').hide();
                $('.ad-tag-frame-content input').val('');
                console.log("completed submit-tag-ajax");
             }
@@ -364,8 +375,9 @@ var AdEntify = {
       if (!$(e.target).is('[disabled]')) {
          if (typeof this.photoIdSelected !== "undefined" && this.photoIdSelected) {
             window.send_to_editor('[adentify=' + this.photoIdSelected + ']');
-            this.removePhotoSelection();
-            $('#adentify-upload-modal').hide();
+            this.removePhotoSelection(0);
+            $('#adentify-upload-modal, #adentify-tag-modal').hide();
+            $('.ad-tag-frame-content input').val('');
          }
          else
             console.log("you have to select a photo"); // TODO: gestion erreur

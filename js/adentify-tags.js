@@ -88,9 +88,7 @@ var AdEntify = {
                   $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
                   + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                   + '" src="' + photo.large_url + '"/>');
-                  setTimeout(function() {
-                      $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
-                  }, 500);
+                  (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
 
                   // append the new photo to the library content
                   var thumbnail = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
@@ -255,13 +253,12 @@ var AdEntify = {
                   that.setupSelect2Js();
                   try {
                      var photo = JSON.parse(data.data);
+                     var maxHeight = $('#ad-display-photo').height();
 
-                     $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
+                     $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
                      + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
                      + '" src="' + photo.large_url + '"/>');
-                     setTimeout(function() {
-                        $('#ad-wrapper-tag-photo').height($('#photo-getting-tagged').height());
-                     }, 500);
+                     (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
                      that.removePhotoSelection(1);
                   } catch(e) {
                      console.log(e);

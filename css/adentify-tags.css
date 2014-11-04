@@ -22,8 +22,6 @@
                 outline: solid 2px #2ea2cc;
             }
             .tagShape .tagShape1, .tagShape2, .tagShape3, .tagShape4, .tagShape5, .tagShape6, .tagShape7, .tagShape8 {
-                border-radius: 0%!important;
-                margin: 0!important;
                 width: 30px;
                 height: 30px;
             }

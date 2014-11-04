@@ -173,8 +173,13 @@ function wptuts_styles_with_the_lot()
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
         'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/'),
-	'adentify_api_product_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'product/search'),
-	'adentify_api_product_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'products/'),
+        'adentify_api_product_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'product/search'),
+        'adentify_api_product_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'products/'),
+        'adentify_api_venue_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'venue/search'),
+        'adentify_api_venue_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'venues/'),
+        'adentify_api_person_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'person/search'),
+        'adentify_api_person_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'people/'),
+        'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
 

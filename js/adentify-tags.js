@@ -150,7 +150,7 @@ var AdEntify = {
       $('.ad-media-frame-content .photo-overlay').click($.proxy(this.addTag, this));
 
       // post tag
-      $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.postTag, this));
+      $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.retrieveTagData, this));
 
       // Store the id of the selected photo and enabled the buttons
       $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
@@ -226,7 +226,7 @@ var AdEntify = {
                   $('#adentify-tag-modal').show(0, function() {
                      $('#tag-product input').first().focus();
                   });
-                  that.setupSelect2Js();
+                  that.setupTagForms();
                   try {
                      var photo = JSON.parse(data.data);
                      $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
@@ -252,12 +252,12 @@ var AdEntify = {
       }
    },
 
-   setupSelect2Js: function() {
-      $("#brand-name").select2({
-         placeholder: "Search for a brand",
+   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl) {
+      $(selector).select2({
+         placeholder: placeholder,
          minimumInputLength: 1,
          ajax: {
-            url: adentifyTagsData.adentify_api_brand_search_url,
+            url: searchUrl,
             dataType: 'json',
             quietMillis: 250,
             data: function (term, page) {
@@ -266,88 +266,73 @@ var AdEntify = {
                };
             },
             results: function (data, page) {
-               return { results: data.data };
+               return { results: (typeof data.data !== 'undefined' ? data.data : data) };
             },
-            cache: true
+            cache: true,
+            transport: function(params) {
+               params.beforeSend = function(request){
+                  request.setRequestHeader("Authorization", 'Bearer ' + adentifyTagsData.adentify_api_access_token);
+               };
+               return $.ajax(params);
+            }
          },
          initSelection: function(element, callback) {
-            // the input tag has a value attribute preloaded that points to a preselected repository's id
-            // this function resolves that id attribute to an object that select2 can render
-            // using its formatResult renderer - that way the repository name is shown preselected
             var id = $(element).val();
             if (id !== "") {
-               $.ajax(adentifyTagsData.adentify_api_brand_get_url + id, {
+               $.ajax(getUrl + id, {
                   dataType: "json"
                }).done(function(data) { callback(data); });
             }
          },
-         formatResult: this.brandFormatResult, // omitted for brevity, see the source of this page
-         formatSelection: this.brandFormatSelection,  // omitted for brevity, see the source of this page
-         dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
-         escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
-      });
-
-      $("#product-name").select2({
-	 placeholder: "Search for a product",
-	 minimumInputLength: 1,
-	 ajax: {
-	    url: adentifyTagsData.adentify_api_product_search_url,
-	    dataType: 'json',
-	    quietMillis: 250,
-	    data: function (term, page) {
-	       return {
-		  query: term
-	       };
-	    },
-	    results: function (data, page) {
-	       return { results: data };
-	    },
-	    cache: true
-	 },
-	 initSelection: function(element, callback) {
-	    // the input tag has a value attribute preloaded that points to a preselected repository's id
-	    // this function resolves that id attribute to an object that select2 can render
-	    // using its formatResult renderer - that way the repository name is shown preselected
-	    var id = $(element).val();
-	    if (id !== "") {
-	       $.ajax(adentifyTagsData.adentify_api_product_get_url + id, {
-		  dataType: "json"
-	       }).done(function(data) { callback(data); });
-	    }
-	 },
-	 formatResult: this.productFormatResult, // omitted for brevity, see the source of this page
-	 formatSelection: this.productFormatSelection,  // omitted for brevity, see the source of this page
-	 dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
-	 escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+         formatResult: formatResult,
+         formatSelection: formatSelection,
+         dropdownCssClass: "bigdrop",
+         escapeMarkup: function (m) { return m; }
       });
    },
 
-   brandFormatResult: function(brand) {
-      var markup = '<div class="row-fluid">' +
-         (brand.medium_logo_url ? '<div class="span2"><img class="small-logo" src="' + brand.medium_logo_url + '" /></div>' : '') +
-         '<div class="span10">' + brand.name + '</div>';
+   setupTagForms: function() {
+      var that = this;
+      // Setup autocomplete with Select2.js
+      this.setupAutocomplete('#brand-name', 'Search for a brand', function(item) { return that.genericFormatResult(item); },
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url, adentifyTagsData.adentify_api_brand_get_url);
 
+      this.setupAutocomplete('#product-name', 'Search for a product', function(item) { return that.genericFormatResult(item, 'medium_url'); },
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url, adentifyTagsData.adentify_api_product_get_url);
+
+      this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url, adentifyTagsData.adentify_api_venue_get_url);
+
+      this.setupAutocomplete('#person-name', 'Search for a person', function(item) { return that.genericFormatResult(item, null, [ 'firstname', 'lastname' ]); },
+         function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url, adentifyTagsData.adentify_api_person_get_url);
+   },
+
+   genericFormatResult: function(item, imageKey, nameKey) {
+      imageKey = imageKey || 'medium_logo_url';
+      nameKey = nameKey || 'name';
+      var markup = '<div class="row-fluid">' +
+         (typeof item[imageKey] !== 'undefined' ? '<div class="span2"><img class="small-logo" src="' + item[imageKey] + '" /></div>' : '');
+
+      markup += '<div class="span10">' + (nameKey instanceof Array ? this.explode(item, nameKey) : item[nameKey]) + '</div>';
       markup += '</div></div>';
 
       return markup;
    },
 
-   brandFormatSelection: function(brand) {
-      return brand.name;
+   genericFormatSelection: function(item, key) {
+      key = key || 'name';
+      if (key instanceof Array) {
+         return this.explode(item, key);
+      } else
+         return item[key];
    },
 
-   productFormatResult: function(product) {
-      var markup = '<div class="row-fluid">' +
-	 (product.medium_url ? '<div class="span2"><img class="small-logo" src="' + product.medium_url + '" /></div>' : '') +
-	 '<div class="span10">' + product.name + '</div>';
-
-      markup += '</div></div>';
-
-      return markup;
-   },
-
-   productFormatSelection: function(product) {
-      return brand.name;
+   explode: function(object, keys) {
+      var explodedArray = [];
+      keys.forEach(function(key) {
+         explodedArray.push(object[key]);
+      });
+      return explodedArray.join(' ');
    },
 
    addTag: function(e) {
@@ -384,47 +369,124 @@ var AdEntify = {
       $(photoOverlay).find('.tags-container .tag[data-temp-tag]').remove();
    },
 
-   postTag: function(e) {
-      e.preventDefault();
+   /*
+   * Get value from select2
+   *
+   * options.array: array of select2 to retrieve with selector name and target object property name
+   * options.properties: target object properties
+   * options.fail: callback when failed
+   * options.success: callback when all good
+   * */
+   getValueFromSelect2: function(options) {
+      options.array.forEach(function(item) {
+         var val = $(item.select2Selector).select2('val');
+         if (typeof val !== 'undefined' && val)
+            options.properties[item.propertyName] = val;
+         else {
+            options.fail();
+            return;
+         }
+      });
 
-      // Get data from form
-      var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
+      options.success();
+   },
+
+   retrieveTagData: function(e) {
+      e.preventDefault();
+      var that = this;
 
       if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
+         // Get data from form
+         var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
          var tag = this.tags[this.currentTagIndex];
-         var data = {
+         var properties = {
             'type': $(e.target).context.form.attributes['data-tag-type'].value,
             'title': tagForm.name,
             'description': tagForm.description,
             'link': tagForm.url,
-            'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id'),
-            'venue': 62
-            //'brand': 10,
-            //'product': 10,
-            //'productType': 10,
-            //'person': 10
+            'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id')
          };
-         $('.submit-tag').hide();
-         $('#ad-posting-tag, #ad-uploading-message').show();
-         $.extend(tag, data);
-         $.ajax({
-            type: 'POST',
-            url: adentifyTagsData.admin_ajax_url,
-            data: {
-               'action': 'ad_tag',
-               'tag': tag
-            },
-            complete: function() {
-               $('.submit-tag').show();
-               $('#ad-posting-tag').hide();
-               $('.ad-tag-frame-content input').val('');
-               console.log("completed submit-tag-ajax");
-            }
-         });
+
+         switch ($(e.target).context.form.attributes['data-tag-type'].value) {
+            case 'venue':
+               this.getValueFromSelect2({
+                  array: [
+                     {
+                        propertyName: 'venue',
+                        select2Selector: '#venue-name'
+                     }
+                  ],
+                  properties: properties,
+                  success: function() {
+                     that.postTag($.extend(tag, properties));
+                  },
+                  fail: function () {
+                     alert('Please select a venue before adding'); // TODO: gestion erreur
+                  }
+               });
+               break;
+            case 'product':
+               this.getValueFromSelect2({
+                  array: [
+                     {
+                        propertyName: 'product',
+                        select2Selector: '#product-name'
+                     },
+                     {
+                        propertyName: 'brand',
+                        select2Selector: '#brand-name'
+                     }
+                  ],
+                  properties: properties,
+                  success: function() {
+                     that.postTag($.extend(tag, properties));
+                  },
+                  fail: function () {
+                     alert('Please select a product and a brand before adding'); // TODO: gestion erreur
+                  }
+               });
+               break;
+            case 'person':
+               this.getValueFromSelect2({
+                  array: [
+                     {
+                        propertyName: 'person',
+                        select2Selector: '#person-name'
+                     }
+                  ],
+                  properties: properties,
+                  success: function() {
+                     that.postTag($.extend(tag, properties));
+                  },
+                  fail: function () {
+                     alert('Please select a person before adding'); // TODO: gestion erreur
+                  }
+               });
+               break;
+         }
       } else {
          alert('Vous devez tout d\'abord ajouter un tag sur l\'image');
          // TODO: gestion erreur
       }
+   },
+
+   postTag: function(tag) {
+      $('.submit-tag').hide();
+      $('#ad-posting-tag, #ad-uploading-message').show();
+      $.ajax({
+         type: 'POST',
+         url: adentifyTagsData.admin_ajax_url,
+         data: {
+            'action': 'ad_tag',
+            'tag': tag
+         },
+         complete: function() {
+            $('.submit-tag').show();
+            $('#ad-posting-tag').hide();
+            $('.ad-tag-frame-content input').val('');
+            console.log("completed submit-tag-ajax");
+         }
+      });
    },
 
    insertPhotoInPostEditor: function(e) {

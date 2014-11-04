@@ -159,6 +159,16 @@ class APIManager
     }
 
     /**
+     * Remove Access Token and linked data in Wordpress settings
+     */
+    public function revokeAccessToken()
+    {
+        delete_option(ADENTIFY_API_ACCESS_TOKEN);
+        delete_option(ADENTIFY_API_EXPIRES_TIMESTAMP);
+        delete_option(ADENTIFY_API_REFRESH_TOKEN);
+    }
+
+    /**
      * Get authorization url to get authorization code
      *
      * @return string

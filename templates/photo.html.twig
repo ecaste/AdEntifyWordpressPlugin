@@ -1,5 +1,6 @@
 <div class="adentify-container">
     <img src="{{ imageUrl }}" />
+    {% if renderWithTags %}
     <ul class="tags">
         {% for tag in tags %}
             <li>
@@ -9,6 +10,5 @@
             </li>
         {% endfor %}
     </ul>
+    {% endif %}
 </div>
-
-<a href="{{ link }}">{{ caption }}</a>

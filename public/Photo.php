@@ -29,13 +29,14 @@ class Photo
         }
     }
 
-    public function render()
+    public function render($renderWithTags = true)
     {
         return $this->getJson() ? Twig::render('photo.html.twig', array(
             'link' => $this->getLink(),
             'imageUrl' => $this->getImageUrl(),
             'caption' => $this->getCaption(),
-            'tags' => $this->getTags()
+            'tags' => $renderWithTags ? $this->getTags() : null,
+            'renderWithTags' => $renderWithTags
         )) : 'Can\'t load this image.';
     }
 

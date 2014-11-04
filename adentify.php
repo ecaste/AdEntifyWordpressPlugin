@@ -27,7 +27,7 @@
 
 defined('ABSPATH') or die("No script kiddies please!");
 
-define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
+define( 'ADENTIFY_URL', 'https://adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
 define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
@@ -58,7 +58,6 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
 
-add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 function filter_function_name( $content, $post_id ) {
 
     preg_match('/\[adentify=(.+)\]/i', $content, $matches);
@@ -68,8 +67,8 @@ function filter_function_name( $content, $post_id ) {
 
     return $content;
 }
+add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
 
-add_filter( 'the_content', 'my_the_content_filter', 20 );
 /**
  * Add a icon to the beginning of every post page.
  *
@@ -92,12 +91,13 @@ function my_the_content_filter( $content ) {
     // Returns the content.
     return $content;
 }
+add_filter( 'the_content', 'my_the_content_filter', 20 );
 
-add_action( 'admin_menu', 'adentify_setting_menu' );
 
 function adentify_setting_menu() {
 	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME, 'adentify_plugin_settings' );
 }
+add_action( 'admin_menu', 'adentify_setting_menu' );
 
 function adentify_plugin_settings() {
 	if ( !current_user_can( 'manage_options' ) )  {

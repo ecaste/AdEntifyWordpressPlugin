@@ -196,6 +196,7 @@ var AdEntify = {
       $('#ad-uploading-message, #adentify-tag-modal').hide();
       $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
+      $('.ad-tag-frame-content input').val('');
    },
 
    openPhotoModal: function(e) {
@@ -319,6 +320,7 @@ var AdEntify = {
             window.send_to_editor('[adentify=' + this.photoIdSelected + ']');
             this.removePhotoSelection(0);
             $('#adentify-upload-modal, #adentify-tag-modal').hide();
+            $('.ad-tag-frame-content input').val('');
          }
          else
             console.log("you have to select a photo"); // TODO: gestion erreur

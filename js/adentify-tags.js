@@ -286,6 +286,40 @@ var AdEntify = {
          dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
          escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
       });
+
+      $("#product-name").select2({
+	 placeholder: "Search for a product",
+	 minimumInputLength: 1,
+	 ajax: {
+	    url: adentifyTagsData.adentify_api_product_search_url,
+	    dataType: 'json',
+	    quietMillis: 250,
+	    data: function (term, page) {
+	       return {
+		  query: term
+	       };
+	    },
+	    results: function (data, page) {
+	       return { results: data };
+	    },
+	    cache: true
+	 },
+	 initSelection: function(element, callback) {
+	    // the input tag has a value attribute preloaded that points to a preselected repository's id
+	    // this function resolves that id attribute to an object that select2 can render
+	    // using its formatResult renderer - that way the repository name is shown preselected
+	    var id = $(element).val();
+	    if (id !== "") {
+	       $.ajax(adentifyTagsData.adentify_api_product_get_url + id, {
+		  dataType: "json"
+	       }).done(function(data) { callback(data); });
+	    }
+	 },
+	 formatResult: this.productFormatResult, // omitted for brevity, see the source of this page
+	 formatSelection: this.productFormatSelection,  // omitted for brevity, see the source of this page
+	 dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+	 escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+      });
    },
 
    brandFormatResult: function(brand) {
@@ -299,6 +333,20 @@ var AdEntify = {
    },
 
    brandFormatSelection: function(brand) {
+      return brand.name;
+   },
+
+   productFormatResult: function(product) {
+      var markup = '<div class="row-fluid">' +
+	 (product.medium_url ? '<div class="span2"><img class="small-logo" src="' + product.medium_url + '" /></div>' : '') +
+	 '<div class="span10">' + product.name + '</div>';
+
+      markup += '</div></div>';
+
+      return markup;
+   },
+
+   productFormatSelection: function(product) {
       return brand.name;
    },
 

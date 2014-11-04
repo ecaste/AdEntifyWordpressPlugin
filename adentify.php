@@ -259,8 +259,18 @@ function adentify_activated() {
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
+
+    add_option('adentify_plugin_redirect', true);
 }
 register_activation_hook( __FILE__, 'adentify_activated' );
+
+function adentify_redirect() {
+    if (get_option('adentify_plugin_redirect', false)) {
+        delete_option('adentify_plugin_redirect');
+        wp_redirect(ADENTIFY_REDIRECT_URI);
+    }
+}
+add_action('admin_init', 'adentify_redirect');
 
 function ad_upload() {
     if (APIManager::getInstance()->getAccessToken())

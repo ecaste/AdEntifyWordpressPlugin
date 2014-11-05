@@ -284,14 +284,18 @@ var AdEntifyBO = {
             },
             success: function(data) {
                if (typeof data.data !== 'undefined') {
-                  $('#photo-getting-tagged').remove();
-                  $('#adentify-upload-modal').hide();
-                  $('#adentify-tag-modal').show(0, function() {
-                     $('#tag-product input').first().focus();
-                  });
-                  that.setupTagForms();
                   try {
                      var photo = JSON.parse(data.data);
+                     photo.tags.forEach(function(tag) {
+                        that.renderTag($('.photo-overlay'), tag);
+                     });
+
+                     $('#photo-getting-tagged').remove();
+                     $('#adentify-upload-modal').hide();
+                     $('#adentify-tag-modal').show(0, function() {
+                        $('#tag-product input').first().focus();
+                     });
+                     that.setupTagForms();
                      var maxHeight = $('#ad-display-photo').height();
 
                      $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
@@ -467,7 +471,7 @@ var AdEntifyBO = {
    },
 
    renderTag: function(photoOverlay, tag) {
-      $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape + ' tag" data-temp-tag="true" style="left: ' + (tag.x_position * 100) + '%; ' +
+      $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape + ' tag" ' + (typeof tag.temp !== 'undefined' ? 'data-temp-tag="true"' : '') + ' style="left: ' + (tag.x_position * 100) + '%; ' +
          'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;"></div>');
    },
 

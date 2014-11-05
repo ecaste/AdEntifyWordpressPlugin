@@ -59,7 +59,7 @@
                                 <ul id="ad-library-list">
                                     {% for photo in photos %}
                                         <li class="ad-library-photo-thumbnail">
-                                            <div class="ad-library-photo-wrapper" data-adentify-photo-id="{{ photo.adentify_photo_id }}" style="background-image: url({{ photo.thumb_url }})"></div>
+                                            <div class="ad-library-photo-wrapper" data-wp-photo-id="{{ photo.wordpress_photo_id }}" data-adentify-photo-id="{{ photo.adentify_photo_id }}" style="background-image: url({{ photo.thumb_url }})"></div>
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -88,6 +88,7 @@
                                 </div>
                                 <div id="ad-tag-from-library" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Ajouter un tag</div>
                                 <div id="ad-insert-from-library" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Insérer dans l’article</div>
+                                <div id="ad-delete-photo" class="ad-upload-button button button-primary button-large media-button-insert" disabled="disabled">Supprimer</div>
                             </div>
                         </div>
                     </div>

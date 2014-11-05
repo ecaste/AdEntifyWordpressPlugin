@@ -6,12 +6,13 @@ var AdEntify = {
    tag: null,
    tags: [],
    photoIdSelected: null,
+   wpPhotoIdSelected: null,
    currentSelectedPhoto: null,
    selectedPhotoClassName: 'ad-selected-photo',
    currentTagIndex: null,
 
    /*
-    * Events handlers
+    * Events handlers`
     */
    clickOnAdEntifyButton: function() {
       if ($('#adentify-upload-modal').html() === undefined) {
@@ -29,10 +30,10 @@ var AdEntify = {
    clickOnUploadTab: function(e) {
       $('#upload-file, #file-library').removeClass('active');
       $(e.target).addClass('active');
-      $('#ad-uploader, #ad-library, #ad-tag-from-library, #ad-insert-from-library').hide();
+      $('#ad-uploader, #ad-library, #ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
       switch(e.target.id) {
          case 'file-library':
-            $('#ad-library, #ad-tag-from-library, #ad-insert-from-library').show();
+            $('#ad-library, #ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').show();
             break;
          case 'upload-file':
          default:
@@ -89,6 +90,8 @@ var AdEntify = {
                });
                try {
                   var photo = data.data;
+                  var maxHeight = $('#ad-display-photo').height();
+
                   that.photoIdSelected = photo.id;
                   $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
                   + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
@@ -96,7 +99,7 @@ var AdEntify = {
                   (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
 
                   // append the new photo to the library content
-                  var thumbnail = '<div class="ad-library-photo-wrapper" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
+                  var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
                   var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
                   $('#ad-library-list').append(wrapper);
                   $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
@@ -105,8 +108,9 @@ var AdEntify = {
                      }
                      that.currentSelectedPhoto = $(this);
                      that.currentSelectedPhoto.addClass(that.selectedPhotoClassName);
-                     $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
+                     $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
                      that.photoIdSelected = that.currentSelectedPhoto.attr('data-adentify-photo-id');
+                     that.wpPhotoIdSelected = that.currentSelectedPhoto.attr('data-wp-photo-id');
                   });
                } catch(e) {
                   console.log("Error: " + data.data); // TODO : gestion erreur
@@ -127,8 +131,31 @@ var AdEntify = {
       }
       this.currentSelectedPhoto = $(e.target);
       this.currentSelectedPhoto.addClass(this.selectedPhotoClassName);
-      $('#ad-insert-from-library, #ad-tag-from-library').removeAttr('disabled');
+      $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
       this.photoIdSelected = this.currentSelectedPhoto.attr('data-adentify-photo-id');
+      this.wpPhotoIdSelected = this.currentSelectedPhoto.attr('data-wp-photo-id');
+   },
+
+   clickOnDeletePhoto: function(e) {
+      var that = this;
+      that.startLoading('tag-from-library');
+      $.ajax({
+         type: 'GET',
+         url: adentifyTagsData.admin_ajax_url,
+         data: {
+            'action': 'ad_delete_photo',
+            'wp_photo_id': that.wpPhotoIdSelected,
+            'photo_id': that.photoIdSelected
+         },
+         complete: function() {
+            console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
+            console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
+            $('.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"]').remove();
+            that.removePhotoSelection(0);
+            that.closeModals();
+            that.stopLoading('tag-from-library');
+         }
+      });
    },
 
    /*
@@ -169,6 +196,10 @@ var AdEntify = {
 
       // "back" button on the tag modal
       $('#ad-back-to-library').click($.proxy(this.backToMainModal, this));
+
+      // delete a photo
+      $('#ad-delete-photo').click($.proxy(this.clickOnDeletePhoto, this));
+
    },
 
    /*
@@ -176,16 +207,18 @@ var AdEntify = {
     */
    removePhotoSelection: function(needId) {
       $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
-      if (needId === 0)
+      if (needId === 0) {
          this.photoIdSelected = undefined;
-      $('#ad-insert-from-library, #ad-tag-from-library').attr('disabled', 'disabled');
+         this.wpPhotoIdSelected = undefined;
+      }
+      $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').attr('disabled', 'disabled');
    },
 
    renderModals: function() {
       $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
       $('#adentify-upload-modal').html($('#adentify-uploader').html());
       $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
-      $('#ad-tag-from-library, #ad-insert-from-library').hide();
+      $('#ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
       this.stopLoading('uploading-message');
    },
 
@@ -262,7 +295,7 @@ var AdEntify = {
                      var maxHeight = $('#ad-display-photo').height();
 
                      $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
-                     + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
+                     + 'px" class="ad-photo-getting-tagged" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id
                      + '" src="' + photo.large_url + '"/>');
                      (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
                      that.removePhotoSelection(1);
@@ -332,8 +365,9 @@ var AdEntify = {
          });
       }
       $(selector).select2(select2Parameters).on('select2-selecting', function(e) {
-         $(tagFormField[0]).val((selector == '#person-name') ? e.choice.profile_picture_url : e.choice.description);
-         $(tagFormField[1]).val((selector == '#product-name') ? e.choice.purchase_url : e.choice.link);
+         tagFormField.forEach(function(entry) {
+            $(entry.fieldSelector).val(e.choice[entry.propertyName]);
+         });
       });
    },
 
@@ -344,13 +378,39 @@ var AdEntify = {
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url, adentifyTagsData.adentify_api_brand_get_url);
 
       this.setupAutocomplete('#product-name', 'Search for a product', function(item) { return that.genericFormatResult(item, 'medium_url'); },
-         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url, adentifyTagsData.adentify_api_product_get_url, ['#product-description', '#product-url']);
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url,
+         adentifyTagsData.adentify_api_product_get_url, [
+            {
+               fieldSelector: '#product-description',
+               propertyName: 'description'
+            },
+            {
+               fieldSelector: '#product-url',
+               propertyName: 'purchase_url'
+            }
+         ]);
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
-         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url, adentifyTagsData.adentify_api_venue_get_url, ['#venue-description', '#venue-url']);
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url,
+         adentifyTagsData.adentify_api_venue_get_url, [
+            {
+               fieldSelector: '#venue-description',
+               propertyName: 'description'
+            },
+            {
+               fieldSelector: '#venue-url',
+               propertyName: 'link'
+            }
+         ]);
 
       this.setupAutocomplete('#person-name', 'Search for a person', function(item) { return that.genericFormatResult(item, null, [ 'firstname', 'lastname' ]); },
-         function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url, adentifyTagsData.adentify_api_person_get_url, ['#person-description', '#person-url']);
+         function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url,
+         adentifyTagsData.adentify_api_person_get_url, [
+            {
+               fieldSelector: '#person-url',
+               propertyName: 'link'
+            }
+         ]);
    },
 
    genericFormatResult: function(item, imageKey, nameKey) {

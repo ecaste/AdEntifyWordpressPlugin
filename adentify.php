@@ -356,3 +356,13 @@ function ad_admin_notice() {
 }
 add_action( 'admin_notices', 'ad_admin_notice' );
 
+function ad_delete_photo() {
+    if (APIManager::getInstance()->getAccessToken()) {
+        wp_delete_attachment($_GET['wp_photo_id']);
+        DBManager::getInstance()->deletePhoto($_GET['wp_photo_id']);
+        print_r(APIManager::getInstance()->deletePhoto($_GET['photo_id']));
+    }
+}
+add_action( 'wp_ajax_ad_delete_photo', 'ad_delete_photo' );
+
+

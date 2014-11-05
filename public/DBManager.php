@@ -46,6 +46,14 @@ class DBManager
         global $wpdb;
 
         $table_name = $wpdb->prefix . ADENTIFY_SQL_TABLE_PHOTOS;
-        return $wpdb->get_results("SELECT adentify_photo_id, thumb_url FROM $table_name");
+        return $wpdb->get_results("SELECT adentify_photo_id, thumb_url, wordpress_photo_id FROM $table_name");
+    }
+
+    public function deletePhoto($wp_photo_id)
+    {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . ADENTIFY_SQL_TABLE_PHOTOS;
+        return $wpdb->delete($table_name, array('wordpress_photo_id' => $wp_photo_id));
     }
 } 

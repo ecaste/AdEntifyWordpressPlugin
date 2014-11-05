@@ -159,8 +159,6 @@ function wptuts_styles_with_the_lot()
     // For either a plugin or a theme, you can then enqueue the style:
     wp_enqueue_style( 'adentify-tags-style' );
 
-    // Register the script like this for a plugin:
-    wp_register_script( 'adentify-tags-js', plugins_url( '/js/adentify-tags.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.min.js', '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.ui.widget.js', plugins_url( '/js/vendor/jquery.ui.widget.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.iframe-transport.js', plugins_url( '/js/vendor/jquery.iframe-transport.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
@@ -180,8 +178,7 @@ function wptuts_styles_with_the_lot()
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
 
-    // For either a plugin or a theme, you can then enqueue the script:
-    wp_enqueue_script( 'adentify-tags-js' );
+
     wp_enqueue_script( 'jquery.min.js' );
     wp_enqueue_script( 'jquery.ui.widget.js' );
     wp_enqueue_script( 'jquery.iframe-transport.js' );
@@ -189,11 +186,12 @@ function wptuts_styles_with_the_lot()
 
 }
 function wptuts_admin_styles_with_the_lot() {
-    // Register the style like this for a plugin:
     wp_register_style( 'adentify-admin-style', plugins_url( '/css/adentify.admin.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
-
-    // For either a plugin or a theme, you can then enqueue the style:
     wp_enqueue_style( 'adentify-admin-style' );
+
+    // AdEntify
+    wp_register_script( 'adentify-admin-js', plugins_url( '/js/adentify.admin.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-admin-js' );
 
     // SELECT2.js
     wp_register_style( 'adentify-select2-style', plugins_url( '/js/vendor/select2/select2.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );

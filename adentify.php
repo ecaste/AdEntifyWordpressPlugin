@@ -122,7 +122,7 @@ function adentify_plugin_settings() {
         }
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
 
-        wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+        wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
             'admin_ajax_url' => ADENTIFY_ADMIN_URL,
             'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
         ));
@@ -174,6 +174,8 @@ function wptuts_admin_styles_with_the_lot() {
     wp_enqueue_style( 'adentify-admin-style' );
 
     // AdEntify
+    wp_register_script( 'adentify-admin-js', plugins_url( '/js/adentify.admin.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-admin-js' );
     wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
@@ -187,9 +189,6 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
-    wp_register_script( 'adentify-admin-js', plugins_url( '/js/adentify.admin.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
-    wp_enqueue_script( 'adentify-admin-js' );
-
 
     // SELECT2.js
     wp_register_style( 'adentify-select2-style', plugins_url( '/js/vendor/select2/select2.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );

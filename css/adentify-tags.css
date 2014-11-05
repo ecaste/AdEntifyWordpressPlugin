@@ -4,6 +4,10 @@
     .adentify-container ul.tags {
         list-style-type: none;
     }
+        .adentify-container[data-tags-visibility="visible-on-hover"] .tags {
+            display: none;
+        }
+
         .adentify-container .tags .tag {
             position: absolute;
         }

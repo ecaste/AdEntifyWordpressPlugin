@@ -1,7 +1,7 @@
 /**
  * Created by pierrickmartos on 06/10/2014.
  */
-var AdEntify = {
+var AdEntifyBO = {
 
    tag: null,
    tags: [],
@@ -628,5 +628,5 @@ jQuery(document).ready(function($) {
       }
    });
 
-   AdEntify.init();
+   AdEntifyBO.init();
 });

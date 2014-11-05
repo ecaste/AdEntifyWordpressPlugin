@@ -151,20 +151,30 @@ function adentify_button($editor_id = 'content') {
 add_action( 'media_buttons', 'adentify_button' );
 
 /* CSS and JS files */
-function wptuts_styles_with_the_lot()
-{
-    // Register the style like this for a plugin:
-    wp_register_style( 'adentify-tags-style', plugins_url( '/css/adentify-tags.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
-
-    // For either a plugin or a theme, you can then enqueue the style:
+function wptuts_styles_with_the_lot() {
+    wp_register_style( 'adentify-tags-style', plugins_url( '/css/adentify-tags.css', __FILE__ ), array(), PLUGIN_VERSION, 'all');
     wp_enqueue_style( 'adentify-tags-style' );
 
     wp_register_script( 'jquery.min.js', '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.ui.widget.js', plugins_url( '/js/vendor/jquery.ui.widget.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.iframe-transport.js', plugins_url( '/js/vendor/jquery.iframe-transport.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.fileupload.js', plugins_url( '/js/vendor/jquery.fileupload.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_register_script( 'adentify-js', plugins_url( '/js/adentify.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
-    wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+    wp_enqueue_script( 'adentify-js' );
+    wp_enqueue_script( 'jquery.min.js' );
+    wp_enqueue_script( 'jquery.ui.widget.js' );
+    wp_enqueue_script( 'jquery.iframe-transport.js' );
+    wp_enqueue_script( 'jquery.fileupload.js' );
+
+}
+/* CSS and JS Files for admin */
+function wptuts_admin_styles_with_the_lot() {
+    wp_register_style( 'adentify-admin-style', plugins_url( '/css/adentify.admin.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+    wp_enqueue_style( 'adentify-admin-style' );
+
+    // AdEntify
+    wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
         'adentify_api_brand_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brands/'),
@@ -177,21 +187,9 @@ function wptuts_styles_with_the_lot()
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
-
-
-    wp_enqueue_script( 'jquery.min.js' );
-    wp_enqueue_script( 'jquery.ui.widget.js' );
-    wp_enqueue_script( 'jquery.iframe-transport.js' );
-    wp_enqueue_script( 'jquery.fileupload.js' );
-
-}
-function wptuts_admin_styles_with_the_lot() {
-    wp_register_style( 'adentify-admin-style', plugins_url( '/css/adentify.admin.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
-    wp_enqueue_style( 'adentify-admin-style' );
-
-    // AdEntify
     wp_register_script( 'adentify-admin-js', plugins_url( '/js/adentify.admin.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_enqueue_script( 'adentify-admin-js' );
+
 
     // SELECT2.js
     wp_register_style( 'adentify-select2-style', plugins_url( '/js/vendor/select2/select2.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );

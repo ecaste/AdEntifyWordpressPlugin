@@ -182,7 +182,7 @@
 .ad-selected-photo {
     outline: #2ea2cc 3px solid;
 }
-#ad-insert-from-library, #ad-tag-from-library {
+#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo {
     display: inline-block;
     margin-top: 15px;
     margin-left: 10px;

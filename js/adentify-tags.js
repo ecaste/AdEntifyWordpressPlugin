@@ -45,6 +45,7 @@ var AdEntify = {
       $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').removeClass('active');
       $(e.target).addClass('active');
       $('.tag-form').hide();
+      this.hideOpenedSelect2();
       switch(e.target.id) {
          case 'ad-tag-venue-tab':
             $('#tag-venue').show();
@@ -60,6 +61,10 @@ var AdEntify = {
             $('#tag-product input').first().focus();
             break;
       }
+   },
+
+   hideOpenedSelect2: function() {
+      $('#select2-drop-mask').click();
    },
 
    clickOnUploaderButton: function(e) {
@@ -195,6 +200,7 @@ var AdEntify = {
    },
 
    backToMainModal: function() {
+      this.hideOpenedSelect2();
       $('#adentify-tag-modal').hide();
       $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
@@ -276,15 +282,16 @@ var AdEntify = {
       }
    },
 
-   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl) {
-      $(selector).select2({
+   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl, enableCreateSearchChoice) {
+      enableCreateSearchChoice = enableCreateSearchChoice || true;
+      var select2Parameters = {
          placeholder: placeholder,
          minimumInputLength: 1,
          ajax: {
             url: searchUrl,
-            dataType: 'json',
-            quietMillis: 250,
-            data: function (term, page) {
+               dataType: 'json',
+               quietMillis: 250,
+               data: function (term, page) {
                return {
                   query: term
                };
@@ -293,7 +300,7 @@ var AdEntify = {
                return { results: (typeof data.data !== 'undefined' ? data.data : data) };
             },
             cache: true,
-            transport: function(params) {
+               transport: function(params) {
                params.beforeSend = function(request){
                   request.setRequestHeader("Authorization", 'Bearer ' + adentifyTagsData.adentify_api_access_token);
                };
@@ -312,7 +319,19 @@ var AdEntify = {
          formatSelection: formatSelection,
          dropdownCssClass: "bigdrop",
          escapeMarkup: function (m) { return m; }
-      });
+      };
+      if (enableCreateSearchChoice) {
+         $.extend(select2Parameters, {
+            createSearchChoice: function(term) {
+               return {
+                  id: 0,
+                  'name': term
+               }
+            },
+            createSearchChoicePosition: 'bottom'
+         });
+      }
+      $(selector).select2(select2Parameters);
    },
 
    setupTagForms: function() {
@@ -329,8 +348,6 @@ var AdEntify = {
 
       this.setupAutocomplete('#person-name', 'Search for a person', function(item) { return that.genericFormatResult(item, null, [ 'firstname', 'lastname' ]); },
          function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url, adentifyTagsData.adentify_api_person_get_url);
-
-      // TODO: Hide select2 dropdown on tab changed
    },
 
    genericFormatResult: function(item, imageKey, nameKey) {

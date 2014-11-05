@@ -541,7 +541,7 @@ var AdEntify = {
    postTag: function(tag) {
       var that = this;
       $('.submit-tag').hide();
-      $('#ad-posting-tag, #ad-uploading-message').show();
+      that.startLoading('posting-tag');
       $.ajax({
          type: 'POST',
          url: adentifyTagsData.admin_ajax_url,

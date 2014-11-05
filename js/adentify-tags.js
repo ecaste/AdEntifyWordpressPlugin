@@ -282,7 +282,7 @@ var AdEntify = {
       }
    },
 
-   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl, enableCreateSearchChoice) {
+   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl, tagFormField, enableCreateSearchChoice) {
       enableCreateSearchChoice = enableCreateSearchChoice || true;
       var select2Parameters = {
          placeholder: placeholder,
@@ -331,7 +331,10 @@ var AdEntify = {
             createSearchChoicePosition: 'bottom'
          });
       }
-      $(selector).select2(select2Parameters);
+      $(selector).select2(select2Parameters).on('select2-selecting', function(e) {
+         $(tagFormField[0]).val((selector == '#person-name') ? e.choice.profile_picture_url : e.choice.description);
+         $(tagFormField[1]).val((selector == '#product-name') ? e.choice.purchase_url : e.choice.link);
+      });
    },
 
    setupTagForms: function() {
@@ -341,13 +344,13 @@ var AdEntify = {
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url, adentifyTagsData.adentify_api_brand_get_url);
 
       this.setupAutocomplete('#product-name', 'Search for a product', function(item) { return that.genericFormatResult(item, 'medium_url'); },
-         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url, adentifyTagsData.adentify_api_product_get_url);
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url, adentifyTagsData.adentify_api_product_get_url, ['#product-description', '#product-url']);
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
-         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url, adentifyTagsData.adentify_api_venue_get_url);
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url, adentifyTagsData.adentify_api_venue_get_url, ['#venue-description', '#venue-url']);
 
       this.setupAutocomplete('#person-name', 'Search for a person', function(item) { return that.genericFormatResult(item, null, [ 'firstname', 'lastname' ]); },
-         function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url, adentifyTagsData.adentify_api_person_get_url);
+         function(item) { return that.genericFormatSelection(item, [ 'firstname', 'lastname' ]); }, adentifyTagsData.adentify_api_person_search_url, adentifyTagsData.adentify_api_person_get_url, ['#person-description', '#person-url']);
    },
 
    genericFormatResult: function(item, imageKey, nameKey) {

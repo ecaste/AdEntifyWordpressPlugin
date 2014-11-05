@@ -423,7 +423,7 @@ var AdEntify = {
 
       if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
          // Get data from form
-         var tagForm = $('#' + $(e.target).context.form.id).serializeArray();
+         var tagForm = $('#' + $(e.target).context.form.id).serializeObject();
          var tag = this.tags[this.currentTagIndex];
 
          var properties = {
@@ -571,22 +571,24 @@ var AdEntify = {
 
 jQuery(document).ready(function($) {
    // Helpers
-   $.fn.serializeObject = function()
-   {
-      var o = {};
-      var a = this.serializeArray();
-      $.each(a, function() {
-         if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-               o[this.name] = [o[this.name]];
+   jQuery.fn.extend({
+      serializeObject: function()
+      {
+         var o = {};
+         var a = this.serializeArray();
+         $.each(a, function() {
+            if (o[this.name] !== undefined) {
+               if (!o[this.name].push) {
+                  o[this.name] = [o[this.name]];
+               }
+               o[this.name].push(this.value || '');
+            } else {
+               o[this.name] = this.value || '';
             }
-            o[this.name].push(this.value || '');
-         } else {
-            o[this.name] = this.value || '';
-         }
-      });
-      return o;
-   };
+         });
+         return o;
+      }
+   });
 
    AdEntify.init();
 });

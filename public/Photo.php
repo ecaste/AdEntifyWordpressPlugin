@@ -36,6 +36,7 @@ class Photo
             'imageUrl' => $this->getImageUrl(),
             'caption' => $this->getCaption(),
             'tags' => $renderWithTags ? $this->getTags() : null,
+            'tagShape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
             'renderWithTags' => $renderWithTags
         )) : 'Can\'t load this image.';
     }

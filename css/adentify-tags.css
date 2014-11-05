@@ -9,7 +9,6 @@
         }
             /* Tag icon styles */
             .adentify-container .tags .tag .tag-icon {
-                background: url('../images/tag-background.png') no-repeat;
                 width: 30px;
                 height: 30px;
                 opacity: 0;

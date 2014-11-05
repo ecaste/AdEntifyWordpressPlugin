@@ -356,7 +356,7 @@ var AdEntify = {
       var markup = '<div class="row-fluid">' +
          (typeof item[imageKey] !== 'undefined' ? '<div class="span2"><img class="small-logo" src="' + item[imageKey] + '" /></div>' : '');
 
-      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implode(item, nameKey) : item[nameKey]) + '</div>';
+      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implodeObject(item, nameKey) : item[nameKey]) + '</div>';
       markup += '</div></div>';
 
       return markup;
@@ -365,12 +365,12 @@ var AdEntify = {
    genericFormatSelection: function(item, key) {
       key = key || 'name';
       if (key instanceof Array) {
-         return this.implode(item, key);
+         return this.implodeObject(item, key);
       } else
          return item[key];
    },
 
-   implode: function(object, keys) {
+   implodeObject: function(object, keys) {
       var implodedString = [];
       keys.forEach(function(key) {
          implodedString.push(object[key]);
@@ -421,8 +421,15 @@ var AdEntify = {
    * options.success: callback when all good
    * */
    getValueFromSelect2: function(options) {
+      var that = this;
       options.array.forEach(function(item) {
-         var val = $(item.select2Selector).select2('val');
+         var val;
+         if (typeof item.objectProperty !== 'undefined') {
+            var data = $(item.select2Selector).select2('data');
+            val = that.implodeObject(data, item.objectProperty);
+         } else
+            val = $(item.select2Selector).select2('val');
+
          if (typeof val !== 'undefined' && val)
             options.properties[item.propertyName] = val;
          else {
@@ -445,7 +452,6 @@ var AdEntify = {
 
          var properties = {
             'type': $(e.target).context.form.attributes['data-tag-type'].value,
-            'title': tagForm.name,
             'description': tagForm.description,
             'link': tagForm.url,
             'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id')
@@ -455,6 +461,11 @@ var AdEntify = {
             case 'venue':
                this.getValueFromSelect2({
                   array: [
+                     {
+                        propertyName: 'title',
+                        select2Selector: '#venue-name',
+                        objectProperty: [ 'name' ]
+                     },
                      {
                         propertyName: 'venue',
                         select2Selector: '#venue-name'
@@ -477,6 +488,11 @@ var AdEntify = {
                         select2Selector: '#product-name'
                      },
                      {
+                        propertyName: 'title',
+                        select2Selector: '#product-name',
+                        objectProperty: [ 'name' ]
+                     },
+                     {
                         propertyName: 'brand',
                         select2Selector: '#brand-name'
                      }
@@ -493,6 +509,11 @@ var AdEntify = {
             case 'person':
                this.getValueFromSelect2({
                   array: [
+                     {
+                        propertyName: 'title',
+                        select2Selector: '#person-name',
+                        objectProperty: [ 'firstname', 'lastname' ]
+                     },
                      {
                         propertyName: 'person',
                         select2Selector: '#person-name'
@@ -515,6 +536,7 @@ var AdEntify = {
    },
 
    postTag: function(tag) {
+      var that = this;
       $('.submit-tag').hide();
       $('#ad-posting-tag, #ad-uploading-message').show();
       $.ajax({
@@ -528,7 +550,6 @@ var AdEntify = {
             $('.submit-tag').show();
             that.stopLoading('posting-tag');
             $('.ad-tag-frame-content input').val('');
-            console.log("completed submit-tag-ajax");
          }
       });
    },

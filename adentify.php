@@ -122,7 +122,7 @@ function adentify_plugin_settings() {
         }
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
 
-        wp_localize_script('adentify-tags-js', 'adentifyTagsData', array(
+        wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
             'admin_ajax_url' => ADENTIFY_ADMIN_URL,
             'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
         ));
@@ -191,7 +191,6 @@ function wptuts_admin_styles_with_the_lot() {
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
     wp_enqueue_script( 'adentify-admin-js' );
-
 
     // SELECT2.js
     wp_register_style( 'adentify-select2-style', plugins_url( '/js/vendor/select2/select2.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
@@ -318,12 +317,15 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->json())
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->getBody())
             {
-                $photo->setSmallUrl($result['small_url']);
-                $photo->setId($result['id']);
+                $photo->setSmallUrl(json_decode($result)->small_url);
+                $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);
-                wp_send_json_success($result);
+                wp_send_json_success(array(
+                    'photo' => sprintf($result),
+                    'wp_photo_id' => $attach_id
+                ));
             }
             else
                 wp_send_json_error("unknown error");

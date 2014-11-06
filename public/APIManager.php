@@ -42,6 +42,11 @@ class APIManager
         return $this->getAction(sprintf('photos/%s', $id));
     }
 
+    public function gettoken()
+    {
+        return $this->getCsrfToken('venue_item');
+    }
+
     /**
      * Post a photo
      *
@@ -84,6 +89,30 @@ class APIManager
                 '_token' => $this->getCsrfToken('tag_item')
             )))
         );
+    }
+
+    public function postVenue($venue)
+    {
+        $venue['venue']['_token'] = $this->getCsrfToken('venue_item');
+        return $this->postAction('venue', $venue);
+    }
+
+    public function postBrand($brand)
+    {
+        $venue['brand']['_token'] = $this->getCsrfToken('brand_item');
+        return $this->postAction('brand', $brand);
+    }
+
+    public function postPerson($person)
+    {
+        $person['person']['_token'] = $this->getCsrfToken('person_item');
+        return $this->postAction('person', $person);
+    }
+
+    public function postProduct($product)
+    {
+        $product['product']['_token'] = $this->getCsrfToken('product_item');
+        return $this->postAction('product', $product);
     }
 
     /**

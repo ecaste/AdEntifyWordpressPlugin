@@ -471,7 +471,8 @@ var AdEntifyBO = {
    },
 
    renderTag: function(photoOverlay, tag) {
-      $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape + ' tag" ' + (typeof tag.temp !== 'undefined' ? 'data-temp-tag="true"' : '') + ' style="left: ' + (tag.x_position * 100) + '%; ' +
+      $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape +
+         ' tag" ' + (typeof tag.temp !== 'undefined' ? 'data-temp-tag="true"' : '') + ' style="left: ' + (tag.x_position * 100) + '%; ' +
          'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;"></div>');
    },
 
@@ -487,18 +488,30 @@ var AdEntifyBO = {
    * options.fail: callback when failed
    * options.success: callback when all good
    * */
-   getValueFromSelect2: function(options) {
+   getValuesFromSelect2: function(options) {
       var that = this;
       options.array.forEach(function(item) {
-         var val;
+         var value;
          if (typeof item.objectProperty !== 'undefined') {
             var data = $(item.select2Selector).select2('data');
-            val = that.implodeObject(data, item.objectProperty);
+            value = that.implodeObject(data, item.objectProperty);
          } else
-            val = $(item.select2Selector).select2('val');
+            value = $(item.select2Selector).select2('val');
 
-         if (typeof val !== 'undefined' && val)
-            options.properties[item.propertyName] = val;
+         if (typeof value !== 'undefined' && value && value != "0") {
+            options.properties[item.propertyName] = value;
+         }
+         else if ((value == 0 || value == '0') && typeof item.createIfNotExists) {
+            if (typeof options.properties.extraData === 'undefined')
+               options.properties.extraData = [];
+
+            var data = $(item.select2Selector).select2('data');
+            var newObject = {};
+            newObject[item.propertyName] = {
+               name: data.name
+            };
+            options.properties.extraData.push(newObject);
+         }
          else {
             options.fail();
             return;
@@ -526,7 +539,7 @@ var AdEntifyBO = {
 
          switch ($(e.target).context.form.attributes['data-tag-type'].value) {
             case 'venue':
-               this.getValueFromSelect2({
+               this.getValuesFromSelect2({
                   array: [
                      {
                         propertyName: 'title',
@@ -535,7 +548,8 @@ var AdEntifyBO = {
                      },
                      {
                         propertyName: 'venue',
-                        select2Selector: '#venue-name'
+                        select2Selector: '#venue-name',
+                        createIfNotExists: true
                      }
                   ],
                   properties: properties,
@@ -548,7 +562,7 @@ var AdEntifyBO = {
                });
                break;
             case 'product':
-               this.getValueFromSelect2({
+               this.getValuesFromSelect2({
                   array: [
                      {
                         propertyName: 'product',
@@ -574,7 +588,7 @@ var AdEntifyBO = {
                });
                break;
             case 'person':
-               this.getValueFromSelect2({
+               this.getValuesFromSelect2({
                   array: [
                      {
                         propertyName: 'title',

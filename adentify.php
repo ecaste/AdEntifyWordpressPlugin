@@ -183,8 +183,10 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_product_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'products/'),
         'adentify_api_venue_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'venue/search'),
         'adentify_api_venue_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'venues/'),
+        'adentify_api_venue_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'venue'),
         'adentify_api_person_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'person/search'),
         'adentify_api_person_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'people/'),
+        'adentify_api_csrf_token' => sprintf(ADENTIFY_API_ROOT_URL, 'csrftokens/'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
@@ -334,8 +336,12 @@ add_action( 'wp_ajax_ad_upload', 'ad_upload' );
 
 function ad_tag() {
     $tag = Tag::loadPost($_POST['tag']);
-    echo APIManager::getInstance()->postTag($tag)->getBody();
-    exit();
+    if (is_array($tag) && array_key_exists('error', $tag)) {
+        throw new Exception('tag error');
+    } else {
+        echo APIManager::getInstance()->postTag($tag)->getBody();
+        exit();
+    }
 }
 add_action( 'wp_ajax_ad_tag', 'ad_tag' );
 

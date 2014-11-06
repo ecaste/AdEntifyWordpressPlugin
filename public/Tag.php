@@ -72,6 +72,37 @@ class Tag
 
     static function loadPost($postArray)
     {
+        $venue = null;
+        $product = null;
+        $brand = null;
+        $person = null;
+        if (array_key_exists('extraData', $postArray)) {
+            foreach($postArray['extraData'] as $key => $entry) {
+                switch ($key) {
+                    case 'venue':
+                        $response = APIManager::getInstance()->postVenue($entry);
+                        if ($response)
+                            $venue = json_decode($response->getBody());
+                        break;
+                    case 'product':
+                        $response = APIManager::getInstance()->postProduct($entry);
+                        if ($response)
+                            $product = json_decode($response->getBody());
+                        break;
+                    case 'brand':
+                        $response = APIManager::getInstance()->postBrand($entry);
+                        if ($response)
+                            $brand = json_decode($response->getBody());
+                        break;
+                    case 'person':
+                        $response = APIManager::getInstance()->postPerson($entry);
+                        if ($response)
+                            $person = json_decode($response->getBody());
+                        break;
+                }
+            }
+        }
+
         $tag = new Tag;
         $tag->setType($postArray['type']);
         $tag->setTitle($postArray['title']);
@@ -83,19 +114,19 @@ class Tag
 
         switch ($tag->getType()) {
             case 'product':
-                $tag->setProductType(($postArray['productType']) ? $postArray['productType'] : null);
-                $tag->setProduct(($postArray['product']) ? $postArray['product'] : null);
-                $tag->setBrand(($postArray['brand']) ? $postArray['brand'] : null);
-                if ($tag->getProductType() && $tag->getProduct() && $tag->getBrand())
+                $tag->setProductType((array_key_exists('productType', $postArray) ? $postArray['productType'] : null));
+                $tag->setProduct((array_key_exists('product', $postArray) ? $postArray['product'] : ($product ? $product->id : null)));
+                $tag->setBrand((array_key_exists('brand', $postArray) ? $postArray['brand'] : ($brand ? $brand->id : null)));
+                if ($tag->getProduct() && $tag->getBrand())
                     return $tag;
                 break;
             case 'venue':
-                $tag->setVenue(($postArray['venue']) ? $postArray['venue'] : null);
+                $tag->setVenue((array_key_exists('venue', $postArray) ? $postArray['venue'] : ($venue ? $venue->id : null)));
                 if ($tag->getVenue())
                     return $tag;
                 break;
             case 'person':
-                $tag->setPerson(($postArray['person']) ? $postArray['person'] : null);
+                $tag->setPerson((array_key_exists('person', $postArray) ? $postArray['person'] : ($person ? $person->id : null)));
                 if ($tag->getPerson())
                     return $tag;
                 break;

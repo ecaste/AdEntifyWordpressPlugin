@@ -116,7 +116,7 @@ var AdEntifyBO = {
          complete: function() {
             console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
             console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
-            $('.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"]').remove();
+            $('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
             that.removePhotoSelection(false);
             that.stopLoading('tag-from-library');
          }

@@ -315,12 +315,15 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->json())
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->getBody())
             {
-                $photo->setSmallUrl($result['small_url']);
-                $photo->setId($result['id']);
+                $photo->setSmallUrl(json_decode($result)->small_url);
+                $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);
-                wp_send_json_success($result);
+                wp_send_json_success(array(
+                    'photo' => sprintf($result),
+                    'wp_photo_id' => $attach_id
+                ));
             }
             else
                 wp_send_json_error("unknown error");

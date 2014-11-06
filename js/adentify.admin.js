@@ -82,42 +82,8 @@ var AdEntifyBO = {
             data.submit();
          },
          success: function (data) {
-            if (data.success) {
-               $('#photo-getting-tagged').remove();
-               $('#adentify-upload-modal').hide();
-               $('#adentify-tag-modal').show(0, function() {
-                  $('#tag-product input').first().focus();
-               });
-               try {
-                  var photo = data.data;
-                  var maxHeight = $('#ad-display-photo').height();
-
-                  that.photoIdSelected = photo.id;
-                  $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + $('#ad-display-photo').height()
-                  + 'px" class="ad-photo-getting-tagged" data-adentify-photo-id="' + photo.id
-                  + '" src="' + photo.large_url + '"/>');
-                  (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
-
-                  // append the new photo to the library content
-                  var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
-                  var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
-                  $('#ad-library-list').append(wrapper);
-                  $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
-                     if (that.currentSelectedPhoto) {
-                        that.currentSelectedPhoto.removeClass(that.selectedPhotoClassName);
-                     }
-                     that.currentSelectedPhoto = $(this);
-                     that.currentSelectedPhoto.addClass(that.selectedPhotoClassName);
-                     $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
-                     that.photoIdSelected = that.currentSelectedPhoto.attr('data-adentify-photo-id');
-                     that.wpPhotoIdSelected = that.currentSelectedPhoto.attr('data-wp-photo-id');
-                  });
-               } catch(e) {
-                  console.log("Error: " + data.data); // TODO : gestion erreur
-               }
-            } else {
-               console.log("Error: " + data.data); // TODO : gestion erreur
-            }
+            that.openPhotoModal(data.data.photo);
+            that.appendPhotoToLibrary(data.data.photo, data.data.wp_photo_id);
          },
           complete: function() {
              that.stopLoading('uploading-message');
@@ -151,8 +117,7 @@ var AdEntifyBO = {
             console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
             console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
             $('.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"]').remove();
-            that.removePhotoSelection(0);
-            that.closeModals();
+            that.removePhotoSelection(false);
             that.stopLoading('tag-from-library');
          }
       });
@@ -189,7 +154,7 @@ var AdEntifyBO = {
       $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
 
       // show the tag modal with the selected photo
-      $('#ad-tag-from-library').click($.proxy(this.openPhotoModal, this));
+      $('#ad-tag-from-library').click($.proxy(this.getPhoto, this));
 
       // insert a photo in the post editor
       $('#ad-insert-from-library, #ad-insert-after-tag').click($.proxy(this.insertPhotoInPostEditor, this));
@@ -207,7 +172,7 @@ var AdEntifyBO = {
     */
    removePhotoSelection: function(needId) {
       $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
-      if (needId === 0) {
+      if (needId === false) {
          this.photoIdSelected = undefined;
          this.wpPhotoIdSelected = undefined;
       }
@@ -228,7 +193,7 @@ var AdEntifyBO = {
       });
       $('#adentify-tag-modal').hide();
       //this.stopLoading('uploading-message');
-      this.removePhotoSelection(0);
+      this.removePhotoSelection(false);
       $('.ad-tag-frame-content input').val('');
    },
 
@@ -270,7 +235,52 @@ var AdEntifyBO = {
       }
    },
 
-   openPhotoModal: function(e) {
+   appendPhotoToLibrary: function(photo, wp_photo_id) {
+      var that = this;
+      try {
+         var photo = JSON.parse(photo);
+         that.wpPhotoIdSelected = wp_photo_id;
+         var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
+         var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
+         $('#ad-library-list').append(wrapper);
+         $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
+            if (that.currentSelectedPhoto) {
+               that.currentSelectedPhoto.removeClass(that.selectedPhotoClassName);
+            }
+            that.currentSelectedPhoto = $(this);
+            that.currentSelectedPhoto.addClass(that.selectedPhotoClassName);
+            $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
+            that.photoIdSelected = that.currentSelectedPhoto.attr('data-adentify-photo-id');
+            that.wpPhotoIdSelected = that.currentSelectedPhoto.attr('data-wp-photo-id');
+         });
+      } catch(e) {
+         console.log("Error appending photo to library: ");
+         console.log(e);
+      }
+   },
+
+   openPhotoModal: function(data) {
+      $('#photo-getting-tagged').remove();
+      $('#adentify-upload-modal').hide();
+      $('#adentify-tag-modal').show(0, function() {
+         $('#tag-product input').first().focus();
+      });
+      this.setupTagForms();
+      try {
+         var photo = JSON.parse(data);
+         var maxHeight = $('#ad-display-photo').height();
+
+         $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
+         + 'px" class="ad-photo-getting-tagged" data-wp-photo-id="' + this.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id
+         + '" src="' + photo.large_url + '"/>');
+         (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
+      } catch(e) {
+         console.log(e);
+         console.log("Error: " + data); // TODO gestion erreur
+      }
+   },
+
+   getPhoto: function(e) {
       var that = this;
       that.startLoading('tag-from-library');
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
@@ -283,30 +293,11 @@ var AdEntifyBO = {
                'photo_id': that.photoIdSelected
             },
             success: function(data) {
-               if (typeof data.data !== 'undefined') {
-                  $('#photo-getting-tagged').remove();
-                  $('#adentify-upload-modal').hide();
-                  $('#adentify-tag-modal').show(0, function() {
-                     $('#tag-product input').first().focus();
-                  });
-                  that.setupTagForms();
-                  try {
-                     var photo = JSON.parse(data.data);
-                     var maxHeight = $('#ad-display-photo').height();
-
-                     $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
-                     + 'px" class="ad-photo-getting-tagged" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id
-                     + '" src="' + photo.large_url + '"/>');
-                     (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
-                     that.removePhotoSelection(1);
-                  } catch(e) {
-                     console.log(e);
-                     console.log("Error: " + data.data); // TODO gestion erreur
-                  }
-               } else {
-                  alert('Impossible de r�cup�rer la photo.');
-                  // TOOD: gestion erreur
-               }
+               if (typeof data !== 'undefined')
+                  that.openPhotoModal(data.data);
+               else
+                  alert('Impossible de recuperer la photo'); // TODO: gestion erreur
+               that.removePhotoSelection(true);
             },
             complete: function() {
                that.stopLoading('tag-from-library');
@@ -621,7 +612,7 @@ var AdEntifyBO = {
       if (!$(e.target).is('[disabled]')) {
          if (typeof this.photoIdSelected !== "undefined" && this.photoIdSelected) {
             window.send_to_editor('[adentify=' + this.photoIdSelected + ']');
-            this.removePhotoSelection(0);
+            this.removePhotoSelection(false);
             $('#adentify-upload-modal, #adentify-tag-modal').hide();
             $('.ad-tag-frame-content input').val('');
          }

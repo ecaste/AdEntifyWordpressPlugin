@@ -62,8 +62,9 @@
                 opacity: 1;
             }
             .adentify-container .tags .tag .popover {
-                display: none;
-                opacity: 0;
+                position: absolute;
+                /*display: none;*/
+                /*opacity: 0;*/
                 color: white;
                 top: 30px;
                 left: -50%;

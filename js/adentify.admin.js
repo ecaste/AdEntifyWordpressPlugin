@@ -308,6 +308,7 @@ var AdEntifyBO = {
 
    setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl, tagFormField, enableCreateSearchChoice) {
       enableCreateSearchChoice = enableCreateSearchChoice || true;
+      tagFormField = tagFormField || [];
       var select2Parameters = {
          placeholder: placeholder,
          minimumInputLength: 1,
@@ -600,10 +601,12 @@ var AdEntifyBO = {
             'action': 'ad_tag',
             'tag': tag
          },
+         success: function() {
+            $('.ad-tag-frame-content input').val('');
+         },
          complete: function() {
             $('.submit-tag').show();
             that.stopLoading('posting-tag');
-            $('.ad-tag-frame-content input').val('');
          }
       });
    },

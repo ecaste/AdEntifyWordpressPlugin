@@ -37,7 +37,8 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility',
-    'TAGS_SHAPE' => 'tagShape'
+    'TAGS_SHAPE' => 'tagShape',
+    'GOOGLE_MAPS_KEY' => 'googleMapsKey'
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );

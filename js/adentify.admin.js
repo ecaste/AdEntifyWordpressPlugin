@@ -150,6 +150,9 @@ var AdEntifyBO = {
       // post tag
       $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.retrieveTagData, this));
 
+      // delete a tag
+      $('div').on('click', '#ad-delete-tag', $.proxy(this.removeTag, this));
+
       // Store the id of the selected photo and enabled the buttons
       $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
 
@@ -164,7 +167,6 @@ var AdEntifyBO = {
 
       // delete a photo
       $('#ad-delete-photo').click($.proxy(this.clickOnDeletePhoto, this));
-
    },
 
    /*
@@ -213,6 +215,9 @@ var AdEntifyBO = {
          case 'uploading-message':
             $('#ad-uploading-message').show();
             break;
+         case 'remove-tag':
+            $('#ad-remove-tag-loader').show();
+            break;
          case 'posting-tag':
          default:
             $('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').show();
@@ -227,6 +232,9 @@ var AdEntifyBO = {
             break;
          case 'uploading-message':
             $('#ad-uploading-message').hide();
+            break;
+         case 'remove-tag':
+            $('#ad-remove-tag-loader').hide();
             break;
          case 'posting-tag':
          default:
@@ -466,11 +474,38 @@ var AdEntifyBO = {
    renderTag: function(photoOverlay, tag) {
       $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape +
          ' tag" ' + (typeof tag.temp !== 'undefined' ? 'data-temp-tag="true"' : '') + ' style="left: ' + (tag.x_position * 100) + '%; ' +
-         'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;"></div>');
+         'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;">' +
+         ((typeof tag.id !== 'undefined') ? '<div class="popover"><div class="popover-inner">' +
+         ((typeof tag.title !== 'undefined') ? '<p class="title">' + tag.title + '</p>' : '') +
+         ((typeof tag.description !== 'undefined') ? '<p class="tag-description">' + tag.description + '</p>' : '') +
+         '<div id="ad-delete-tag" data-tag-id="' + tag.id + '" class="button button-primary button-large media-button-insert">Supprimer le tag</div>' +
+         '<div id="ad-remove-tag-loader" class="loading-gif-container" style="display: none">' +
+         '<div class="loader rotate"><div class="loading-gif"></div></div></div>' +
+         '</div>' : '') + '</div></div>');
+
    },
 
    removeTempTagsFromDOM: function(photoOverlay) {
       $(photoOverlay).find('.tags-container .tag[data-temp-tag]').remove();
+   },
+
+   removeTag: function(e) {
+      var that = this;
+      that.startLoading('remove-tag');
+      $.ajax({
+         type: 'GET',
+         url: adentifyTagsData.admin_ajax_url,
+         data: {
+            'action': 'ad_remove_tag',
+            'tag_id': e.target.attributes['data-tag-id'].value
+         },
+         complete: function() {
+            console.log("tag removed");
+            $('div .tag:has([data-tag-id="' + e.target.attributes['data-tag-id'].value + '"])').remove();
+            that.stopLoading('remove-tag');
+         }
+      });
+      return(false);
    },
 
    /*
@@ -622,6 +657,7 @@ var AdEntifyBO = {
          },
          success: function() {
             $('.ad-tag-frame-content input').val('');
+            // TODO: append popover to tag
          },
          complete: function() {
             $('.submit-tag').show();

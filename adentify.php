@@ -371,4 +371,9 @@ function ad_delete_photo() {
 }
 add_action( 'wp_ajax_ad_delete_photo', 'ad_delete_photo' );
 
-
+function ad_remove_tag() {
+    if (APIManager::getInstance()->getAccessToken()) {
+        print_r(APIManager::getInstance()->deleteTag($_GET['tag_id']));
+    }
+}
+add_action( 'wp_ajax_ad_remove_tag', 'ad_remove_tag' );

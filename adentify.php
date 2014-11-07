@@ -154,7 +154,9 @@ function wptuts_styles_with_the_lot() {
     wp_enqueue_script( 'jquery.ui.widget.js' );
     wp_enqueue_script( 'jquery.iframe-transport.js' );
     wp_enqueue_script( 'jquery.fileupload.js' );
-    wp_enqueue_script( 'google-maps', '//maps.googleapis.com/maps/api/js?key=AIzaSyAe0qbULIaxm2zV74LqAatdq1-uIW_iFLU&v=3&sensor=false',  array(), false, false);
+    $googleMapsKey = get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['GOOGLE_MAPS_KEY']);
+    if (!empty($googleMapsKey))
+        wp_enqueue_script( 'google-maps', '//maps.googleapis.com/maps/api/js?key=' . $googleMapsKey,  array(), false, false);
 
 }
 /* CSS and JS Files for admin */

@@ -43,6 +43,7 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
 define( 'ADENTIFY_ADMIN_URL', admin_url('admin-ajax.php'));
+define( 'ADENTIFY_AJAX_URL', plugin_dir_url( __FILE__ ) . 'ajax.php');
 define( 'ADENTIFY_API_CLIENT_NAME', sprintf('plugin_wordpress_%s', $_SERVER['HTTP_HOST']));
 define( 'ADENTIFY_API_CLIENT_ID_KEY', 'api_client_id');
 define( 'ADENTIFY_API_CLIENT_SECRET_KEY', 'api_client_secret');
@@ -82,6 +83,7 @@ function my_the_content_filter( $content ) {
     return $content;
 }
 add_filter( 'the_content', 'my_the_content_filter', 20 );
+add_filter( 'the_excerpt', 'my_the_content_filter', 20 );
 
 
 function adentify_setting_menu() {
@@ -149,6 +151,9 @@ function wptuts_styles_with_the_lot() {
     wp_register_script( 'jquery.fileupload.js', plugins_url( '/js/vendor/jquery.fileupload.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'adentify-js', plugins_url( '/js/adentify.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
 
+    wp_localize_script('adentify-js', 'adentifyTagsData', array(
+        'admin_ajax_url' => ADENTIFY_ADMIN_URL,
+    ));
     wp_enqueue_script( 'adentify-js' );
     wp_enqueue_script( 'jquery.min.js' );
     wp_enqueue_script( 'jquery.ui.widget.js' );
@@ -178,6 +183,7 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_person_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'person/search'),
         'adentify_api_person_get_url' => sprintf(ADENTIFY_API_ROOT_URL, 'people/'),
         'adentify_api_csrf_token' => sprintf(ADENTIFY_API_ROOT_URL, 'csrftokens/'),
+        'adentify_api_analytics_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'analytics'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
     ));
@@ -342,6 +348,11 @@ function ad_get_photo() {
     wp_send_json_success(sprintf(APIManager::getInstance()->getPhoto($_GET['photo_id'])));
 }
 add_action( 'wp_ajax_ad_get_photo', 'ad_get_photo' );
+
+function ad_analytics() {
+    echo APIManager::getInstance()->postAnalytic($_POST['analytic']);
+}
+add_action( 'wp_ajax_nopriv_ad_analytics', 'ad_analytics');
 
 function ad_admin_notice() {
     if (!APIManager::getInstance()->getAccessToken() && !array_key_exists('code', $_GET))

@@ -663,11 +663,35 @@ var AdEntifyBO = {
     * Init
     * */
    init: function() {
-      /*var xhr = this.createCORSRequest('GET', 'https://local.adentify.com/api/v1/brand/search?query=ad');
+      /*var xhr = this.createCORSRequest('GET', adentifyTagsData.adentify_api_brand_search_url + '?query=ad');
       if (xhr) {
-         *//*xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");*//*
+         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
          xhr.setRequestHeader('X-Custom-Header', 'value');
-         console.log(xhr.send());
+         xhr.send();
+         //'tag=1&action=hover&element=tag&platform=wordpress&user=1'
+      }
+
+      xhr = this.createCORSRequest('POST', adentifyTagsData.adentify_api_analytics_post_url);
+      if (xhr) {
+         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+         xhr.setRequestHeader('X-Custom-Header', 'value');
+         xhr.send('tag=1&action=hover&element=tag&platform=wordpress&user=1');
+         //'tag=1&action=hover&element=tag&platform=wordpress&user=1'
+      }*/
+
+     /* var xhr = this.createCORSRequest('POST', adentifyTagsData.adentify_api_analytics_post_url);
+      if (xhr) {
+         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+         xhr.setRequestHeader('X-Custom-Header', 'value');
+         xhr.send($.param({
+            'analytic': {
+               'platform': 'wordpress',
+               'action': 'hover',
+               'element': 'photo',
+               'photo': 164,
+               'user': 1
+            }
+         }));
 
          *//*xhr.send('tagId=' + jQuery(this).data('tag-id') + '&statType=hover');*//*
       }*/
@@ -680,6 +704,29 @@ var AdEntifyBO = {
             that.clickOnAdEntifyButton();
          });
       }
+
+      /*$.ajax({
+         url: adentifyTagsData.adentify_api_analytics_post_url,
+         type: 'POST',
+         xhrFields: {
+            withCredentials: true
+         },
+         contentType: 'text/plain',
+         crossDomain: true,
+         headers: {
+            'X-Custom-Header': 'value',
+            'Authorization': 'Bearer ' + adentifyTagsData.adentify_api_access_token
+         },
+         data: {
+            'analytic': {
+               'platform': 'wordpress',
+               'action': 'hover',
+               'element': 'photo',
+               'photo': 164,
+               'user': 1
+            }
+         }
+      });*/
    }
 };
 

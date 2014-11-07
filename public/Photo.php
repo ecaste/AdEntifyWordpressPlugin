@@ -31,6 +31,7 @@ class Photo
     public function render($renderWithTags = true)
     {
         return $this->getJson() ? Twig::render('photo.html.twig', array(
+            'photoId' => $this->getId(),
             'link' => $this->getLink(),
             'imageUrl' => $this->getImageUrl(),
             'caption' => $this->getCaption(),

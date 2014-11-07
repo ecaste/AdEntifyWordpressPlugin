@@ -115,6 +115,14 @@ class APIManager
         return $this->postAction('product', $product);
     }
 
+    public function postAnalytic($analytic)
+    {
+        return $this->postAction('analytics', array(
+                'analytic' => $analytic
+            )
+        );
+    }
+
     /**
      * Delete a tag by ID
      *

@@ -58,17 +58,6 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
 
-function filter_function_name( $content, $post_id ) {
-
-    preg_match('/\[adentify=(.+)\]/i', $content, $matches);
-    if (isset($matches[1])) {
-
-    }
-
-    return $content;
-}
-add_filter( 'content_edit_pre', 'filter_function_name', 10, 2 );
-
 /**
  * Add a icon to the beginning of every post page.
  *
@@ -115,8 +104,7 @@ function adentify_plugin_settings() {
         $settings[$key] = get_option($key);
 
     if (isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y') {
-        foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
-        {
+	foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
             $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
             update_option($key, $settings[$key]);
         }
@@ -127,8 +115,7 @@ function adentify_plugin_settings() {
             'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
         ));
     }
-    foreach($settings as $key => $value)
-    {
+    foreach($settings as $key => $value) {
         $parameters[$key.'Val'] = $value;
         $parameters[$key] = $key;
     }

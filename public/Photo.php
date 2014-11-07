@@ -13,7 +13,6 @@ class Photo
     protected $json;
     protected $caption;
     protected $smallUrl;
-    protected $visibilityScope = 'public';
 
     public function __construct($id = null)
     {
@@ -51,7 +50,7 @@ class Photo
     {
         $photo = array(
             'source' => 'wordpress',
-            'visibility_scope' => $this->visibilityScope,
+	    'visibility_scope' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['IS_PRIVATE']) ? 'public' : 'private',
         );
         if ($this->caption)
             $photo['caption'] = $this->caption;

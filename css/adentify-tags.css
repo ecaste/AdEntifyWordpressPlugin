@@ -57,14 +57,16 @@
                 opacity: 1;
             }
             /* Popover styles */
-            .adentify-container:hover .tags .tag:hover .popover {
+            .adentify-container:hover .tags .tag:hover .popover,
+            .photo-overlay:hover .tags-container .tag:hover .popover {
                 display: block;
                 opacity: 1;
             }
-            .adentify-container .tags .tag .popover {
+            .adentify-container .tags .tag .popover,
+            .photo-overlay .tags-container .tag .popover {
                 position: absolute;
-                display: none;
-                opacity: 0;
+                /*display: none;*/
+                /*opacity: 0;*/
                 color: grey;
                 top: 30px;
                 left: -50%;
@@ -79,7 +81,8 @@
                 -o-transition: opacity 0.3s ease-out;
                 transition: opacity 0.3s ease-out;
             }
-            .adentify-container .tags .tag .popover-inner {
+            .adentify-container .tags .tag .popover-inner,
+            .photo-overlay .tags-container .tag .popover-inner {
                 position: absolute;
                 overflow: auto;
                 padding: 15px;
@@ -96,18 +99,24 @@
                 margin-right: 15px;
                 max-width: 150px;
             }
-            .adentify-container .tags .tag .popover-inner .ad-tag-info{
+            .adentify-container .tags .tag .popover-inner .ad-tag-info,
+            .photo-overlay .tags-container .tag .popover-inner {
                 float: left;
-                right: 0px;
                 max-width: 300px;
             }
-            .adentify-container .tags .tag .popover-inner .title, .adentify-container .tags .tag .popover-inner .title a{
+            .adentify-container .tags .tag .popover-inner .title,
+            .adentify-container .tags .tag .popover-inner .title a,
+            .photo-overlay .tags-container .tag .popover-inner .title
+            {
                 color: black;
                 text-decoration: none;
+                margin: 0px;
             }
-            .adentify-container .tags .tag .popover-inner .ad-tag-info .tag-description{
+            .adentify-container .tags .tag .popover-inner .ad-tag-info .tag-description,
+            .photo-overlay .tags-container .tag .popover-inner .tag-description {
                 margin-bottom: 0px;
                 margin-top: 10px;
+                text-align: justify;
             }
             .adentify-container .tags .tag .popover-inner .ad-tag-info .brand{
                 margin-top: 15px;
@@ -123,6 +132,16 @@
             .adentify-container .tags .tag .map-canvas {
                 width: 300px;
                 height: 250px;
+            }
+            #ad-delete-tag {
+                float: right;
+                margin-top: 20px;
+            }
+            #ad-remove-tag-loader {
+                float: right;
+                margin-top: 22px;
+                margin-right: 13px;
+                display: inline-block;
             }
             /* END : Popover styles */
 
@@ -257,7 +276,7 @@
     background: url('../images/loading.gif') no-repeat;
     width: 24px;
     height: 24px;
-    margin: 0px auto 10px auto;
+    /*margin: 0px auto 10px auto;*/
 }
 .loader{
     margin-left: auto;

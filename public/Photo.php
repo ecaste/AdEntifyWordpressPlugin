@@ -37,7 +37,8 @@ class Photo
             'tags' => $renderWithTags ? $this->getTags() : null,
             'tagShape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
             'tagsVisibility' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_VISIBILITY']),
-            'renderWithTags' => $renderWithTags
+            'renderWithTags' => $renderWithTags,
+            'googleMapsAPIKey' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['GOOGLE_MAPS_KEY']),
         )) : 'Can\'t load this image.';
     }
 
@@ -50,7 +51,7 @@ class Photo
     {
         $photo = array(
             'source' => 'wordpress',
-	    'visibility_scope' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['IS_PRIVATE']) ? 'public' : 'private',
+	        'visibility_scope' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['IS_PRIVATE']) ? 'public' : 'private',
         );
         if ($this->caption)
             $photo['caption'] = $this->caption;

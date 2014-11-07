@@ -317,6 +317,7 @@ var AdEntifyBO = {
          placeholder: placeholder,
          minimumInputLength: 1,
          ajax: {
+            id: function(e) { return typeof e.id !== 'undefined' ? e.id : e.foursquare_id; },
             url: searchUrl,
                dataType: 'json',
                quietMillis: 250,
@@ -530,7 +531,7 @@ var AdEntifyBO = {
          };
 
          switch ($(e.target).context.form.attributes['data-tag-type'].value) {
-            case 'venue':
+            case 'place':
                this.getValuesFromSelect2({
                   array: [
                      {

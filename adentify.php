@@ -37,7 +37,8 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
     'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility',
-    'TAGS_SHAPE' => 'tagShape'
+    'TAGS_SHAPE' => 'tagShape',
+    'GOOGLE_MAPS_KEY' => 'googleMapsKey'
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
@@ -153,6 +154,7 @@ function wptuts_styles_with_the_lot() {
     wp_enqueue_script( 'jquery.ui.widget.js' );
     wp_enqueue_script( 'jquery.iframe-transport.js' );
     wp_enqueue_script( 'jquery.fileupload.js' );
+    wp_enqueue_script( 'google-maps', '//maps.googleapis.com/maps/api/js?key=AIzaSyAe0qbULIaxm2zV74LqAatdq1-uIW_iFLU&v=3&sensor=false',  array(), false, false);
 
 }
 /* CSS and JS Files for admin */

@@ -120,7 +120,7 @@ class Tag
                 if ($tag->getProduct() && $tag->getBrand())
                     return $tag;
                 break;
-            case 'venue':
+            case 'place':
                 $tag->setVenue((array_key_exists('venue', $postArray) ? $postArray['venue'] : ($venue ? $venue->id : null)));
                 if ($tag->getVenue())
                     return $tag;

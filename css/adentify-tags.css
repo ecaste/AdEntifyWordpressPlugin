@@ -84,6 +84,10 @@
             .adentify-container .tags .tag .popover-inner {
                 padding: 6px;
             }
+            .adentify-container .tags .tag .map-canvas {
+                width: 300px;
+                height: 250px;
+            }
             /* END : Popover styles */
 
 .ad-media-modal-backdrop {

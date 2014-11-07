@@ -90,6 +90,19 @@
                     </fieldset>
                 </td>
             </tr>
+            <tr>
+                <th scope="row">Google maps API key</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Google maps API key</span>
+                        </legend>
+                        <label for="googleMapsKey">
+                            <input name="googleMapsKey" type="text" id="googleMapsKey" value="{% if(googleMapsKeyVal) %} {{ googleMapsKeyVal }} {% endif %}"/> Enter your google maps API key
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
         </table>
         <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save the modifications"  /></p>
     </form>

@@ -5,10 +5,10 @@
         <div class="tag-popover-arrow"></div>
         <div class="popover-inner">
             {% if model.link is defined or model.person.link is defined %}
-            <a class="person-picture" href="{{ model.link is defined ? model.link : model.person.link }}" target="_blank"><img src="{{ model.personModel.largeProfilePicture }}" /></a>
+            <a href="{{ model.link is defined ? model.link : model.person.link }}" target="_blank"><img class="person-picture "src="{{ model.person.profile_picture_url }}" /></a>
             <span class="title"><a href="{{ model.link is defined ? model.link : model.person.link }}" target="_blank">{{ model.title }}</a></span>
             {% else %}
-            <div class="person-picture"><img src="<%= model.get('personModel').get('largeProfilePicture') %>" /></div>
+            <div class="person-picture-wrapper"><img class="person-picture" src="{{ model.person.profile_picture_url }}" /></div>
             <span class="title">{{ model.title }}</span>
             {% endif %}
             <div class="clearfix"></div>

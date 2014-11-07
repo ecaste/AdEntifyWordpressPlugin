@@ -4,39 +4,39 @@
     <div class="popover">
         <div class="tag-popover-arrow"></div>
         <div class="popover-inner">
-
-            {% if model.link %}
-            <span class="title"><a href="{{ model.link }}" target="_blank">{{ model.title }}</a></span>
-            {% else %}
-            <span class="title">{{ model.title }}</span>
-            {% endif %}
-
             {% if model.product is defined and model.product.small_url %}
-            <div class="pull-left">
+            <div class="pull-left ad-thumbnail">
                 {% if model.link %}<a href="{{ model.link }}" target="_blank">{% endif %}
                 <img src="{{ model.product.small_url }}" class="product-photo" />
                 {% if model.link %}</a>{% endif %}
             </div>
             {% endif %}
 
-            {% if model.description is defined and model.description %}
-            <p class="tag-description">{{ model.description }}</p>
-            {% elseif model.product is defined and model.product.description is defined and model.product.description %}
-            <p class="tag-description">{{ model.product.description }}</p>
-            {% endif %}
+            <div class="ad-tag-info">
+                {% if model.link %}
+                    <span class="title"><a href="{{ model.link }}" target="_blank">{{ model.title }}</a></span>
+                {% else %}
+                    <span class="title">{{ model.title }}</span>
+                {% endif %}
 
-            {% if model.brandModel is defined and model.brandModel %}
-            <div class="brand">
-                <a href="{{ model.brandModel.link }}">
-                    {% if model.brandModel.small_logo_url is not defined %}
-                    {{ model.brandModel.name }}
-                    {% else %}
-                    <img src="{{ model.brandModel.small_logo_url }}" alt="{{ model.brandModel.name }}" class="brand-logo" />
-                    {% endif %}
-                </a>
+                {% if model.description is defined and model.description %}
+                    <p class="tag-description">{{ model.description }}</p>
+                {% elseif model.product is defined and model.product.description is defined and model.product.description %}
+                    <p class="tag-description">{{ model.product.description }}</p>
+                {% endif %}
+
+                {% if model.brand is defined and model.brand %}
+                    <div class="brand">
+                        <a href="{{ model.brand.link }}">
+                            {% if model.brand.small_logo_url is not defined %}
+                                {{ model.brand.name }}
+                            {% else %}
+                                <img src="{{ model.brand.small_logo_url }}" alt="{{ model.brand.name }}" class="brand-logo" />
+                            {% endif %}
+                        </a>
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
-
         </div>
         <div class="clearfix"></div>
     </div>

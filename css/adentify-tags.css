@@ -65,8 +65,8 @@
             .adentify-container .tags .tag .popover,
             .photo-overlay .tags-container .tag .popover {
                 position: absolute;
-                /*display: none;*/
-                /*opacity: 0;*/
+                display: none;
+                opacity: 0;
                 color: grey;
                 top: 30px;
                 left: -50%;

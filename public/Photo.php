@@ -11,8 +11,10 @@ class Photo
     protected $client;
     protected $id;
     protected $json;
+    protected $caption;
+    protected $smallUrl;
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
         $this->id = $id;
         $this->client = new GuzzleHttp\Client();
@@ -20,24 +22,42 @@ class Photo
 
     public function load()
     {
-        $response = $this->client->get(sprintf(ADENTIFY_API_ROOT_URL, sprintf('photos/%s', $this->id)));
-        if ($response->getStatusCode() == 200) {
-            $this->setJson($response->getBody());
+        $photo = APIManager::getInstance()->getPhoto($this->id);
+        if (!empty($photo)) {
+            $this->setJson($photo);
         }
     }
 
-    public function render()
+    public function render($renderWithTags = true)
     {
-        $loader = new Twig_Loader_Filesystem(ADENTIFY__PLUGIN_DIR . 'templates');
-        $twig = new Twig_Environment($loader, array(
-            'cache' => ADENTIFY__PLUGIN_DIR . 'cache/templates',
-        ));
-        $template = $twig->loadTemplate('photo.html.twig');
-        return $template->render(array(
+        return $this->getJson() ? Twig::render('photo.html.twig', array(
+            'photoId' => $this->getId(),
             'link' => $this->getLink(),
             'imageUrl' => $this->getImageUrl(),
-            'caption' => $this->getCaption()
-        ));
+            'caption' => $this->getCaption(),
+            'tags' => $renderWithTags ? $this->getTags() : null,
+            'tagShape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
+            'tagsVisibility' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_VISIBILITY']),
+            'renderWithTags' => $renderWithTags,
+            'googleMapsAPIKey' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['GOOGLE_MAPS_KEY']),
+        )) : 'Can\'t load this image.';
+    }
+
+    /**
+     * Serialize photo to an array
+     *
+     * @return array
+     */
+    public function serialize($data = array())
+    {
+        $photo = array(
+            'source' => 'wordpress',
+	        'visibility_scope' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['IS_PRIVATE']) ? 'public' : 'private',
+        );
+        if ($this->caption)
+            $photo['caption'] = $this->caption;
+        $photo = array_merge($photo, $data);
+        return $photo;
     }
 
     public function getLink()
@@ -53,7 +73,28 @@ class Photo
 
     public function getCaption()
     {
-        return $this->getJson()->caption;
+        return isset($this->getJson()->caption) ? $this->getJson()->caption : null;
+    }
+
+    /**
+     * @param mixed $caption
+     */
+    public function setCaption($caption)
+    {
+        $this->caption = $caption;
+        return $this;
+    }
+
+    public function getTags()
+    {
+        $tags = $this->getJson()->tags;
+        if (count($tags) > 0) {
+            foreach($tags as $tag) {
+                $tag->style = sprintf('left: %s%%; top: %s%%; margin-left: %spx; margin-top: %spx', ($tag->x_position * 100), ($tag->y_position * 100),  '-15', '-15');
+            }
+        }
+
+        return $tags;
     }
 
     /**
@@ -86,6 +127,40 @@ class Photo
     public function setJson($json)
     {
         $this->json = json_decode($json);
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVisibilityScope()
+    {
+        return $this->visibilityScope;
+    }
+
+    /**
+     * @param mixed $visibilityScope
+     */
+    public function setVisibilityScope($visibilityScope)
+    {
+        $this->visibilityScope = $visibilityScope;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSmallUrl()
+    {
+        return $this->smallUrl;
+    }
+
+    /**
+     * @param mixed $smallUrl
+     */
+    public function setSmallUrl($smallUrl)
+    {
+        $this->smallUrl = $smallUrl;
         return $this;
     }
 }

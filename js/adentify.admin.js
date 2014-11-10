@@ -644,6 +644,13 @@ var AdEntifyBO = {
       }
    },
 
+   resetForms: function() {
+      $('.ad-tag-frame-content textarea, .ad-tag-frame-content input').each(function(index, element) {
+         $(element).val('');
+      });
+      $('#product-name, #venue-name, #brand-name, #person-name').select2('data', null);
+   },
+
    postTag: function(tag) {
       var that = this;
       $('.submit-tag').hide();
@@ -655,8 +662,10 @@ var AdEntifyBO = {
             'action': 'ad_tag',
             'tag': tag
          },
-         success: function() {
-            $('.ad-tag-frame-content input').val('');
+         success: function(data) {
+            that.resetForms();
+            that.renderTag($('.photo-overlay'), JSON.parse(data));
+            that.removeTempTagsFromDOM($('.photo-overlay'));
             // TODO: append popover to tag
          },
          complete: function() {

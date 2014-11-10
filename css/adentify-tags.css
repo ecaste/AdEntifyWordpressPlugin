@@ -133,14 +133,14 @@
                 width: 300px;
                 height: 250px;
             }
-            #ad-delete-tag {
+            .ad-delete-tag {
                 float: right;
-                margin-top: 20px;
+                margin-top: 15px!important;
             }
-            #ad-remove-tag-loader {
+            .ad-delete-loader {
                 float: right;
-                margin-top: 22px;
-                margin-right: 13px;
+                margin-top: 18px!important;
+                margin-right: 9px;
                 display: inline-block;
             }
             /* END : Popover styles */

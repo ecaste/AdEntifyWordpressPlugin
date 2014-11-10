@@ -153,7 +153,7 @@ var AdEntifyBO = {
       $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.retrieveTagData, this));
 
       // delete a tag
-      $('div').on('click', '#ad-delete-tag', $.proxy(this.removeTag, this));
+      $('div').on('click', '.ad-delete-tag', $.proxy(this.removeTag, this));
 
       // Store the id of the selected photo and enabled the buttons
       $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
@@ -212,7 +212,7 @@ var AdEntifyBO = {
       this.removeTagsFromDOM($('.photo-overlay'));
    },
 
-   startLoading: function(loader) {
+   startLoading: function(loader, tagId) {
       switch (loader) {
          case 'tag-from-library':
             $('#ad-tag-from-library-loading').show();
@@ -221,7 +221,7 @@ var AdEntifyBO = {
             $('#ad-uploading-message').show();
             break;
          case 'remove-tag':
-            $('#ad-remove-tag-loader').show();
+            $('#ad-remove-tag-loader-' + tagId).show();
             break;
          case 'posting-tag':
          default:
@@ -230,7 +230,7 @@ var AdEntifyBO = {
       }
    },
 
-   stopLoading: function(loader) {
+   stopLoading: function(loader, tagId) {
       switch (loader) {
          case 'tag-from-library':
             $('#ad-tag-from-library-loading').hide();
@@ -239,7 +239,7 @@ var AdEntifyBO = {
             $('#ad-uploading-message').hide();
             break;
          case 'remove-tag':
-            $('#ad-remove-tag-loader').hide();
+            $('.ad-remove-tag-loader-' + tagId).hide();
             break;
          case 'posting-tag':
          default:
@@ -483,8 +483,8 @@ var AdEntifyBO = {
          ((typeof tag.id !== 'undefined') ? '<div class="popover"><div class="popover-inner">' +
          ((typeof tag.title !== 'undefined') ? '<p class="title">' + tag.title + '</p>' : '') +
          ((typeof tag.description !== 'undefined') ? '<p class="tag-description">' + tag.description + '</p>' : '') +
-         '<div id="ad-delete-tag" data-tag-id="' + tag.id + '" class="button button-primary button-large media-button-insert">Supprimer le tag</div>' +
-         '<div id="ad-remove-tag-loader" class="loading-gif-container" style="display: none">' +
+         '<div data-tag-id="' + tag.id + '" class="ad-delete-tag button button-primary button-large media-button-insert">Supprimer le tag</div>' +
+         '<div id="ad-remove-tag-loader-' + tag.id + '" class="loading-gif-container ad-delete-loader" style="display: none">' +
          '<div class="loader rotate"><div class="loading-gif"></div></div></div>' +
          '</div>' : '') + '</div></div>');
 
@@ -500,7 +500,7 @@ var AdEntifyBO = {
 
    removeTag: function(e) {
       var that = this;
-      that.startLoading('remove-tag');
+      that.startLoading('remove-tag', e.target.attributes['data-tag-id'].value);
       $.ajax({
          type: 'GET',
          url: adentifyTagsData.admin_ajax_url,
@@ -511,7 +511,7 @@ var AdEntifyBO = {
          complete: function() {
             console.log("tag removed");
             $('div .tag:has([data-tag-id="' + e.target.attributes['data-tag-id'].value + '"])').remove();
-            that.stopLoading('remove-tag');
+            that.stopLoading('remove-tag', e.target.id);
          }
       });
       return(false);

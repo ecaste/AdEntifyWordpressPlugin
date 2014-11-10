@@ -69,6 +69,28 @@
                 opacity: 1;
             }
 
+            .photo-overlay .tags-container .tag .popover {
+                position: fixed;
+                display: none;
+                opacity: 0;
+                color: grey;
+                left: 50%;
+                margin-left: -50%;
+                z-index: 2000;
+                padding: 0px;
+                border: 0px;
+                border-radius: 0px;
+                width: 500px;
+                -webkit-transition: opacity 0.3s ease-out;
+                -moz-transition: opacity 0.3s ease-out;
+                -ms-transition: opacity 0.3s ease-out;
+                -o-transition: opacity 0.3s ease-out;
+                transition: opacity 0.3s ease-out;
+            }
+            .photo-overlay .tags-container .tag .popover-inner {
+                float: left;
+                max-width: 300px;
+            }
             /* Extra small devices (phones, less than 768px) */
             /* No media query since this is the default in Bootstrap */
             .adentify-container .tags .tag .popover,
@@ -77,7 +99,6 @@
                 /*display: none;*/
                 /*opacity: 0;*/
                 color: grey;
-                top: 25%;
                 left: 50%;
                 margin-left: -50%;
                 z-index: 2000;
@@ -92,48 +113,26 @@
                 transition: opacity 0.3s ease-out;
             }
 
-            .adentify-container .tags .tag .popover-inner .ad-thumbnail{
+            .adentify-container .tags .tag .popover-inner .ad-thumbnail {
                 float: left;
                 left: 0px;
                 margin-right: 15px;
                 max-width: 75px;
             }
-            .adentify-container .tags .tag .popover-inner .ad-tag-info,
-            .photo-overlay .tags-container .tag .popover-inner {
+            .adentify-container .tags .tag .popover-inner .ad-tag-info {
                 float: left;
                 max-width: 180px;
             }
 
             /* Small devices (tablets, 768px and up) */
             @media (min-width: 768px) {
-                .adentify-container .tags .tag .popover,
-                .photo-overlay .tags-container .tag .popover {
-                    position: fixed;
-                    /*display: none;*/
-                    /*opacity: 0;*/
-                    color: grey;
-                    top: 50%;
-                    left: 50%;
-                    z-index: 2000;
-                    padding: 0px;
-                    border: 0px;
-                    border-radius: 0px;
+                .adentify-container .tags .tag .popover {
                     width: 500px;
-                    -webkit-transition: opacity 0.3s ease-out;
-                    -moz-transition: opacity 0.3s ease-out;
-                    -ms-transition: opacity 0.3s ease-out;
-                    -o-transition: opacity 0.3s ease-out;
-                    transition: opacity 0.3s ease-out;
                 }
-                .adentify-container .tags .tag .popover-inner .ad-thumbnail{
-                    float: left;
-                    left: 0px;
-                    margin-right: 15px;
+                .adentify-container .tags .tag .popover-inner .ad-thumbnail {
                     max-width: 150px;
                 }
-                .adentify-container .tags .tag .popover-inner .ad-tag-info,
-                .photo-overlay .tags-container .tag .popover-inner {
-                    float: left;
+                .adentify-container .tags .tag .popover-inner .ad-tag-info {
                     max-width: 300px;
                 }
             }
@@ -145,29 +144,14 @@
                     position: absolute;
                     /*display: none;*/
                     /*opacity: 0;*/
-                    color: grey;
                     top: 30px;
                     left: -50%;
-                    z-index: 2000;
-                    padding: 0px;
-                    border: 0px;
-                    border-radius: 0px;
                     width: 500px;
-                    -webkit-transition: opacity 0.3s ease-out;
-                    -moz-transition: opacity 0.3s ease-out;
-                    -ms-transition: opacity 0.3s ease-out;
-                    -o-transition: opacity 0.3s ease-out;
-                    transition: opacity 0.3s ease-out;
                 }
-                .adentify-container .tags .tag .popover-inner .ad-thumbnail{
-                    float: left;
-                    left: 0px;
-                    margin-right: 15px;
+                .adentify-container .tags .tag .popover-inner .ad-thumbnail {
                     max-width: 150px;
                 }
-                .adentify-container .tags .tag .popover-inner .ad-tag-info,
-                .photo-overlay .tags-container .tag .popover-inner {
-                    float: left;
+                .adentify-container .tags .tag .popover-inner .ad-tag-info {
                     max-width: 300px;
                 }
             }

@@ -674,6 +674,7 @@ var AdEntifyBO = {
             that.resetForms();
             that.renderTag($('.photo-overlay'), JSON.parse(data));
             that.removeTempTagsFromDOM($('.photo-overlay'));
+            // TODO: append popover to tag
          },
          complete: function() {
             $('.submit-tag').show();

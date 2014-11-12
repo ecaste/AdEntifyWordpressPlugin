@@ -40,10 +40,11 @@ you put the stable version, in order to eliminate any doubt.
 == Installation ==
 
 1. Upload the `adentify` directory and all the files to the `/wp-content/plugins/` directory
-2. Change CHMOD of the directory `/wp-content/plugins/adentify/cache/` to 777
+2. Change CHMOD of the directory `/wp-content/plugins/adentify/cache/` to 755
 3. Activate the plugin through the 'Plugins' menu in WordPress
-4. Go to the `AdEntify Settings` page and click on the URL to authenticate your AdEntify plugin and link it to your AdEntify account
-5. On the `AdEntify Settings` page and add your Google Maps API Key (Optionnal)
+4. Configure the plugin for your needs and save it (If you want a map on place tag, you need to enter a Google Maps API Key, this is optionnal)
+5. Stay on the `AdEntify Settings` page, click on the connect URL and log in (or sign up if you don't have an account) to an AdEntify.com account to authorize the AdEntify Plugin connection.
+6. That's it. You're ready to go!
 
 == Screenshots ==
 

@@ -61,9 +61,7 @@ var AdEntify = {
 
       // When all deferreds are done (all images loaded) do some stuff
       $.when.apply(null, deferreds).done(function() {
-         that.css({
-            'margin-left': - that.find('.popover-inner').outerWidth() / 2
-         });
+         that.css('display', 'block').css({'margin-left': - that.find('.popover-inner').outerWidth() / 2}).css('display', 'none');
       });
    },
 

@@ -67,16 +67,14 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
  */
 function my_the_content_filter( $content ) {
 
-    if ( is_single() ) {
-        preg_match('/\[adentify=(.+)\]/i', $content, $matches);
-        if (isset($matches[1])) {
-            $photoId = $matches[1];
+    preg_match('/\[adentify=(.+)\]/i', $content, $matches);
+    if (isset($matches[1])) {
+        $photoId = $matches[1];
 
-            $photo = new Photo($photoId);
-            $photo->load();
+        $photo = new Photo($photoId);
+        $photo->load();
 
-            $content = preg_replace('/\[adentify=(.+)\]/i', $photo->render(), $content);
-        }
+        $content = preg_replace('/\[adentify=(.+)\]/i', $photo->render(), $content);
     }
 
     // Returns the content.
@@ -84,7 +82,6 @@ function my_the_content_filter( $content ) {
 }
 add_filter( 'the_content', 'my_the_content_filter', 20 );
 add_filter( 'the_excerpt', 'my_the_content_filter', 20 );
-
 
 function adentify_setting_menu() {
 	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME, 'adentify_plugin_settings' );

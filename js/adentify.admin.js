@@ -487,7 +487,6 @@ var AdEntifyBO = {
          '<div id="ad-remove-tag-loader-' + tag.id + '" class="loading-gif-container ad-delete-loader" style="display: none">' +
          '<div class="loader rotate"><div class="loading-gif"></div></div></div>' +
          '</div>' : '') + '</div></div>');
-
    },
 
    removeTempTagsFromDOM: function(photoOverlay) {

@@ -44,6 +44,34 @@ var AdEntify = {
       });
    },
 
+   changePopoverPos: function(that) {
+      var deferreds = [];
+      var i = 0;
+
+      // Create a deferred for all images
+      $(that).find('img').each(function() {
+         deferreds.push(new $.Deferred());
+      });
+
+      // When image is loaded, resolve the next deferred
+      $(that).find('img').load(function() {
+         deferreds[i].resolve();
+         i++;
+      });
+
+      // When all deferreds are done (all images loaded) do some stuff
+      $.when.apply(null, deferreds).done(function() {
+         that.css('display', 'block').css({'margin-left': - that.find('.popover-inner').outerWidth() / 2}).css('display', 'none');
+      });
+   },
+
+   changeAllPopoverPos: function() {
+      var that = this;
+      $('.adentify-container .popover').each(function() {
+         that.changePopoverPos($(this));
+      });
+   },
+
    init: function() {
       var that = this;
       this.setupTagsBehavior();
@@ -51,6 +79,8 @@ var AdEntify = {
       $('.adentify-container').each(function() {
          that.postAnalytic('view', 'photo', null, $(this).attr('data-photo-id'));
       });
+      if ($(window).width() > 1400)
+         that.changeAllPopoverPos();
    }
 };
 

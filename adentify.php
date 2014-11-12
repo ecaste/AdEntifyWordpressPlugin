@@ -27,7 +27,7 @@
 
 defined('ABSPATH') or die("No script kiddies please!");
 
-define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
+define( 'ADENTIFY_URL', 'https://adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
 define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
@@ -127,6 +127,8 @@ function adentify_plugin_settings() {
 }
 
 function adentify_button($editor_id = 'content') {
+    $max_upload_size = wp_max_upload_size() / pow(2, 20);
+
     //displays the button
     printf( '<a href="#" id="adentify-upload-img" class="button add_media" data-editor="%s" title="%s">%s</a>',
         esc_attr( $editor_id ),
@@ -134,7 +136,8 @@ function adentify_button($editor_id = 'content') {
         'AdEntify'
     );
     echo Twig::render('admin\modals\upload.modal.html.twig', array(
-        'photos' => DBManager::getInstance()->getPhotos()
+        'photos' => DBManager::getInstance()->getPhotos(),
+        'max_upload_size' => $max_upload_size
     ));
     echo Twig::render('admin\modals\tag.modal.html.twig', array());
 }

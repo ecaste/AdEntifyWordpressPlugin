@@ -207,7 +207,7 @@ var AdEntifyBO = {
       $('#adentify-tag-modal').hide();
       $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
-      $('.ad-tag-frame-content input').val('');
+      this.resetForms();
       this.removeTempTagsFromDOM($('.photo-overlay'));
       this.removeTagsFromDOM($('.photo-overlay'));
    },
@@ -335,8 +335,10 @@ var AdEntifyBO = {
                dataType: 'json',
                quietMillis: 250,
                data: function (term, page) {
-               return {
-                  query: term
+                  return {
+                     action: 'ad_select_product',
+                     pid: adentifyTagsData.shopsense_api_access_key,
+                     query: term
                };
             },
             results: function (data, page) {
@@ -376,7 +378,14 @@ var AdEntifyBO = {
       }
       $(selector).select2(select2Parameters).on('select2-selecting', function(e) {
          tagFormField.forEach(function(entry) {
-            $(entry.fieldSelector).val(e.choice[entry.propertyName]);
+            $(entry.fieldSelector).val('');
+            entry.propertyName.forEach(function(propertyName) {
+               if (typeof e.choice[propertyName] !== 'undefined')
+               {
+                  $(entry.fieldSelector).val(e.choice[propertyName]);
+                  return false;
+               }
+            });
          });
       });
    },
@@ -392,11 +401,24 @@ var AdEntifyBO = {
          adentifyTagsData.adentify_api_product_get_url, [
             {
                fieldSelector: '#product-description',
-               propertyName: 'description'
+               propertyName: ['description']
             },
             {
                fieldSelector: '#product-url',
-               propertyName: 'purchase_url'
+               propertyName: ['purchase_url']
+            }
+         ]);
+
+      this.setupAutocomplete('#product-name-shopsense', 'Search for a product on Shopsense', function(item) { return that.genericFormatResult(item, 'medium_url'); },
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.admin_ajax_url,
+         adentifyTagsData.admin_ajax_url, [
+            {
+               fieldSelector: '#product-description',
+               propertyName: ['description']
+            },
+            {
+               fieldSelector: '#product-url',
+               propertyName: ['purchase_url', 'clickUrl']
             }
          ]);
 
@@ -405,11 +427,11 @@ var AdEntifyBO = {
          adentifyTagsData.adentify_api_venue_get_url, [
             {
                fieldSelector: '#venue-description',
-               propertyName: 'description'
+               propertyName: ['description']
             },
             {
                fieldSelector: '#venue-url',
-               propertyName: 'link'
+               propertyName: ['link']
             }
          ]);
 
@@ -418,7 +440,7 @@ var AdEntifyBO = {
          adentifyTagsData.adentify_api_person_get_url, [
             {
                fieldSelector: '#person-url',
-               propertyName: 'link'
+               propertyName: ['link']
             }
          ]);
    },

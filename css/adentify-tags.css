@@ -289,6 +289,9 @@
     width: 70%;
     margin-bottom: 10px;
 }
+.ad-tag-frame-content .tab-pane textarea {
+    max-width: 70%;
+}
 .ad-library-photo-wrapper {
     display: inline-block;
     height: 128px;

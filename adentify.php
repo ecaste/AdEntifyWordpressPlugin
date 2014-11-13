@@ -52,6 +52,7 @@ define( 'ADENTIFY_API_REFRESH_TOKEN', 'api_refresh_token');
 define( 'ADENTIFY_API_EXPIRES_TIMESTAMP', 'api_expires_timestamp');
 define( 'PLUGIN_VERSION', '1.0.0');
 define( 'ADENTIFY_SQL_TABLE_PHOTOS', 'adentify_photos');
+define( 'SHOPSENSE_API_ACCESS_KEY', 'uid321-26129111-96');
 
 require 'vendor/autoload.php';
 require_once( ADENTIFY__PLUGIN_DIR . 'public/APIManager.php' );
@@ -185,7 +186,8 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_csrf_token' => sprintf(ADENTIFY_API_ROOT_URL, 'csrftokens/'),
         'adentify_api_analytics_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'analytics'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
-        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
+        'shopsense_api_access_key' => SHOPSENSE_API_ACCESS_KEY
     ));
     wp_enqueue_script( 'adentify-admin-js' );
 
@@ -377,3 +379,37 @@ function ad_remove_tag() {
     }
 }
 add_action( 'wp_ajax_ad_remove_tag', 'ad_remove_tag' );
+
+function cross_domain($options = array())
+{
+    $c = curl_init();
+    foreach ($options as $option_name => $option_value)
+        curl_setopt($c, $option_name, $option_value);
+    $result = curl_exec($c);
+    if ($result === false)
+        trigger_error('Erreur curl : ' . curl_error($c), E_USER_WARNING);
+    else
+        $result = json_decode($result, true);
+    curl_close($c);
+    return $result;
+}
+
+function ad_select_product() {
+    $shopsense = cross_domain([
+        CURLOPT_URL =>  sprintf("http://api.shopstyle.com/api/v2/products?pid=%s&fts=%s", $_GET['pid'], str_replace(' ', '+', $_GET['query'])),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER => false
+    ])['products'];
+
+    $adentify = cross_domain([
+        CURLOPT_URL =>  sprintf(sprintf(ADENTIFY_API_ROOT_URL, 'product/search?query=%s'), str_replace(' ', '+', $_GET['query'])),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER => false,
+        CURLOPT_SSL_VERIFYPEER => false
+    ]);
+    $result = array_merge($shopsense, $adentify);
+    wp_send_json_success($result);
+//    print_r(json_encode($result));
+//    exit;
+}
+add_action( 'wp_ajax_ad_select_product', 'ad_select_product' );

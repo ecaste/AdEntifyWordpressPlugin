@@ -207,7 +207,7 @@ var AdEntifyBO = {
       $('#adentify-tag-modal').hide();
       $('#ad-uploader-content, #adentify-upload-modal').show();
       $('#__wp-uploader-id-2').focus();
-      $('.ad-tag-frame-content input').val('');
+      this.resetForms();
       this.removeTempTagsFromDOM($('.photo-overlay'));
       this.removeTagsFromDOM($('.photo-overlay'));
    },

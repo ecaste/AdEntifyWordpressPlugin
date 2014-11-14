@@ -67,14 +67,15 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
  */
 function my_the_content_filter( $content ) {
 
-    preg_match('/\[adentify=(.+)\]/i', $content, $matches);
+    preg_match_all('/\[adentify=(.+)\]/i', $content, $matches);
     if (isset($matches[1])) {
-        $photoId = $matches[1];
+        foreach($matches[1] as $photoId)
+        {
+            $photo = new Photo($photoId);
+            $photo->load();
 
-        $photo = new Photo($photoId);
-        $photo->load();
-
-        $content = preg_replace('/\[adentify=(.+)\]/i', $photo->render(), $content);
+            $content = preg_replace(sprintf('/\[adentify=(%s)\]/i', $photoId), $photo->render(), $content);
+        }
     }
 
     // Returns the content.

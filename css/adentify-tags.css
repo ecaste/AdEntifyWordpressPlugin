@@ -287,6 +287,7 @@
 }
 .form-control {
     width: 70%;
+    max-width: 70%;
     margin-bottom: 10px;
 }
 .ad-library-photo-wrapper {

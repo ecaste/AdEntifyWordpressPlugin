@@ -57,6 +57,9 @@ var AdEntify = {
       $(that).find('img').load(function() {
          deferreds[i].resolve();
          i++;
+      }).each(function() {
+         if(this.complete)
+            $(this).load();
       });
 
       // When all deferreds are done (all images loaded) do some stuff

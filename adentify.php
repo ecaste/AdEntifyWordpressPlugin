@@ -66,8 +66,7 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
  * @uses is_single()
  */
 function my_the_content_filter( $content ) {
-
-    preg_match_all('/\[adentify=(.+)\]/i', $content, $matches);
+    preg_match_all('/\[adentify=([0-9]+)\]/i', $content, $matches);
     if (isset($matches[1])) {
         foreach($matches[1] as $photoId)
         {

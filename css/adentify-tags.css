@@ -362,3 +362,8 @@
 @-ms-keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
 @-o-keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
 @keyframes rotate { from { -webkit-transform: rotateZ(0deg); } to { -webkit-transform: rotateZ(360deg); } }
+
+.ad-post-container {
+    position: relative;
+    z-index: 0;
+}

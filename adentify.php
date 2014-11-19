@@ -77,9 +77,7 @@ function my_the_content_filter( $content ) {
             $content = preg_replace(sprintf('/\[adentify=(%s)\]/i', $photoId), $photo->render(true, $i--), $content, 1);
         }
     }
-
     $content = '<div class="ad-post-container">'. $content .'</div>';
-    // Returns the content.
     return $content;
 }
 add_filter( 'the_content', 'my_the_content_filter', 20 );

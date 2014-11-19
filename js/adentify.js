@@ -44,7 +44,7 @@ var AdEntify = {
       });
    },
 
-   changePopoverPos: function(that) {
+   changePopoverPos: function(that, vw) {
       var deferreds = [];
       var i = 0;
 
@@ -64,14 +64,20 @@ var AdEntify = {
 
       // When all deferreds are done (all images loaded) do some stuff
       $.when.apply(null, deferreds).done(function() {
-         that.css('display', 'block').css({'margin-left': - that.find('.popover-inner').outerWidth() / 2}).css('display', 'none');
+         that.css('display', 'block');
+         if (vw > 1400)
+            that.css({'margin-left': - that.find('.popover-inner').outerWidth() / 2}).css('display', 'none');
+         else {
+            marginLeft = ($('.tags').outerWidth(true) / 2) - (that.parent().position().left - 15 + that.find('.popover-inner').outerWidth(true) / 2);
+            that.css({'margin-left': marginLeft + 'px'}).css('display', 'none');
+         }
       });
    },
 
-   changeAllPopoverPos: function() {
+   changeAllPopoverPos: function(vw) {
       var that = this;
       $('.adentify-container .popover').each(function() {
-         that.changePopoverPos($(this));
+         that.changePopoverPos($(this), vw);
       });
    },
 
@@ -82,8 +88,8 @@ var AdEntify = {
       $('.adentify-container').each(function() {
          that.postAnalytic('view', 'photo', null, $(this).attr('data-photo-id'));
       });
-      if ($(window).width() > 1400)
-         that.changeAllPopoverPos();
+      //if ($(window).width() > 1400)
+      that.changeAllPopoverPos($(window).width());
    }
 };
 

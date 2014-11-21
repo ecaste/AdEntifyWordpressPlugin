@@ -19,6 +19,9 @@
 .select2-drop .row-fluid .span2 {
     width: 20%;
     float: left;
+    padding-right: 5px;
+    box-sizing: border-box;
+    text-align: center;
 }
 .select2-drop .row-fluid .span10 {
     width: 80%;

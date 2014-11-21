@@ -280,7 +280,7 @@ var AdEntifyBO = {
       });
       try {
          var that = this;
-         var photo = JSON.parse(data);
+         var photo = data;
          photo.tags.forEach(function(tag) {
             that.renderTag($('.photo-overlay'), tag);
          });
@@ -311,7 +311,7 @@ var AdEntifyBO = {
             },
             success: function(data) {
                if (typeof data !== 'undefined')
-                  that.openPhotoModal(data.data);
+                  that.openPhotoModal(data);
                else
                   alert('Impossible de recuperer la photo'); // TODO: gestion erreur
                that.removePhotoSelection(true);
@@ -323,21 +323,27 @@ var AdEntifyBO = {
       }
    },
 
-   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl, tagFormField, enableCreateSearchChoice) {
+   setupAutocomplete: function(selector, placeholder, formatResult, formatSelection, searchUrl, getUrl, tagFormField,
+                               enableCreateSearchChoice, extraQueryParams) {
       enableCreateSearchChoice = enableCreateSearchChoice || true;
       tagFormField = tagFormField || [];
+      extraQueryParams = extraQueryParams || [];
+
       var select2Parameters = {
          placeholder: placeholder,
          minimumInputLength: 1,
          ajax: {
             id: function(e) { return typeof e.id !== 'undefined' ? e.id : e.foursquare_id; },
             url: searchUrl,
-               dataType: 'json',
-               quietMillis: 250,
-               data: function (term, page) {
-               return {
+            dataType: 'json',
+            quietMillis: 250,
+            data: function (term, page) {
+               var queryParams = {
                   query: term
                };
+               $.extend(queryParams, extraQueryParams);
+
+               return queryParams;
             },
             results: function (data, page) {
                return { results: (typeof data.data !== 'undefined' ? data.data : data) };
@@ -376,7 +382,10 @@ var AdEntifyBO = {
       }
       $(selector).select2(select2Parameters).on('select2-selecting', function(e) {
          tagFormField.forEach(function(entry) {
-            $(entry.fieldSelector).val(e.choice[entry.propertyName]);
+            if (typeof entry.isSelect2 !== 'undefined' && entry.isSelect2) {
+               $(entry.fieldSelector).select2('data', e.choice[entry.propertyName]);
+            } else
+               $(entry.fieldSelector).val(e.choice[entry.propertyName]);
          });
       });
    },
@@ -397,8 +406,15 @@ var AdEntifyBO = {
             {
                fieldSelector: '#product-url',
                propertyName: 'purchase_url'
+            },
+            {
+               fieldSelector: '#brand-name',
+               propertyName: 'brand',
+               isSelect2: true
             }
-         ]);
+         ], true, {
+            'providers': 'adentify+shopsense'
+         });
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url,
@@ -539,14 +555,10 @@ var AdEntifyBO = {
          }
          else if ((value == 0 || value == '0') && typeof item.createIfNotExists) {
             if (typeof options.properties.extraData === 'undefined')
-               options.properties.extraData = [];
+               options.properties.extraData = {};
 
             var data = $(item.select2Selector).select2('data');
-            var newObject = {};
-            newObject[item.propertyName] = {
-               name: data.name
-            };
-            options.properties.extraData.push(newObject);
+            options.properties.extraData[item.propertyName] = data;
          }
          else {
             options.fail();

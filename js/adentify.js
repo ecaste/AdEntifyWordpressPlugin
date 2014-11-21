@@ -88,7 +88,6 @@ var AdEntify = {
       $('.adentify-container').each(function() {
          that.postAnalytic('view', 'photo', null, $(this).attr('data-photo-id'));
       });
-      //if ($(window).width() > 1400)
       that.changeAllPopoverPos($(window).width());
    }
 };

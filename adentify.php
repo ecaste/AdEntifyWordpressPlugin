@@ -320,7 +320,7 @@ function ad_upload() {
                 $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);
                 wp_send_json_success(array(
-                    'photo' => sprintf($result),
+                    'photo' => json_decode($result),
                     'wp_photo_id' => $attach_id
                 ));
             }
@@ -345,7 +345,9 @@ function ad_tag() {
 add_action( 'wp_ajax_ad_tag', 'ad_tag' );
 
 function ad_get_photo() {
-    wp_send_json_success(sprintf(APIManager::getInstance()->getPhoto($_GET['photo_id'])));
+    @header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+    echo APIManager::getInstance()->getPhoto($_GET['photo_id']);
+    wp_die();
 }
 add_action( 'wp_ajax_ad_get_photo', 'ad_get_photo' );
 

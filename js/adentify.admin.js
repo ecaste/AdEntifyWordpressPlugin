@@ -337,6 +337,7 @@ var AdEntifyBO = {
             url: searchUrl,
             dataType: 'json',
             quietMillis: 250,
+            crossDomain: true,
             data: function (term, page) {
                var queryParams = {
                   query: term
@@ -394,7 +395,8 @@ var AdEntifyBO = {
       var that = this;
       // Setup autocomplete with Select2.js
       this.setupAutocomplete('#brand-name', 'Search for a brand', function(item) { return that.genericFormatResult(item); },
-         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url, adentifyTagsData.adentify_api_brand_get_url);
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url,
+         adentifyTagsData.adentify_api_brand_get_url);
 
       this.setupAutocomplete('#product-name', 'Search for a product', function(item) { return that.genericFormatResult(item, 'medium_url'); },
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url,
@@ -413,7 +415,7 @@ var AdEntifyBO = {
                isSelect2: true
             }
          ], true, {
-            'providers': 'adentify+shopsense'
+            'p': 'adentify+shopsense'
          });
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
@@ -444,9 +446,13 @@ var AdEntifyBO = {
       nameKey = nameKey || 'name';
       var markup = '<div class="row-fluid">' +
          (typeof item[imageKey] !== 'undefined' ? '<div class="span2"><img class="small-logo" src="' + item[imageKey] + '" /></div>' : '');
-
-      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implodeObject(item, nameKey) : item[nameKey]) + '</div>';
-      markup += '</div></div>';
+      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implodeObject(item, nameKey) : item[nameKey]);
+      if (typeof item.product_provider !== 'undefined') {
+         markup += '<span class="providerName">' + item.product_provider.name + '</span>';
+      } else {
+         markup += '<span class="providerName">AdEntify</span>';
+      }
+      markup += '</div><div class="clearfix"></div></div></div>';
 
       return markup;
    },

@@ -214,11 +214,19 @@ class APIManager
      */
     public function getAccessToken()
     {
-        if (!get_option(ADENTIFY_API_ACCESS_TOKEN) || (get_option(ADENTIFY_API_EXPIRES_TIMESTAMP) && get_option(ADENTIFY_API_EXPIRES_TIMESTAMP) < time())) {
+        if (!get_option(ADENTIFY_API_ACCESS_TOKEN) || !$this->isAccesTokenValid()) {
             return false;
         }
 
         return get_option(ADENTIFY_API_ACCESS_TOKEN);
+    }
+
+    public function isAccesTokenValid()
+    {
+        if (get_option(ADENTIFY_API_EXPIRES_TIMESTAMP) && get_option(ADENTIFY_API_EXPIRES_TIMESTAMP) < time())
+            return false;
+        else
+            return true;
     }
 
     /**

@@ -27,7 +27,7 @@
 
 defined('ABSPATH') or die("No script kiddies please!");
 
-define( 'ADENTIFY_URL', 'https://adentify.com/%s');
+define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
 define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
@@ -59,6 +59,10 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/DBManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
+
+if (!APIManager::getInstance()->isAccesTokenValid()) {
+    APIManager::getInstance()->revokeAccessToken();
+}
 
 /**
  * Add a icon to the beginning of every post page.

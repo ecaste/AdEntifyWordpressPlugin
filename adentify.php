@@ -27,7 +27,7 @@
 
 defined('ABSPATH') or die("No script kiddies please!");
 
-define( 'ADENTIFY_URL', 'https://adentify.com/%s');
+define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
 define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
@@ -314,8 +314,9 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->getBody())
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r')))
             {
+                $result = $result->getBody();
                 $photo->setSmallUrl(json_decode($result)->small_url);
                 $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);

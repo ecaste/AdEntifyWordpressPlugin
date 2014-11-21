@@ -321,7 +321,6 @@ class APIManager
                 'config' => $this->config,
                 'cookies' => true,
             ));
-
             return $response->getStatusCode() == 200 ? $response : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             return false;

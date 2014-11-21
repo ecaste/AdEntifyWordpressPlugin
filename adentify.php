@@ -66,25 +66,22 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
  * @uses is_single()
  */
 function my_the_content_filter( $content ) {
-
-    if ( is_single() ) {
-        preg_match('/\[adentify=(.+)\]/i', $content, $matches);
-        if (isset($matches[1])) {
-            $photoId = $matches[1];
-
+    preg_match_all('/\[adentify=([0-9]+)\]/i', $content, $matches);
+    $i = count($matches[1]);
+    if (isset($matches[1])) {
+        foreach($matches[1] as $photoId)
+        {
             $photo = new Photo($photoId);
             $photo->load();
 
-            $content = preg_replace('/\[adentify=(.+)\]/i', $photo->render(), $content);
+            $content = preg_replace(sprintf('/\[adentify=(%s)\]/i', $photoId), $photo->render(true, $i--), $content, 1);
         }
     }
-
-    // Returns the content.
+    $content = '<div class="ad-post-container">'. $content .'</div>';
     return $content;
 }
 add_filter( 'the_content', 'my_the_content_filter', 20 );
 add_filter( 'the_excerpt', 'my_the_content_filter', 20 );
-
 
 function adentify_setting_menu() {
 	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME, 'adentify_plugin_settings' );
@@ -323,7 +320,7 @@ function ad_upload() {
                 $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);
                 wp_send_json_success(array(
-                    'photo' => sprintf($result),
+                    'photo' => json_decode($result),
                     'wp_photo_id' => $attach_id
                 ));
             }
@@ -348,7 +345,9 @@ function ad_tag() {
 add_action( 'wp_ajax_ad_tag', 'ad_tag' );
 
 function ad_get_photo() {
-    wp_send_json_success(sprintf(APIManager::getInstance()->getPhoto($_GET['photo_id'])));
+    @header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+    echo APIManager::getInstance()->getPhoto($_GET['photo_id']);
+    wp_die();
 }
 add_action( 'wp_ajax_ad_get_photo', 'ad_get_photo' );
 

@@ -28,7 +28,7 @@ class Photo
         }
     }
 
-    public function render($renderWithTags = true)
+    public function render($renderWithTags = true, $zIndex = 0)
     {
         return $this->getJson() ? Twig::render('photo.html.twig', array(
             'photoId' => $this->getId(),
@@ -40,6 +40,7 @@ class Photo
             'tagsVisibility' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_VISIBILITY']),
             'renderWithTags' => $renderWithTags,
             'googleMapsAPIKey' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['GOOGLE_MAPS_KEY']),
+            'zIndex' => $zIndex,
         )) : 'Can\'t load this image.';
     }
 

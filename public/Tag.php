@@ -77,30 +77,28 @@ class Tag
         $brand = null;
         $person = null;
         if (array_key_exists('extraData', $postArray)) {
-            foreach($postArray['extraData'] as $key => $entry) {
-                switch ($key) {
-                    case 'venue':
-                        $response = APIManager::getInstance()->postVenue($entry);
-                        if ($response)
-                            $venue = json_decode($response->getBody());
-                        break;
-                    case 'product':
-                        $response = APIManager::getInstance()->postProduct($entry);
-                        if ($response)
-                            $product = json_decode($response->getBody());
-                        break;
-                    case 'brand':
-                        $response = APIManager::getInstance()->postBrand($entry);
-                        if ($response)
-                            $brand = json_decode($response->getBody());
-                        break;
-                    case 'person':
-                        $response = APIManager::getInstance()->postPerson($entry);
-                        if ($response)
-                            $person = json_decode($response->getBody());
-                        break;
+            if (array_key_exists('venue', $postArray['extraData'])) {
+                $response = APIManager::getInstance()->postVenue($postArray['extraData']['venue']);
+                if ($response)
+                    $venue = json_decode($response->getBody());
+            }
+            if (array_key_exists('product', $postArray['extraData'])) {
+                $response = APIManager::getInstance()->postProduct($postArray['extraData']['product']);
+                if ($response) {
+                    $product = json_decode($response->getBody());
                 }
             }
+            if (array_key_exists('brand', $postArray['extraData'])) {
+                $response = APIManager::getInstance()->postBrand($postArray['extraData']['brand']);
+                if ($response)
+                    $brand = json_decode($response->getBody());
+            }
+            if (array_key_exists('person', $postArray['extraData'])) {
+                $response = APIManager::getInstance()->postPerson($postArray['extraData']['person']);
+                if ($response)
+                    $person = json_decode($response->getBody());
+            }
+
         }
 
         $tag = new Tag;
@@ -116,7 +114,12 @@ class Tag
             case 'product':
                 $tag->setProductType((array_key_exists('productType', $postArray) ? $postArray['productType'] : null));
                 $tag->setProduct((array_key_exists('product', $postArray) ? $postArray['product'] : ($product ? $product->id : null)));
-                $tag->setBrand((array_key_exists('brand', $postArray) ? $postArray['brand'] : ($brand ? $brand->id : null)));
+                if ($product && $product->brand)
+                    $tag->setBrand($product->brand->id);
+                else if ($brand)
+                    $tag->setBrand($brand->id);
+                else if (array_key_exists('brand', $postArray))
+                    $tag->setBrand($postArray['brand']);
                 if ($tag->getProduct() && $tag->getBrand())
                     return $tag;
                 break;

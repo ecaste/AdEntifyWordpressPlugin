@@ -99,7 +99,20 @@ class APIManager
 
     public function postBrand($brand)
     {
-        $venue['brand']['_token'] = $this->getCsrfToken('brand_item');
+        $keysToKept = array(
+            'name',
+            'provider_id',
+            'product_provider'
+        );
+        $body = array(
+            'brand' => array()
+        );
+        foreach($keysToKept as $key) {
+            $body['brand'][$key] = is_array($brand[$key]) ? $brand[$key]['id'] : $brand[$key];
+        }
+
+        $body['brand']['_token'] = $this->getCsrfToken('brand_item');
+
         return $this->postAction('brand', $brand);
     }
 
@@ -111,8 +124,21 @@ class APIManager
 
     public function postProduct($product)
     {
-        $product['product']['_token'] = $this->getCsrfToken('product_item');
-        return $this->postAction('product', $product);
+        $keysToKept = array(
+            'name',
+            'product_provider_id',
+            'product_provider'
+        );
+        $body = array(
+            'product' => array()
+        );
+        foreach($keysToKept as $key) {
+            $body['product'][$key] = is_array($product[$key]) ? $product[$key]['id'] : $product[$key];
+        }
+
+        $body['product']['_token'] = $this->getCsrfToken('product_item');
+
+        return $this->postAction('product', $body);
     }
 
     public function postAnalytic($analytic)

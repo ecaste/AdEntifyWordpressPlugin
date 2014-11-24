@@ -415,7 +415,7 @@ var AdEntifyBO = {
                isSelect2: true
             }
          ], true, {
-            'providers': 'adentify+shopsense'
+            'providers': adentifyTagsData.product_providers
          });
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },

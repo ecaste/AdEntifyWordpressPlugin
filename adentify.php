@@ -189,7 +189,7 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_analytics_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'analytics'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
-        'product_providers' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['PRODUCT_PROVIDERS'])
+        'product_providers' => implode('+', get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['PRODUCT_PROVIDERS']))
     ));
     wp_enqueue_script( 'adentify-admin-js' );
 

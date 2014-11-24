@@ -149,6 +149,11 @@ class APIManager
         );
     }
 
+    public function getProductProviders()
+    {
+        return $this->getAction(sprintf('productproviders/current/user'));
+    }
+
     /**
      * Delete a tag by ID
      *

@@ -103,6 +103,25 @@
                     </fieldset>
                 </td>
             </tr>
+            <tr>
+                <th scope="row">Products Providers</th>
+                <td>
+                    <label for="product-providers">
+                        <select multiple="multiple" name="productsProviders[]" id="product-providers">
+                            <optgroup label="Products providers">
+                                {% for productProvider in providers_list %}
+                                    <option {% if (productProvider == 'adentify' and productsProvidersVal is empty)
+                                                or productProvider in productsProvidersVal%}
+                                                selected="selected"
+                                            {% endif %}
+                                            value={{ productProvider }}>{{ productProvider }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                        Choose your products providers
+                    </label>
+                </td>
+            </tr>
         </table>
         <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save the modifications"  /></p>
     </form>

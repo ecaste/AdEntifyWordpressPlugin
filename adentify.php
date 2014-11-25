@@ -35,10 +35,11 @@ define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
-    'USE_DATABASE' => 'adentifyDatabase',
+//    'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility',
     'TAGS_SHAPE' => 'tagShape',
-    'GOOGLE_MAPS_KEY' => 'googleMapsKey'
+    'GOOGLE_MAPS_KEY' => 'googleMapsKey',
+    'PRODUCT_PROVIDERS' => 'productsProviders'
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
@@ -108,21 +109,23 @@ function adentify_plugin_settings() {
         $settings[$key] = get_option($key);
 
     if (isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y') {
-	foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
+	    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
             $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
             update_option($key, $settings[$key]);
         }
+
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
 
         wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
             'admin_ajax_url' => ADENTIFY_ADMIN_URL,
-            'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+            'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
         ));
     }
-    foreach($settings as $key => $value) {
+    foreach($settings as $key => $value)
         $parameters[$key.'Val'] = $value;
-        $parameters[$key] = $key;
-    }
+
+    foreach(json_decode((APIManager::getInstance()->getProductProviders())) as $provider)
+        $parameters['providers_list'][] = $provider->product_providers->provider_key;
 
     echo Twig::render('adentify.settings.html.twig', $parameters);
 }
@@ -189,7 +192,8 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_csrf_token' => sprintf(ADENTIFY_API_ROOT_URL, 'csrftokens/'),
         'adentify_api_analytics_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'analytics'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
-        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
+        'product_providers' => implode('+', get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['PRODUCT_PROVIDERS']))
     ));
     wp_enqueue_script( 'adentify-admin-js' );
 
@@ -318,8 +322,9 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->getBody())
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r')))
             {
+                $result = $result->getBody();
                 $photo->setSmallUrl(json_decode($result)->small_url);
                 $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);

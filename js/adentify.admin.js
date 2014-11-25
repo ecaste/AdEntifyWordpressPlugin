@@ -84,7 +84,7 @@ var AdEntifyBO = {
          success: function (data) {
             that.openPhotoModal(data.data.photo);
             that.appendPhotoToLibrary(data.data.photo, data.data.wp_photo_id);
-            that.photoIdSelected = JSON.parse(data.data.photo).id;
+            that.photoIdSelected = data.data.photo.id;
          },
           complete: function() {
              that.stopLoading('uploading-message');
@@ -106,23 +106,26 @@ var AdEntifyBO = {
 
    clickOnDeletePhoto: function(e) {
       var that = this;
-      that.startLoading('tag-from-library');
-      $.ajax({
-         type: 'GET',
-         url: adentifyTagsData.admin_ajax_url,
-         data: {
-            'action': 'ad_delete_photo',
-            'wp_photo_id': that.wpPhotoIdSelected,
-            'photo_id': that.photoIdSelected
-         },
-         complete: function() {
-            console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
-            console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
-            $('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
-            that.removePhotoSelection(false);
-            that.stopLoading('tag-from-library');
-         }
-      });
+      if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected)
+      {
+         that.startLoading('tag-from-library');
+         $.ajax({
+            type: 'GET',
+            url: adentifyTagsData.admin_ajax_url,
+            data: {
+               'action': 'ad_delete_photo',
+               'wp_photo_id': that.wpPhotoIdSelected,
+               'photo_id': that.photoIdSelected
+            },
+            complete: function() {
+               console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
+               console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
+               $('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
+               that.removePhotoSelection(false);
+               that.stopLoading('tag-from-library');
+            }
+         });
+      }
    },
 
    /*
@@ -251,7 +254,6 @@ var AdEntifyBO = {
    appendPhotoToLibrary: function(photo, wp_photo_id) {
       var that = this;
       try {
-         var photo = JSON.parse(photo);
          that.wpPhotoIdSelected = wp_photo_id;
          var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
          var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
@@ -299,8 +301,8 @@ var AdEntifyBO = {
 
    getPhoto: function(e) {
       var that = this;
-      that.startLoading('tag-from-library');
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
+         that.startLoading('tag-from-library');
          $.ajax({
             type: 'GET',
             url: adentifyTagsData.admin_ajax_url,
@@ -415,8 +417,7 @@ var AdEntifyBO = {
                isSelect2: true
             }
          ], true, {
-            'p': 'adentify+shopsense'
-         });
+            'providers': adentifyTagsData.product_providers});
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url,

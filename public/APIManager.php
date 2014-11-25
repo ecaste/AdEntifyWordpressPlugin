@@ -149,6 +149,11 @@ class APIManager
         );
     }
 
+    public function getProductProviders()
+    {
+        return $this->getAction(sprintf('productproviders/current/user'));
+    }
+
     /**
      * Delete a tag by ID
      *
@@ -329,7 +334,6 @@ class APIManager
                 'config' => $this->config,
                 'cookies' => true,
             ));
-
             return $response->getStatusCode() == 200 ? $response : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             return false;

@@ -13,8 +13,9 @@
             {% endif %}
 
             <div class="ad-tag-info">
-                {% if model.link %}
-                    <span class="title"><a href="{{ model.link }}" target="_blank">{{ model.title }}</a></span>
+                {% set link = model.purchase_url ? model.purchase_url : (model.link ? model.link : null) %}
+                {% if link %}
+                    <span class="title"><a href="{{ link }}" target="_blank">{{ model.title }}</a></span>
                 {% else %}
                     <span class="title">{{ model.title }}</span>
                 {% endif %}

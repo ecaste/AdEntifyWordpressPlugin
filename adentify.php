@@ -178,6 +178,10 @@ function wptuts_admin_styles_with_the_lot() {
 
     // AdEntify
     wp_register_script( 'adentify-admin-js', plugins_url( '/js/adentify.admin.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    $providers = get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['PRODUCT_PROVIDERS']);
+    if (is_array($providers) && count($providers)) {
+        $providers = implode('+', $providers);
+    }
     wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
@@ -193,7 +197,7 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_analytics_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'analytics'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
         'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
-        'product_providers' => implode('+', get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['PRODUCT_PROVIDERS']))
+        'product_providers' => $providers
     ));
     wp_enqueue_script( 'adentify-admin-js' );
 

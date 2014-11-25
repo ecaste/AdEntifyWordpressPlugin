@@ -40,8 +40,7 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'TAGS_SHAPE' => 'tagShape',
     'GOOGLE_MAPS_KEY' => 'googleMapsKey',
     'PRODUCT_PROVIDERS' => 'productsProviders',
-    'SHOPSENSE_API_KEY' => 'shopsenseProviderKey',
-    'BABA_API_KEY' => 'babaProviderKey'
+    'PRODUCT_PROVIDERS_KEY' => array('shopsenseProviderKey', 'babaProviderKey')
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
@@ -108,21 +107,27 @@ function adentify_plugin_settings() {
 
     //fill the settings array with wordpress options if they are already set
     foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
-        if ($pos = strpos($key, 'ProviderKey'))
-            $settings['productProvidersKey'][substr($key, 0, $pos)] = get_option($key);
-        else
+        if (is_string($key))
             $settings[$key.'Val'] = get_option($key);
+        else {
+            foreach ($key as $providerKey)
+            $settings['productProvidersKey'][$providerKey.'Val'] = get_option($providerKey);
+        }
     }
 
     if ($_POST) {
         //update the settings array & the wordpress options
 	    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
-            $optionValue = (isset($_POST[$key])) ? $_POST[$key] : null;
-            if (is_string($_POST[$key]) && $pos = strpos($key, 'ProviderKey'))
-                $settings['productProvidersKey'][substr($key, 0, $pos)] = $optionValue;
-            else
+            if (is_string($key)) {
                 $settings[$key.'Val'] = (isset($_POST[$key])) ? $_POST[$key] : null;
-            update_option($key, $optionValue);
+                update_option($key, (isset($_POST[$key])) ? $_POST[$key] : null);
+            }
+            else {
+                foreach ($key as $providerKey) {
+                    $settings['productProvidersKey'][$providerKey.'Val'] = (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null;
+                    update_option($providerKey, (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null);
+                }
+            }
         }
 
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';

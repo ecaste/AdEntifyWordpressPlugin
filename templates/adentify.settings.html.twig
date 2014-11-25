@@ -130,7 +130,7 @@
                             {% if(productProvider != 'adentify') %}
                                 <label for="{{ productProvider }}ProviderKey">
                                     <input name="{{ productProvider }}ProviderKey" type="text" id="{{ productProvider }}ProviderKey"
-                                        value="{% if(productProvidersKey[productProvider]) %}{{ productProvidersKey[productProvider] }}{% endif %}"/>
+                                        value="{% if(productProvidersKey[productProvider ~ 'ProviderKeyVal']) %}{{ productProvidersKey[productProvider ~ 'ProviderKeyVal'] }}{% endif %}"/>
                                     {{ productProvider|capitalize }} key (optional)
                                 </label>
                                 <br>

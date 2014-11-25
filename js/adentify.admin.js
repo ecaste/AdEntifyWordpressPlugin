@@ -416,8 +416,7 @@ var AdEntifyBO = {
                propertyName: 'brand',
                isSelect2: true
             }
-         ], true, {
-            'providers': adentifyTagsData.product_providers});
+         ], true, { 'p': adentifyTagsData.product_providers });
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url,

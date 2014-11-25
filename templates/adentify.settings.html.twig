@@ -2,7 +2,6 @@
     <h2>Adentify settings</h2>
 
     <form method="post" action="" novalidate="novalidate">
-        <input type="hidden" name="{{ checkPostHidden }}" value="Y">
 
         <table class="form-table">
             <tr>
@@ -98,7 +97,7 @@
                             <span>Google maps API key</span>
                         </legend>
                         <label for="googleMapsKey">
-                            <input name="googleMapsKey" type="text" id="googleMapsKey" value="{% if(googleMapsKeyVal) %} {{ googleMapsKeyVal }} {% endif %}"/> Enter your google maps API key
+                            <input name="googleMapsKey" type="text" id="googleMapsKey" value="{% if(googleMapsKeyVal) %}{{ googleMapsKeyVal }}{% endif %}"/> Enter your google maps API key
                         </label>
                     </fieldset>
                 </td>
@@ -108,18 +107,37 @@
                 <td>
                     <label for="product-providers">
                         <select multiple="multiple" name="productsProviders[]" id="product-providers">
-                            <optgroup label="Products providers">
-                                {% for productProvider in providers_list %}
-                                    <option {% if (productProvider == 'adentify' and productsProvidersVal is empty)
-                                                or productProvider in productsProvidersVal%}
-                                                selected="selected"
-                                            {% endif %}
-                                            value={{ productProvider }}>{{ productProvider }}</option>
-                                {% endfor %}
-                            </optgroup>
+                            {% for productProvider in providers_list %}
+                                <option {% if (productProvider == 'adentify' and productsProvidersVal is empty)
+                                            or productProvider in productsProvidersVal%}
+                                            selected="selected"
+                                        {% endif %}
+                                        value={{ productProvider }}>{{ productProvider }}</option>
+                            {% endfor %}
                         </select>
                         Choose your products providers
                     </label>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Products providers API key</th>
+                <td>
+                    <fieldset>
+                        <legend class="screen-reader-text">
+                            <span>Products providers API key</span>
+                        </legend>
+                        {% for productProvider in providers_list %}
+                            {% if(productProvider != 'adentify') %}
+                                <label for="{{ productProvider }}ProviderKey">
+                                    <input name="{{ productProvider }}ProviderKey" type="text" id="{{ productProvider }}ProviderKey"
+                                        value="{% if(productProvidersKey[productProvider]) %}{{ productProvidersKey[productProvider] }}{% endif %}"/>
+                                    {{ productProvider|capitalize }} key (optional)
+                                </label>
+                                <br>
+                            {% endif %}
+                        {% endfor %}
+
+                    </fieldset>
                 </td>
             </tr>
         </table>

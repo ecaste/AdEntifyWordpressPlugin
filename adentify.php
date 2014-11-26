@@ -100,10 +100,14 @@ function adentify_plugin_settings() {
     }
 
     $settings = array();
+    $productProvidersId = array();
 
     //fill the settings array with the user's providers
     foreach(json_decode((APIManager::getInstance()->getProductProviders())) as $provider)
+    {
         $settings['providers_list'][] = $provider->product_providers->provider_key;
+        $productProvidersId[$provider->product_providers->provider_key] = $provider->product_providers->id;
+    }
 
     //fill the settings array with wordpress options if they are already set
     foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
@@ -126,6 +130,7 @@ function adentify_plugin_settings() {
                 foreach ($key as $providerKey) {
                     $settings['productProvidersKey'][$providerKey.'Val'] = (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null;
                     update_option($providerKey, (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null);
+                    APIManager::getInstance()->putUserProductProvider($productProvidersId[substr($providerKey, 0, strpos($providerKey, 'ProviderKey'))], $_POST[$providerKey]);
                 }
             }
         }

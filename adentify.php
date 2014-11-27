@@ -39,7 +39,8 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'TAGS_VISIBILITY' => 'tagsVisibility',
     'TAGS_SHAPE' => 'tagShape',
     'GOOGLE_MAPS_KEY' => 'googleMapsKey',
-    'PRODUCT_PROVIDERS' => 'productsProviders'
+    'PRODUCT_PROVIDERS' => 'productsProviders',
+    'PRODUCT_PROVIDERS_KEY' => array('shopsenseProviderKey', 'babaProviderKey')
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
@@ -99,19 +100,43 @@ function adentify_plugin_settings() {
 	}
 
     if (isset($_GET['code'])) {
-        APIManager::getInstance()-> getAccessTokenWithAuthorizationCode($_GET['code']);
+        APIManager::getInstance()->getAccessTokenWithAuthorizationCode($_GET['code']);
     }
 
-    $checkPostHidden = 'checkPostHidden';
     $settings = array();
-    $parameters = array('checkPostHidden' => 'checkPostHidden');
-    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
-        $settings[$key] = get_option($key);
+    $productProvidersId = array();
 
-    if (isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y') {
+    //fill the settings array with the user's providers
+    foreach(json_decode((APIManager::getInstance()->getProductProviders())) as $provider)
+    {
+        $settings['providers_list'][] = $provider->product_providers->provider_key;
+        $productProvidersId[$provider->product_providers->provider_key] = $provider->product_providers->id;
+    }
+
+    //fill the settings array with wordpress options if they are already set
+    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
+        if (is_string($key))
+            $settings[$key.'Val'] = get_option($key);
+        else {
+            foreach ($key as $providerKey)
+            $settings['productProvidersKey'][$providerKey.'Val'] = get_option($providerKey);
+        }
+    }
+
+    if ($_POST) {
+        //update the settings array & the wordpress options
 	    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
-            $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
-            update_option($key, $settings[$key]);
+            if (is_string($key)) {
+                $settings[$key.'Val'] = (isset($_POST[$key])) ? $_POST[$key] : null;
+                update_option($key, (isset($_POST[$key])) ? $_POST[$key] : null);
+            }
+            else {
+                foreach ($key as $providerKey) {
+                    $settings['productProvidersKey'][$providerKey.'Val'] = (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null;
+                    update_option($providerKey, (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null);
+                    APIManager::getInstance()->putUserProductProvider($productProvidersId[substr($providerKey, 0, strpos($providerKey, 'ProviderKey'))], $_POST[$providerKey]);
+                }
+            }
         }
 
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
@@ -121,13 +146,8 @@ function adentify_plugin_settings() {
             'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
         ));
     }
-    foreach($settings as $key => $value)
-        $parameters[$key.'Val'] = $value;
 
-    foreach(json_decode((APIManager::getInstance()->getProductProviders())) as $provider)
-        $parameters['providers_list'][] = $provider->product_providers->provider_key;
-
-    echo Twig::render('adentify.settings.html.twig', $parameters);
+    echo Twig::render('adentify.settings.html.twig', $settings);
 }
 
 function adentify_button($editor_id = 'content') {

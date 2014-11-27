@@ -154,6 +154,15 @@ class APIManager
         return $this->getAction(sprintf('productproviders/current/user'));
     }
 
+    public function putUserProductProvider($id, $apiKey)
+    {
+        return $this->putAction('productproviders/'.$id, array(
+            'userProductProvider' => array(
+                'apiKey' => $apiKey,
+                'productProviders' => $id,
+            )));
+    }
+
     /**
      * Delete a tag by ID
      *
@@ -329,6 +338,30 @@ class APIManager
     {
         try {
             $response = $this->client->post(sprintf($rootUrl, $url), array(
+                'body' => $body,
+                'headers' => $this->getAuthorizationHeader(),
+                'config' => $this->config,
+                'cookies' => true,
+            ));
+            return $response->getStatusCode() == 200 ? $response : false;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * PUT data to the API
+     *
+     * @param $url
+     * @param $body
+     * @param $headers
+     * @param $rootUrl
+     * @return bool
+     */
+    private function putAction($url, $body = array(), $headers = array(), $rootUrl = ADENTIFY_API_ROOT_URL)
+    {
+        try {
+            $response = $this->client->put(sprintf($rootUrl, $url), array(
                 'body' => $body,
                 'headers' => $this->getAuthorizationHeader(),
                 'config' => $this->config,

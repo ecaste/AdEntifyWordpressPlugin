@@ -64,13 +64,16 @@ var AdEntify = {
 
       // When all deferreds are done (all images loaded) do some stuff
       $.when.apply(null, deferreds).done(function() {
+         $('.tags').css('display', 'block');
          that.css('display', 'block');
          if (vw > 1400)
             that.css({'margin-left': - that.find('.popover-inner').outerWidth() / 2}).css('display', 'none');
          else {
-            marginLeft = ($('.tags').outerWidth(true) / 2) - (that.parent().position().left - 15 + that.find('.popover-inner').outerWidth(true) / 2);
-            that.css({'margin-left': marginLeft + 'px'}).css('display', 'none');
+            var popoverInnerWidth = that.find('.popover-inner').outerWidth(true);
+            var marginLeft = ($('.tags').outerWidth(true) / 2) - (that.parent().position().left - 15 + that.find('.popover-inner').outerWidth(true) / 2);
+            that.css({'margin-left': marginLeft + 'px', 'width': popoverInnerWidth + 'px'}).css('display', 'none');
          }
+         $('.tags').css('display', 'none');
       });
    },
 

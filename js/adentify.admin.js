@@ -182,13 +182,12 @@ var AdEntifyBO = {
       new TINY.editor.edit('editor',{
          id:'product-description', // (required) ID of the textarea
          width:340, // (optional) width of the editor
-         height:100, // (optional) heightof the editor
+         height:200, // (optional) heightof the editor
          cssclass:'tinyeditor', // (optional) CSS class of the editor
          controlclass:'tinyeditor-control', // (optional) CSS class of the buttons
          rowclass:'tinyeditor-header', // (optional) CSS class of the button rows
          dividerclass:'tinyeditor-divider', // (optional) CSS class of the button diviers
-         controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|', 'orderedlist', 'unorderedlist',
-            'n' ,'outdent' ,'indent', '|', 'leftalign', 'centeralign', 'rightalign', 'blockjustify', '|', 'unformat', '|', 'undo', 'redo'],
+         controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'orderedlist', 'unorderedlist'],
          //footer:true, // (optional) show the footer
          fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
          //xhtml:true, // (optional) generate XHTML vs HTML
@@ -227,7 +226,7 @@ var AdEntifyBO = {
       });
       $('#adentify-tag-modal').hide();
       this.removePhotoSelection(false);
-      $('.ad-tag-frame-content input').val('');
+      this.resetForms();
       this.removeTempTagsFromDOM($('.photo-overlay'));
       this.removeTagsFromDOM($('.photo-overlay'));
    },
@@ -704,6 +703,7 @@ var AdEntifyBO = {
          $(element).val('');
       });
       $('#product-name, #venue-name, #brand-name, #person-name').select2('data', null);
+      $('.tinyeditor iframe').contents().find('#product-description-editor').html('');
    },
 
    postTag: function(tag) {

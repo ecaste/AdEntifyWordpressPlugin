@@ -55,7 +55,8 @@ var AdEntify = {
 
       // When image is loaded, resolve the next deferred
       $(that).find('img').load(function() {
-         deferreds[i].resolve();
+         if (deferreds.length != 0)
+            deferreds[i].resolve();
          i++;
       }).each(function() {
          if(this.complete)
@@ -64,7 +65,8 @@ var AdEntify = {
 
       // When all deferreds are done (all images loaded) do some stuff
       $.when.apply(null, deferreds).done(function() {
-         $('.tags').css('display', 'block');
+         if (that.parentsUntil('.ad-post-container', '.adentify-container').attr('data-tags-visibility') == 'visible-on-hover')
+            $('.tags').css('display', 'block');
          that.css('display', 'block');
          if (vw > 1400)
             that.css({'margin-left': - that.find('.popover-inner').outerWidth() / 2}).css('display', 'none');
@@ -73,7 +75,8 @@ var AdEntify = {
             var marginLeft = ($('.tags').outerWidth(true) / 2) - (that.parent().position().left - 15 + that.find('.popover-inner').outerWidth(true) / 2);
             that.css({'margin-left': marginLeft + 'px', 'width': popoverInnerWidth + 'px'}).css('display', 'none');
          }
-         $('.tags').css('display', 'none');
+         if (that.parentsUntil('.ad-post-container', '.adentify-container').attr('data-tags-visibility') == 'visible-on-hover')
+            $('.tags').css('display', 'none');
       });
    },
 

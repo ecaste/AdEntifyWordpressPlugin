@@ -24,6 +24,7 @@ var AdEntifyBO = {
       else
          $('#adentify-upload-modal').show();
 
+      $('body').addClass('ad-modal-open');
       $('#__wp-uploader-id-2').focus();
    },
 
@@ -177,6 +178,29 @@ var AdEntifyBO = {
    /*
     * Other methods
     */
+   initTinyEditor: function() {
+      new TINY.editor.edit('editor',{
+         id:'product-description', // (required) ID of the textarea
+         width:340, // (optional) width of the editor
+         height:200, // (optional) heightof the editor
+         cssclass:'tinyeditor', // (optional) CSS class of the editor
+         controlclass:'tinyeditor-control', // (optional) CSS class of the buttons
+         rowclass:'tinyeditor-header', // (optional) CSS class of the button rows
+         dividerclass:'tinyeditor-divider', // (optional) CSS class of the button diviers
+         controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'orderedlist', 'unorderedlist'],
+         //footer:true, // (optional) show the footer
+         fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
+         //xhtml:true, // (optional) generate XHTML vs HTML
+         //cssfile:'style.css', // (optional) attach an external CSS file to the editor
+         //content:'<p>test</p>', // (optional) set the starting content else it will default to the textarea content
+         css:'body{background-color:white}', // (optional) attach CSS to the editor
+         bodyid:'product-description-editor', // (optional) attach an ID to the editor body
+         //footerclass:'tefooter', // (optional) CSS class of the footer
+         //toggle:{text:'source',activetext:'wysiwyg',cssclass:'toggle'}, // (optional) toggle to markup view options
+         //resize:{cssclass:'resize'} // (optional) display options for the editor resize
+      });
+   },
+
    removePhotoSelection: function(needId) {
       $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
       if (needId === false) {
@@ -192,15 +216,17 @@ var AdEntifyBO = {
       $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
       $('#ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
       this.stopLoading('uploading-message');
+      this.initTinyEditor();
    },
 
    closeModals: function() {
+      $('body').removeClass("ad-modal-open");
       $('#adentify-upload-modal').hide(0, function() {
          $('#ad-uploader-content').show();
       });
       $('#adentify-tag-modal').hide();
       this.removePhotoSelection(false);
-      $('.ad-tag-frame-content input').val('');
+      this.resetForms();
       this.removeTempTagsFromDOM($('.photo-overlay'));
       this.removeTagsFromDOM($('.photo-overlay'));
    },
@@ -389,6 +415,8 @@ var AdEntifyBO = {
                $(entry.fieldSelector).select2('data', e.choice[entry.propertyName]);
             } else
                $(entry.fieldSelector).val(e.choice[entry.propertyName]);
+            if ($(entry.fieldSelector).attr('id') == 'product-description')
+               $('.tinyeditor iframe').contents().find('#product-description-editor').html(e.choice[entry.propertyName]);
          });
       });
    },
@@ -675,6 +703,7 @@ var AdEntifyBO = {
          $(element).val('');
       });
       $('#product-name, #venue-name, #brand-name, #person-name').select2('data', null);
+      $('.tinyeditor iframe').contents().find('#product-description-editor').html('');
    },
 
    postTag: function(tag) {

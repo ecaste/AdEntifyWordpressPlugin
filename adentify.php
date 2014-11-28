@@ -40,7 +40,6 @@ define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'TAGS_SHAPE' => 'tagShape',
     'GOOGLE_MAPS_KEY' => 'googleMapsKey',
     'PRODUCT_PROVIDERS' => 'productsProviders',
-    'PRODUCT_PROVIDERS_KEY' => array('shopsenseProviderKey', 'babaProviderKey')
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
@@ -107,31 +106,30 @@ function adentify_plugin_settings() {
     $productProvidersId = array();
 
     //fill the settings array with the user's providers
-    foreach(json_decode((APIManager::getInstance()->getProductProviders())) as $provider)
+    $productProviders = APIManager::getInstance()->getProductProviders();
+    if (!empty($productProviders))
     {
-        $settings['providers_list'][] = $provider->product_providers->provider_key;
-        $productProvidersId[$provider->product_providers->provider_key] = $provider->product_providers->id;
+        foreach(json_decode($productProviders) as $provider)
+        {
+            $providerName = $provider->product_providers->provider_key;
+            $settings['providers_list'][] = $providerName;
+            $productProvidersId[$providerName] = $provider->product_providers->id;
+            $settings['productProvidersKey'][$providerName.'ProviderKeyVal'] = get_option($providerName.'ProviderKey');
+        }
     }
 
     //fill the settings array with wordpress options if they are already set
-    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
-        if (is_string($key))
-            $settings[$key.'Val'] = get_option($key);
-        else {
-            foreach ($key as $providerKey)
-            $settings['productProvidersKey'][$providerKey.'Val'] = get_option($providerKey);
-        }
-    }
+    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
+        $settings[$key.'Val'] = get_option($key);
 
     if ($_POST) {
         //update the settings array & the wordpress options
 	    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
-            if (is_string($key)) {
-                $settings[$key.'Val'] = (isset($_POST[$key])) ? $_POST[$key] : null;
-                update_option($key, (isset($_POST[$key])) ? $_POST[$key] : null);
-            }
-            else {
-                foreach ($key as $providerKey) {
+            $settings[$key.'Val'] = (isset($_POST[$key])) ? $_POST[$key] : null;
+            update_option($key, (isset($_POST[$key])) ? $_POST[$key] : null);
+            foreach (json_decode($productProviders) as $provider) {
+                $providerKey = $provider->product_providers->provider_key.'ProviderKey';
+                if ($providerKey != 'adentifyProviderKey') {
                     $settings['productProvidersKey'][$providerKey.'Val'] = (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null;
                     update_option($providerKey, (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null);
                     APIManager::getInstance()->putUserProductProvider($productProvidersId[substr($providerKey, 0, strpos($providerKey, 'ProviderKey'))], $_POST[$providerKey]);
@@ -226,6 +224,11 @@ function wptuts_admin_styles_with_the_lot() {
     wp_enqueue_style( 'adentify-select2-style' );
     wp_register_script( 'adentify-select2-js', plugins_url( '/js/vendor/select2/select2.min.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_enqueue_script( 'adentify-select2-js' );
+    // tinyeditor
+    wp_register_style( 'adentify-tinyeditor-style', plugins_url( '/js/vendor/tinyeditor/tinyeditor.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+    wp_enqueue_style( 'adentify-tinyeditor-style' );
+    wp_register_script( 'adentify-tinyeditor-js', plugins_url( '/js/vendor/tinyeditor/tiny.editor.packed.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-tinyeditor-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );

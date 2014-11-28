@@ -24,6 +24,7 @@ var AdEntifyBO = {
       else
          $('#adentify-upload-modal').show();
 
+      $('body').addClass('ad-modal-open');
       $('#__wp-uploader-id-2').focus();
    },
 
@@ -220,6 +221,7 @@ var AdEntifyBO = {
    },
 
    closeModals: function() {
+      $('body').removeClass("ad-modal-open");
       $('#adentify-upload-modal').hide(0, function() {
          $('#ad-uploader-content').show();
       });

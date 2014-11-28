@@ -224,6 +224,11 @@ function wptuts_admin_styles_with_the_lot() {
     wp_enqueue_style( 'adentify-select2-style' );
     wp_register_script( 'adentify-select2-js', plugins_url( '/js/vendor/select2/select2.min.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_enqueue_script( 'adentify-select2-js' );
+    // tinyeditor
+    wp_register_style( 'adentify-tinyeditor-style', plugins_url( '/js/vendor/tinyeditor/tinyeditor.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+    wp_enqueue_style( 'adentify-tinyeditor-style' );
+    wp_register_script( 'adentify-tinyeditor-js', plugins_url( '/js/vendor/tinyeditor/tiny.editor.packed.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-tinyeditor-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );

@@ -391,6 +391,7 @@ function ad_analytics() {
     echo APIManager::getInstance()->postAnalytic($_POST['analytic']);
 }
 add_action( 'wp_ajax_nopriv_ad_analytics', 'ad_analytics');
+add_action( 'wp_ajax_ad_analytics', 'ad_analytics');
 
 function ad_admin_notice() {
     if (!APIManager::getInstance()->getAccessToken() && !array_key_exists('code', $_GET))

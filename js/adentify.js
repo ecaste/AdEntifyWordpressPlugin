@@ -16,10 +16,10 @@ var AdEntify = {
          that.postAnalytic('hover', 'photo', null, $(this).attr('data-photo-id'));
       }, function() {});
       $('.adentify-container .tag').hover(function() {
-         that.postAnalytic('hover', 'tag', $(this).attr('data-tag-id'), null);
+         that.postAnalytic('hover', 'tag', $(this).attr('data-tag-id'), $(this).parentsUntil('.ad-post-container', '.adentify-container').attr('data-photo-id'));
       }, function() {});
       $('.adentify-container .tag a').click(function() {
-         that.postAnalytic('click', 'tag', $(this).attr('data-tag-id'), null);
+         that.postAnalytic('click', 'tag', $(this).parentsUntil('li', '.tag').attr('data-tag-id'), $(this).parentsUntil('.ad-post-container', '.adentify-container').attr('data-photo-id'));
       });
    },
 
@@ -31,8 +31,8 @@ var AdEntify = {
       };
       if (tag)
          analytic.tag = tag;
-      if (photo)
-         analytic.photo = photo;
+      //if (photo)
+      analytic.photo = photo;
 
       $.ajax({
          type: 'POST',

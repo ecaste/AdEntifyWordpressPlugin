@@ -19,11 +19,14 @@ var AdEntify = {
          that.postAnalytic('hover', 'tag', $(this).attr('data-tag-id'), null);
       }, function() {});
       $('.adentify-container .tag a').click(function() {
-         that.postAnalytic('click', 'tag', $(this).attr('data-tag-id'), null);
+         var $tag = $(this).parents('.tag');
+         if ($tag.length) {
+            that.postAnalytic('click', 'tag', $tag.attr('data-tag-id'), null, $(this).attr('href'));
+         }
       });
    },
 
-   postAnalytic: function(action, element, tag, photo) {
+   postAnalytic: function(action, element, tag, photo, link) {
       var analytic = {
          'platform': 'wordpress',
          'element': element,
@@ -33,6 +36,8 @@ var AdEntify = {
          analytic.tag = tag;
       if (photo)
          analytic.photo = photo;
+      if (link)
+         analytic.link = link;
 
       $.ajax({
          type: 'POST',

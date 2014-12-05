@@ -16,14 +16,17 @@ var AdEntify = {
          that.postAnalytic('hover', 'photo', null, $(this).attr('data-photo-id'));
       }, function() {});
       $('.adentify-container .tag').hover(function() {
-         that.postAnalytic('hover', 'tag', $(this).attr('data-tag-id'), $(this).parentsUntil('.ad-post-container', '.adentify-container').attr('data-photo-id'));
+         that.postAnalytic('hover', 'tag', $(this).attr('data-tag-id'), null);
       }, function() {});
       $('.adentify-container .tag a').click(function() {
-         that.postAnalytic('click', 'tag', $(this).parentsUntil('li', '.tag').attr('data-tag-id'), $(this).parentsUntil('.ad-post-container', '.adentify-container').attr('data-photo-id'));
+         var $tag = $(this).parents('.tag');
+         if ($tag.length) {
+            that.postAnalytic('click', 'tag', $tag.attr('data-tag-id'), null, $(this).attr('href'));
+         }
       });
    },
 
-   postAnalytic: function(action, element, tag, photo) {
+   postAnalytic: function(action, element, tag, photo, link) {
       var analytic = {
          'platform': 'wordpress',
          'element': element,
@@ -31,8 +34,10 @@ var AdEntify = {
       };
       if (tag)
          analytic.tag = tag;
-      //if (photo)
-      analytic.photo = photo;
+      if (photo)
+         analytic.photo = photo;
+      if (link)
+         analytic.link = link;
 
       $.ajax({
          type: 'POST',

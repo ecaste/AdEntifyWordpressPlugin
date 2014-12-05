@@ -30,7 +30,7 @@
                 {% if model.brand is defined and model.brand %}
                     <div class="brand">
                         {% if model.brand.link %}
-                        <a href="{{ model.brand.link }}" rel="nofollow">
+                        <a href="{{ model.brand.link }}" rel="nofollow" target="_blank">
                         {% endif %}
                             {% if model.brand.small_logo_url is not defined %}
                                 {{ model.brand.name }}

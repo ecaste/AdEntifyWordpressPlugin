@@ -12,12 +12,28 @@ var AdEntify = {
 
    setupEventHandlers: function() {
       var that = this;
+      var photoEnterTime = {};
+      var tagEnterTime = {};
       $('.adentify-container').hover(function() {
+         photoEnterTime[$(this).attr('data-photo-id')] = Date.now();
          that.postAnalytic('hover', 'photo', null, $(this).attr('data-photo-id'));
-      }, function() {});
+      }, function() {
+         if (photoEnterTime[$(this).attr('data-photo-id')]) {
+            var interactionTime = Date.now() - photoEnterTime[$(this).attr('data-photo-id')];
+            if (interactionTime > 200)
+               that.postAnalytic('interaction', 'photo', null, $(this).attr('data-photo-id'), null, interactionTime)
+         }
+      });
       $('.adentify-container .tag').hover(function() {
+         tagEnterTime[$(this).attr('data-tag-id')] = Date.now();
          that.postAnalytic('hover', 'tag', $(this).attr('data-tag-id'), null);
-      }, function() {});
+      }, function() {
+         if (tagEnterTime[$(this).attr('data-tag-id')]) {
+            var interactionTime = Date.now() - tagEnterTime[$(this).attr('data-tag-id')];
+            if (interactionTime > 200)
+               that.postAnalytic('interaction', 'tag', $(this).attr('data-tag-id'), null, null, interactionTime)
+         }
+      });
       $('.adentify-container .tag a').click(function() {
          var $tag = $(this).parents('.tag');
          if ($tag.length) {
@@ -26,7 +42,7 @@ var AdEntify = {
       });
    },
 
-   postAnalytic: function(action, element, tag, photo, link) {
+   postAnalytic: function(action, element, tag, photo, link, actionValue) {
       var analytic = {
          'platform': 'wordpress',
          'element': element,
@@ -39,6 +55,8 @@ var AdEntify = {
          analytic.photo = photo;
       if (link)
          analytic.link = link;
+      if (actionValue)
+         analytic.actionValue = actionValue;
 
       $.ajax({
          type: 'POST',
@@ -101,6 +119,9 @@ var AdEntify = {
          that.postAnalytic('view', 'photo', null, $(this).attr('data-photo-id'));
       });
       that.changeAllPopoverPos($(window).width());
+      if (!Date.now) {
+         Date.now = function() { return new Date().getTime(); };
+      }
    }
 };
 

@@ -30,7 +30,8 @@ var AdEntify = {
       var analytic = {
          'platform': 'wordpress',
          'element': element,
-         'action': action
+         'action': action,
+         'sourceUrl': window.location.href
       };
       if (tag)
          analytic.tag = tag;

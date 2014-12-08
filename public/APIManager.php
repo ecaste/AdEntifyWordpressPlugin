@@ -52,13 +52,15 @@ class APIManager
      *
      * @param Photo $photo
      * @param $fileStream
+     * @param $sourceUrl
      * @return bool
      */
-    public function postPhoto(Photo $photo, $fileStream)
+    public function postPhoto(Photo $photo, $fileStream, $sourceUrl)
     {
         return $this->postAction('photo', array(
             'photo' => $photo->serialize(array(
-                '_token' => $this->getCsrfToken('photo_item')
+                '_token' => $this->getCsrfToken('photo_item'),
+                'source_url' => $sourceUrl
             )),
             'file' => new PostFile('file', $fileStream)
         ), $this->getAuthorizationHeader());

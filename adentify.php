@@ -349,7 +349,7 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r')))
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']))
             {
                 $result = $result->getBody();
                 $photo->setSmallUrl(json_decode($result)->small_url);
@@ -391,6 +391,7 @@ function ad_analytics() {
     echo APIManager::getInstance()->postAnalytic($_POST['analytic']);
 }
 add_action( 'wp_ajax_nopriv_ad_analytics', 'ad_analytics');
+//add_action( 'wp_ajax_ad_analytics', 'ad_analytics');
 
 function ad_admin_notice() {
     if (!APIManager::getInstance()->getAccessToken() && !array_key_exists('code', $_GET))

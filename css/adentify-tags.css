@@ -179,6 +179,9 @@
             .adentify-container .tags .tag .popover-inner .ad-tag-info .brand{
                 margin-top: 15px;
             }
+            .adentify-container .tags .tag .popover-inner .ad-tag-info .retailer{
+                margin-top: 15px;
+            }
             .adentify-container .tags .tag .popover-inner .person-picture-wrapper{
                 display: inline-block;
             }
@@ -360,4 +363,8 @@
 .ad-post-container {
     position: relative;
     z-index: 0;
+}
+
+body.ad-modal-open {
+    overflow: hidden;
 }

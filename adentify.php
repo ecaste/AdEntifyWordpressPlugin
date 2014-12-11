@@ -27,7 +27,7 @@
 
 defined('ABSPATH') or die("No script kiddies please!");
 
-define( 'ADENTIFY_URL', 'https://adentify.com/%s');
+define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
 define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
@@ -35,10 +35,11 @@ define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
-    'USE_DATABASE' => 'adentifyDatabase',
+//    'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility',
     'TAGS_SHAPE' => 'tagShape',
-    'GOOGLE_MAPS_KEY' => 'googleMapsKey'
+    'GOOGLE_MAPS_KEY' => 'googleMapsKey',
+    'PRODUCT_PROVIDERS' => 'productsProviders',
 )));
 define( 'ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME', 'adentify_plugin_submenu');
 define( 'ADENTIFY_REDIRECT_URI', admin_url(sprintf('options-general.php?page=%s', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME)) );
@@ -59,6 +60,10 @@ require_once( ADENTIFY__PLUGIN_DIR . 'public/DBManager.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Photo.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Tag.php' );
 require_once( ADENTIFY__PLUGIN_DIR . 'public/Twig.php' );
+
+if (!APIManager::getInstance()->isAccesTokenValid()) {
+    APIManager::getInstance()->revokeAccessToken();
+}
 
 /**
  * Add a icon to the beginning of every post page.
@@ -94,33 +99,53 @@ function adentify_plugin_settings() {
 	}
 
     if (isset($_GET['code'])) {
-        APIManager::getInstance()-> getAccessTokenWithAuthorizationCode($_GET['code']);
+        APIManager::getInstance()->getAccessTokenWithAuthorizationCode($_GET['code']);
     }
 
-    $checkPostHidden = 'checkPostHidden';
     $settings = array();
-    $parameters = array('checkPostHidden' => 'checkPostHidden');
-    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
-        $settings[$key] = get_option($key);
+    $productProvidersId = array();
 
-    if (isset($_POST[$checkPostHidden]) && $_POST[$checkPostHidden] == 'Y') {
-	foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
-            $settings[$key] = (isset($_POST[$key])) ? $_POST[$key] : null;
-            update_option($key, $settings[$key]);
+    //fill the settings array with the user's providers
+    $productProviders = APIManager::getInstance()->getProductProviders();
+    if (!empty($productProviders))
+    {
+        foreach(json_decode($productProviders) as $provider)
+        {
+            $providerName = $provider->product_providers->provider_key;
+            $settings['providers_list'][] = $providerName;
+            $productProvidersId[$providerName] = $provider->product_providers->id;
+            $settings['productProvidersKey'][$providerName.'ProviderKeyVal'] = get_option($providerName.'ProviderKey');
         }
+    }
+
+    //fill the settings array with wordpress options if they are already set
+    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key)
+        $settings[$key.'Val'] = get_option($key);
+
+    if ($_POST) {
+        //update the settings array & the wordpress options
+	    foreach(unserialize(ADENTIFY__PLUGIN_SETTINGS) as $key) {
+            $settings[$key.'Val'] = (isset($_POST[$key])) ? $_POST[$key] : null;
+            update_option($key, (isset($_POST[$key])) ? $_POST[$key] : null);
+            foreach (json_decode($productProviders) as $provider) {
+                $providerKey = $provider->product_providers->provider_key.'ProviderKey';
+                if ($providerKey != 'adentifyProviderKey') {
+                    $settings['productProvidersKey'][$providerKey.'Val'] = (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null;
+                    update_option($providerKey, (isset($_POST[$providerKey])) ? $_POST[$providerKey] : null);
+                    APIManager::getInstance()->putUserProductProvider($productProvidersId[substr($providerKey, 0, strpos($providerKey, 'ProviderKey'))], $_POST[$providerKey]);
+                }
+            }
+        }
+
         echo '<div class="updated"><p><strong>Settings saved.</strong></p></div>';
 
         wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
             'admin_ajax_url' => ADENTIFY_ADMIN_URL,
-            'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+            'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
         ));
     }
-    foreach($settings as $key => $value) {
-        $parameters[$key.'Val'] = $value;
-        $parameters[$key] = $key;
-    }
 
-    echo Twig::render('adentify.settings.html.twig', $parameters);
+    echo Twig::render('adentify.settings.html.twig', $settings);
 }
 
 function adentify_button($editor_id = 'content') {
@@ -171,6 +196,10 @@ function wptuts_admin_styles_with_the_lot() {
 
     // AdEntify
     wp_register_script( 'adentify-admin-js', plugins_url( '/js/adentify.admin.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    $providers = get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['PRODUCT_PROVIDERS']);
+    if (is_array($providers) && count($providers)) {
+        $providers = implode('+', $providers);
+    }
     wp_localize_script('adentify-admin-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
         'adentify_api_brand_search_url' => sprintf(ADENTIFY_API_ROOT_URL, 'brand/search'),
@@ -185,7 +214,8 @@ function wptuts_admin_styles_with_the_lot() {
         'adentify_api_csrf_token' => sprintf(ADENTIFY_API_ROOT_URL, 'csrftokens/'),
         'adentify_api_analytics_post_url' => sprintf(ADENTIFY_API_ROOT_URL, 'analytics'),
         'adentify_api_access_token' => APIManager::getInstance()->getAccessToken(),
-        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE'])
+        'tag_shape' => get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['TAGS_SHAPE']),
+        'product_providers' => $providers
     ));
     wp_enqueue_script( 'adentify-admin-js' );
 
@@ -194,6 +224,11 @@ function wptuts_admin_styles_with_the_lot() {
     wp_enqueue_style( 'adentify-select2-style' );
     wp_register_script( 'adentify-select2-js', plugins_url( '/js/vendor/select2/select2.min.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_enqueue_script( 'adentify-select2-js' );
+    // tinyeditor
+    wp_register_style( 'adentify-tinyeditor-style', plugins_url( '/js/vendor/tinyeditor/tinyeditor.css', __FILE__ ), array(), PLUGIN_VERSION, 'all' );
+    wp_enqueue_style( 'adentify-tinyeditor-style' );
+    wp_register_script( 'adentify-tinyeditor-js', plugins_url( '/js/vendor/tinyeditor/tiny.editor.packed.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
+    wp_enqueue_script( 'adentify-tinyeditor-js' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 add_action( 'admin_enqueue_scripts', 'wptuts_styles_with_the_lot' );
@@ -314,8 +349,9 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'))->getBody())
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']))
             {
+                $result = $result->getBody();
                 $photo->setSmallUrl(json_decode($result)->small_url);
                 $photo->setId(json_decode($result)->id);
                 DBManager::getInstance()->insertPhoto($photo, $attach_id);
@@ -355,6 +391,7 @@ function ad_analytics() {
     echo APIManager::getInstance()->postAnalytic($_POST['analytic']);
 }
 add_action( 'wp_ajax_nopriv_ad_analytics', 'ad_analytics');
+//add_action( 'wp_ajax_ad_analytics', 'ad_analytics');
 
 function ad_admin_notice() {
     if (!APIManager::getInstance()->getAccessToken() && !array_key_exists('code', $_GET))

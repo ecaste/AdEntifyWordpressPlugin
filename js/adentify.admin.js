@@ -24,6 +24,7 @@ var AdEntifyBO = {
       else
          $('#adentify-upload-modal').show();
 
+      $('body').addClass('ad-modal-open');
       $('#__wp-uploader-id-2').focus();
    },
 
@@ -84,7 +85,7 @@ var AdEntifyBO = {
          success: function (data) {
             that.openPhotoModal(data.data.photo);
             that.appendPhotoToLibrary(data.data.photo, data.data.wp_photo_id);
-            that.photoIdSelected = JSON.parse(data.data.photo).id;
+            that.photoIdSelected = data.data.photo.id;
          },
           complete: function() {
              that.stopLoading('uploading-message');
@@ -106,23 +107,26 @@ var AdEntifyBO = {
 
    clickOnDeletePhoto: function(e) {
       var that = this;
-      that.startLoading('tag-from-library');
-      $.ajax({
-         type: 'GET',
-         url: adentifyTagsData.admin_ajax_url,
-         data: {
-            'action': 'ad_delete_photo',
-            'wp_photo_id': that.wpPhotoIdSelected,
-            'photo_id': that.photoIdSelected
-         },
-         complete: function() {
-            console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
-            console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
-            $('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
-            that.removePhotoSelection(false);
-            that.stopLoading('tag-from-library');
-         }
-      });
+      if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected)
+      {
+         that.startLoading('tag-from-library');
+         $.ajax({
+            type: 'GET',
+            url: adentifyTagsData.admin_ajax_url,
+            data: {
+               'action': 'ad_delete_photo',
+               'wp_photo_id': that.wpPhotoIdSelected,
+               'photo_id': that.photoIdSelected
+            },
+            complete: function() {
+               console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
+               console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
+               $('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
+               that.removePhotoSelection(false);
+               that.stopLoading('tag-from-library');
+            }
+         });
+      }
    },
 
    /*
@@ -174,6 +178,29 @@ var AdEntifyBO = {
    /*
     * Other methods
     */
+   initTinyEditor: function() {
+      new TINY.editor.edit('editor',{
+         id:'product-description', // (required) ID of the textarea
+         width:340, // (optional) width of the editor
+         height:200, // (optional) heightof the editor
+         cssclass:'tinyeditor', // (optional) CSS class of the editor
+         controlclass:'tinyeditor-control', // (optional) CSS class of the buttons
+         rowclass:'tinyeditor-header', // (optional) CSS class of the button rows
+         dividerclass:'tinyeditor-divider', // (optional) CSS class of the button diviers
+         controls:['bold', 'italic', 'underline', 'strikethrough', '|', 'orderedlist', 'unorderedlist'],
+         //footer:true, // (optional) show the footer
+         fonts:['Verdana','Arial','Georgia','Trebuchet MS'],  // (optional) array of fonts to display
+         //xhtml:true, // (optional) generate XHTML vs HTML
+         //cssfile:'style.css', // (optional) attach an external CSS file to the editor
+         //content:'<p>test</p>', // (optional) set the starting content else it will default to the textarea content
+         css:'body{background-color:white}', // (optional) attach CSS to the editor
+         bodyid:'product-description-editor', // (optional) attach an ID to the editor body
+         //footerclass:'tefooter', // (optional) CSS class of the footer
+         //toggle:{text:'source',activetext:'wysiwyg',cssclass:'toggle'}, // (optional) toggle to markup view options
+         //resize:{cssclass:'resize'} // (optional) display options for the editor resize
+      });
+   },
+
    removePhotoSelection: function(needId) {
       $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
       if (needId === false) {
@@ -189,15 +216,17 @@ var AdEntifyBO = {
       $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
       $('#ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
       this.stopLoading('uploading-message');
+      this.initTinyEditor();
    },
 
    closeModals: function() {
+      $('body').removeClass("ad-modal-open");
       $('#adentify-upload-modal').hide(0, function() {
          $('#ad-uploader-content').show();
       });
       $('#adentify-tag-modal').hide();
       this.removePhotoSelection(false);
-      $('.ad-tag-frame-content input').val('');
+      this.resetForms();
       this.removeTempTagsFromDOM($('.photo-overlay'));
       this.removeTagsFromDOM($('.photo-overlay'));
    },
@@ -251,7 +280,6 @@ var AdEntifyBO = {
    appendPhotoToLibrary: function(photo, wp_photo_id) {
       var that = this;
       try {
-         var photo = JSON.parse(photo);
          that.wpPhotoIdSelected = wp_photo_id;
          var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
          var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
@@ -299,8 +327,8 @@ var AdEntifyBO = {
 
    getPhoto: function(e) {
       var that = this;
-      that.startLoading('tag-from-library');
       if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
+         that.startLoading('tag-from-library');
          $.ajax({
             type: 'GET',
             url: adentifyTagsData.admin_ajax_url,
@@ -337,6 +365,7 @@ var AdEntifyBO = {
             url: searchUrl,
             dataType: 'json',
             quietMillis: 250,
+            crossDomain: true,
             data: function (term, page) {
                var queryParams = {
                   query: term
@@ -386,6 +415,8 @@ var AdEntifyBO = {
                $(entry.fieldSelector).select2('data', e.choice[entry.propertyName]);
             } else
                $(entry.fieldSelector).val(e.choice[entry.propertyName]);
+            if ($(entry.fieldSelector).attr('id') == 'product-description')
+               $('.tinyeditor iframe').contents().find('#product-description-editor').html(e.choice[entry.propertyName]);
          });
       });
    },
@@ -394,7 +425,8 @@ var AdEntifyBO = {
       var that = this;
       // Setup autocomplete with Select2.js
       this.setupAutocomplete('#brand-name', 'Search for a brand', function(item) { return that.genericFormatResult(item); },
-         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url, adentifyTagsData.adentify_api_brand_get_url);
+         function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_brand_search_url,
+         adentifyTagsData.adentify_api_brand_get_url);
 
       this.setupAutocomplete('#product-name', 'Search for a product', function(item) { return that.genericFormatResult(item, 'medium_url'); },
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_product_search_url,
@@ -412,9 +444,7 @@ var AdEntifyBO = {
                propertyName: 'brand',
                isSelect2: true
             }
-         ], true, {
-            'providers': 'adentify+shopsense'
-         });
+         ], true, { 'p': adentifyTagsData.product_providers });
 
       this.setupAutocomplete('#venue-name', 'Search for a venue', function(item) { return that.genericFormatResult(item); },
          function(item) { return that.genericFormatSelection(item); }, adentifyTagsData.adentify_api_venue_search_url,
@@ -444,9 +474,13 @@ var AdEntifyBO = {
       nameKey = nameKey || 'name';
       var markup = '<div class="row-fluid">' +
          (typeof item[imageKey] !== 'undefined' ? '<div class="span2"><img class="small-logo" src="' + item[imageKey] + '" /></div>' : '');
-
-      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implodeObject(item, nameKey) : item[nameKey]) + '</div>';
-      markup += '</div></div>';
+      markup += '<div class="span10">' + (nameKey instanceof Array ? this.implodeObject(item, nameKey) : item[nameKey]);
+      if (typeof item.product_provider !== 'undefined') {
+         markup += '<span class="providerName">' + item.product_provider.name + '</span>';
+      } else {
+         markup += '<span class="providerName">AdEntify</span>';
+      }
+      markup += '</div><div class="clearfix"></div></div></div>';
 
       return markup;
    },
@@ -669,6 +703,7 @@ var AdEntifyBO = {
          $(element).val('');
       });
       $('#product-name, #venue-name, #brand-name, #person-name').select2('data', null);
+      $('.tinyeditor iframe').contents().find('#product-description-editor').html('');
    },
 
    postTag: function(tag) {

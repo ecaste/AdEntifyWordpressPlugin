@@ -349,7 +349,8 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']))
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'),
+                'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']))
             {
                 $result = $result->getBody();
                 $photo->setSmallUrl(json_decode($result)->small_url);

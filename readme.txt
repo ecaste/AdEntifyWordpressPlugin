@@ -1,41 +1,39 @@
 === Plugin Name ===
 Contributors: (this should be a list of wordpress.org userid's)
 Donate link: http://adentify.com/
-Tags: comments, spam
+Tags: tags, photos, photo, monetize, images
 Requires at least: 3.0.1
 Tested up to: 3.4
 Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+AdEntify is the easiest way to monetize your visual content : get paid you when your visitors buy the products tagged in your images.
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
+Capture your audience at the point of inspiration and trigger engagement and higher conversion rates. AdEntify is the easiest way to monetize your visual content : get paid you when your visitors buy the products tagged in your images.
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+We believe native content, YOUR content, has value and that you should be rewarded for talking about the things you love.
 
-A few notes about the sections above:
+You've put significant effort into building a user base who values your content. As your audience visits your site, the AdEntify tagging technology enables you to engage with the 1st user-approved advertising format. As an image is worth a 1000 words, AdEntify gives you access to the revenue from the purchases you drive.
 
-*   "Contributors" is a comma separated list of wp.org/wp-plugins.org usernames
-*   "Tags" is a comma separated list of tags that apply to the plugin
-*   "Requires at least" is the lowest version that the plugin will work on
-*   "Tested up to" is the highest version that you've *successfully used to test the plugin*. Note that it might work on
-higher versions... this is just the highest one you've verified.
-*   Stable tag should indicate the Subversion "tag" of the latest stable version, or "trunk," if you use `/trunk/` for
-stable.
+User experience is the cornerstone of the AdEntify technology. Tags provide users with better information, where they need it and when they want it triggering profitable engagement and unprecedented conversion.
 
-    Note that the `readme.txt` of the stable tag is the one that is considered the defining one for the plugin, so
-if the `/trunk/readme.txt` file says that the stable tag is `4.3`, then it is `/tags/4.3/readme.txt` that'll be used
-for displaying information about the plugin.  In this situation, the only thing considered from the trunk `readme.txt`
-is the stable tag pointer.  Thus, if you develop in trunk, you can update the trunk `readme.txt` to reflect changes in
-your in-development version, without having that information incorrectly disclosed about the current stable version
-that lacks those changes -- as long as the trunk's `readme.txt` points to the correct stable tag.
+What a difference a tag makes?
+? 100x Engagement
+? 10x Click-through rates
+? 5x Conversion
 
-    If no stable tag is provided, it is assumed that trunk is stable, but you should specify "trunk" if that's where
-you put the stable version, in order to eliminate any doubt.
+Sign up on AdEntify and install this plugin so you can start adding key pieces of information (brands, products, places, affiliate links and people) directly to your images with discreet and customizable tags. AdEntify monetizes your visual content by providing you access to thousands of products, brands and over 10,000 merchant links. The best part is that it can be seamlessly integrated into your platform and it?s super easy to use.
+
+AdEntify?s business model is exclusively success-fee based. Our technology is free to install transactional and we only charge a 15 % commission on the revenue we generate through our tags.
+
+Once you?ve signed up, you can check your AdEntify dashboard where we provide information about all the activity on your site, giving you insight into the behavior of your audience, tag performance and revenue.
+
+By truly empowering native images, AdEntify revolutionizes digital advertising
+
+For more information visit business.adentify.com or email us at contact@adentify.com
 
 == Installation ==
 
@@ -48,11 +46,8 @@ you put the stable version, in order to eliminate any doubt.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. Tag your photo with products, people or placs
+2. Plugin's settings
 
 == Changelog ==
 

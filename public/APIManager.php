@@ -95,8 +95,29 @@ class APIManager
 
     public function postVenue($venue)
     {
-        $venue['venue']['_token'] = $this->getCsrfToken('venue_item');
-        return $this->postAction('venue', $venue);
+        $keysToKept = array(
+            'name',
+            'foursquare_id',
+            'link',
+            'lat',
+            'lng',
+            'address',
+            'postal_code',
+            'city',
+            'state',
+            'country',
+            'cc',
+        );
+        $body = array(
+            'venue' => array()
+        );
+        foreach($keysToKept as $key) {
+            $body['venue'][$key] = is_array($venue[$key]) ? $venue[$key]['id'] : $venue[$key];
+        }
+
+        $body['venue']['_token'] = $this->getCsrfToken('venue_item');
+
+        return $this->postAction('venue', $body);
     }
 
     public function postBrand($brand)
@@ -115,11 +136,14 @@ class APIManager
 
         $body['brand']['_token'] = $this->getCsrfToken('brand_item');
 
-        return $this->postAction('brand', $brand);
+        return $this->postAction('brand', $body);
     }
 
     public function postPerson($person)
     {
+        $person = array(
+            'person' => $person
+        );
         $person['person']['_token'] = $this->getCsrfToken('person_item');
         return $this->postAction('person', $person);
     }
@@ -347,6 +371,7 @@ class APIManager
             ));
             return $response->getStatusCode() == 200 ? $response : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo $e->getResponse()->getBody();
             return false;
         }
     }

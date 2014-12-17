@@ -402,10 +402,7 @@ var AdEntifyBO = {
       if (enableCreateSearchChoice) {
          jQuery.extend(select2Parameters, {
             createSearchChoice: function(term) {
-               return {
-                  id: 0,
-                  'name': term
-               }
+               return (selector === '#person-name') ? { id:0 ,'firstname': term } : {id: 0, 'name': term } ;
             },
             createSearchChoicePosition: 'bottom'
          });
@@ -727,6 +724,7 @@ var AdEntifyBO = {
          complete: function() {
             jQuery('.submit-tag').show();
             that.stopLoading('posting-tag');
+            that.currentTagIndex = null;
          }
       });
    },

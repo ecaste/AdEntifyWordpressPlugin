@@ -95,49 +95,106 @@ class APIManager
 
     public function postVenue($venue)
     {
-        $venue['venue']['_token'] = $this->getCsrfToken('venue_item');
-        return $this->postAction('venue', $venue);
+        $keysToKept = array(
+            'name',
+            'foursquare_id',
+            'link',
+            'lat',
+            'lng',
+            'address',
+            'postal_code',
+            'city',
+            'state',
+            'country',
+            'cc',
+        );
+        $body = array(
+            'venue' => array()
+        );
+        foreach($keysToKept as $key) {
+            if (array_key_exists($key, $venue))
+                $body['venue'][$key] = is_array($venue[$key]) ? $venue[$key]['id'] : $venue[$key];
+        }
+
+        $body['venue']['_token'] = $this->getCsrfToken('venue_item');
+
+        return $this->postAction('venue', $body);
     }
 
     public function postBrand($brand)
     {
         $keysToKept = array(
-            'name',
-            'provider_id',
-            'product_provider'
+            'website_url',
+            'facebook_url',
+            'twitter_url',
+            'pinterest_url',
+            'instagram_url',
+            'tumblr_url',
+            'original_logo_url',
+            'large_logo_url',
+            'medium_logo_url',
+            'small_logo_url',
+            'description',
+            'categories',
+            'name'
         );
         $body = array(
             'brand' => array()
         );
         foreach($keysToKept as $key) {
-            $body['brand'][$key] = is_array($brand[$key]) ? $brand[$key]['id'] : $brand[$key];
+            if (array_key_exists($key, $brand))
+                $body['brand'][$key] = is_array($brand[$key]) ? $brand[$key]['id'] : $brand[$key];
         }
 
         $body['brand']['_token'] = $this->getCsrfToken('brand_item');
 
-        return $this->postAction('brand', $brand);
+        return $this->postAction('brand', $body);
     }
 
     public function postPerson($person)
     {
-        $person['person']['_token'] = $this->getCsrfToken('person_item');
-        return $this->postAction('person', $person);
+        $keysToKept = array(
+            'name',
+            'firstname',
+            'lastname',
+            'facebookId',
+            'gender',
+            'link'
+        );
+        $body = array(
+            'person' => array()
+        );
+        foreach($keysToKept as $key) {
+            if (array_key_exists($key, $person))
+                $body['person'][$key] = is_array($person[$key]) ? $person[$key]['id'] : $person[$key];
+        }
+
+        $body['person']['_token'] = $this->getCsrfToken('person_item');
+        return $this->postAction('person', $body);
     }
 
-    public function postProduct($product)
+    public function postProduct($product, $brandId)
     {
         $keysToKept = array(
             'name',
             'product_provider_id',
-            'product_provider'
+            'product_provider',
+            'original_url',
+            'medium_url',
+            'small_url',
+            'description',
+            'purchase_url',
+            'brand'
         );
         $body = array(
             'product' => array()
         );
         foreach($keysToKept as $key) {
-            $body['product'][$key] = is_array($product[$key]) ? $product[$key]['id'] : $product[$key];
+            if (array_key_exists($key, $product))
+                $body['product'][$key] = is_array($product[$key]) ? $product[$key]['id'] : $product[$key];
         }
 
+        $body['product']['brand'] = $brandId;
         $body['product']['_token'] = $this->getCsrfToken('product_item');
 
         return $this->postAction('product', $body);
@@ -347,6 +404,7 @@ class APIManager
             ));
             return $response->getStatusCode() == 200 ? $response : false;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo $e->getResponse()->getBody();
             return false;
         }
     }

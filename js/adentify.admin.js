@@ -280,6 +280,7 @@ var AdEntifyBO = {
    appendPhotoToLibrary: function(photo, wp_photo_id) {
       var that = this;
       try {
+         var photo = photo;
          that.wpPhotoIdSelected = wp_photo_id;
          var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
          var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
@@ -360,8 +361,8 @@ var AdEntifyBO = {
       var select2Parameters = {
          placeholder: placeholder,
          minimumInputLength: 1,
+         id: function(e) { return typeof e.id !== 'undefined' ? e.id : null; },
          ajax: {
-            id: function(e) { return typeof e.id !== 'undefined' ? e.id : e.foursquare_id; },
             url: searchUrl,
             dataType: 'json',
             quietMillis: 250,
@@ -401,10 +402,7 @@ var AdEntifyBO = {
       if (enableCreateSearchChoice) {
          jQuery.extend(select2Parameters, {
             createSearchChoice: function(term) {
-               return {
-                  id: 0,
-                  'name': term
-               }
+               return (selector === '#person-name') ? { id:0 ,'firstname': term } : {id: 0, 'name': term } ;
             },
             createSearchChoicePosition: 'bottom'
          });
@@ -726,6 +724,7 @@ var AdEntifyBO = {
          complete: function() {
             jQuery('.submit-tag').show();
             that.stopLoading('posting-tag');
+            that.currentTagIndex = null;
          }
       });
    },

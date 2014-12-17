@@ -373,10 +373,10 @@ function ad_tag() {
     $tag = Tag::loadPost($_POST['tag']);
     if (is_array($tag) && array_key_exists('error', $tag)) {
         throw new Exception('tag error');
-    } else {
-        echo APIManager::getInstance()->postTag($tag)->getBody();
-        exit();
     }
+    else if ($result = APIManager::getInstance()->postTag($tag))
+        echo $result->getBody();
+    exit();
 }
 add_action( 'wp_ajax_ad_tag', 'ad_tag' );
 

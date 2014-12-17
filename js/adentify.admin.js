@@ -361,7 +361,7 @@ var AdEntifyBO = {
          placeholder: placeholder,
          minimumInputLength: 1,
          ajax: {
-            id: function(e) { return typeof e.id !== 'undefined' ? e.id : e.foursquare_id; },
+            id: function(e) { return (typeof e.id !== 'undefined') ? e.id : e.foursquare_id; },
             url: searchUrl,
             dataType: 'json',
             quietMillis: 250,

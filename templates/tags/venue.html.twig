@@ -16,7 +16,7 @@
 {% if googleMapsAPIKey and model.venue.lat and model.venue.lng %}
     <script type="text/javascript">
         function initialize() {
-            if (!$('#map-canvas-' + {{ model.id }}).attr('data-loaded')) {
+            if (!jQuery('#map-canvas-' + {{ model.id }}).attr('data-loaded')) {
                 var latLng = new google.maps.LatLng({{ model.venue.lat }}, {{ model.venue.lng }});
                 var mapOptions = {
                     zoom:  14,
@@ -34,7 +34,7 @@
                     position: latLng,
                     map: map
                 });
-                $('#map-canvas-' + {{ model.id }}).attr('data-loaded', 'true');
+                jQuery('#map-canvas-' + {{ model.id }}).attr('data-loaded', 'true');
             }
         }
         google.maps.event.addDomListener(window, 'load', initialize);

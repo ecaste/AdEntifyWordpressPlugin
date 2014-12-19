@@ -8,7 +8,9 @@
                 {% if model.description is defined and model.description %}
                 <p>{{ model.description }}</p>
                 {% endif %}
+                {% if googleMapsAPIKey and model.venue.lat and model.venue.lng %}
                 <div id="map-canvas-{{ model.id }}" class="map-canvas"></div>
+                {% endif %}
             </div>
         <div class="popover-details"></div>
     </div>

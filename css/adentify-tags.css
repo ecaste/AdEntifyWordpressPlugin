@@ -3,6 +3,14 @@
 }
     .adentify-container ul.tags {
         list-style-type: none;
+        margin: 0px;
+        padding: 0;
+        border: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
     }
         .adentify-container[data-tags-visibility="visible-on-hover"] .tags {
             display: none;

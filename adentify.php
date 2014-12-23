@@ -27,7 +27,7 @@
 
 defined('ABSPATH') or die("No script kiddies please!");
 
-define( 'ADENTIFY_URL', 'https://local.adentify.com/%s');
+define( 'ADENTIFY_URL', 'https://adentify.com/%s');
 define( 'ADENTIFY_API_ROOT_URL', sprintf(ADENTIFY_URL, 'api/v1/%s') );
 define( 'ADENTIFY_TOKEN_URL', sprintf(ADENTIFY_URL, 'oauth/v2/token'));
 define( 'ADENTIFY_AUTHORIZATION_URL', sprintf(ADENTIFY_URL, 'oauth/v2/auth'));
@@ -35,7 +35,6 @@ define( 'ADENTIFY__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ADENTIFY__PLUGIN_SETTINGS', serialize(array(
     'IS_PRIVATE' => 'photoIsPrivate',
-//    'USE_DATABASE' => 'adentifyDatabase',
     'TAGS_VISIBILITY' => 'tagsVisibility',
     'TAGS_SHAPE' => 'tagShape',
     'GOOGLE_MAPS_KEY' => 'googleMapsKey',
@@ -89,7 +88,15 @@ add_filter( 'the_content', 'my_the_content_filter', 20 );
 add_filter( 'the_excerpt', 'my_the_content_filter', 20 );
 
 function adentify_setting_menu() {
-	add_options_page( 'Adentify settings', 'Adentify settings', 'manage_options', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME, 'adentify_plugin_settings' );
+    $settingsTab = null;
+    switch (substr(get_locale(), 0, 2)) {
+        case 'fr':
+            $settingsTab = 'Paramètres AdEntify';
+            break;
+        default:
+            $settingsTab = "AdEntify settings";
+    }
+	add_options_page( 'Adentify settings', $settingsTab, 'manage_options', ADENTIFY_PLUGIN_SETTINGS_PAGE_NAME, 'adentify_plugin_settings' );
 }
 add_action( 'admin_menu', 'adentify_setting_menu' );
 
@@ -170,7 +177,6 @@ function wptuts_styles_with_the_lot() {
     wp_register_style( 'adentify-tags-style', plugins_url( '/css/adentify-tags.css', __FILE__ ), array(), PLUGIN_VERSION, 'all');
     wp_enqueue_style( 'adentify-tags-style' );
 
-    wp_register_script( 'jquery.min.js', '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.ui.widget.js', plugins_url( '/js/vendor/jquery.ui.widget.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.iframe-transport.js', plugins_url( '/js/vendor/jquery.iframe-transport.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
     wp_register_script( 'jquery.fileupload.js', plugins_url( '/js/vendor/jquery.fileupload.js', __FILE__ ), array('jquery'), PLUGIN_VERSION, 'all');
@@ -179,11 +185,12 @@ function wptuts_styles_with_the_lot() {
     wp_localize_script('adentify-js', 'adentifyTagsData', array(
         'admin_ajax_url' => ADENTIFY_ADMIN_URL,
     ));
+
     wp_enqueue_script( 'adentify-js' );
-    wp_enqueue_script( 'jquery.min.js' );
     wp_enqueue_script( 'jquery.ui.widget.js' );
     wp_enqueue_script( 'jquery.iframe-transport.js' );
     wp_enqueue_script( 'jquery.fileupload.js' );
+
     $googleMapsKey = get_option(unserialize(ADENTIFY__PLUGIN_SETTINGS)['GOOGLE_MAPS_KEY']);
     if (!empty($googleMapsKey))
         wp_enqueue_script( 'google-maps', '//maps.googleapis.com/maps/api/js?key=' . $googleMapsKey,  array(), false, false);
@@ -349,7 +356,8 @@ function ad_upload() {
                 wp_set_object_terms( $attach_id, array('AdEntify'), 'adentify-category', true );
 
             $photo = new Photo();
-            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'), 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']))
+            if ($result = APIManager::getInstance()->postPhoto($photo, fopen($_FILES['ad-upload-img']['tmp_name'], 'r'),
+                'http'.(isset($_SERVER['HTTPS']) ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']))
             {
                 $result = $result->getBody();
                 $photo->setSmallUrl(json_decode($result)->small_url);
@@ -373,10 +381,10 @@ function ad_tag() {
     $tag = Tag::loadPost($_POST['tag']);
     if (is_array($tag) && array_key_exists('error', $tag)) {
         throw new Exception('tag error');
-    } else {
-        echo APIManager::getInstance()->postTag($tag)->getBody();
-        exit();
     }
+    else if ($result = APIManager::getInstance()->postTag($tag))
+        echo $result->getBody();
+    exit();
 }
 add_action( 'wp_ajax_ad_tag', 'ad_tag' );
 

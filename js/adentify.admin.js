@@ -15,70 +15,70 @@ var AdEntifyBO = {
     * Events handlers`
     */
    clickOnAdEntifyButton: function() {
-      if ($('#adentify-upload-modal').html() === undefined) {
+      if (jQuery('#adentify-upload-modal').html() === undefined) {
          // render modals
          this.renderModals();
          // Setup event handlers
          this.setupEventHandlers();
       }
       else
-         $('#adentify-upload-modal').show();
+         jQuery('#adentify-upload-modal').show();
 
-      $('body').addClass('ad-modal-open');
-      $('#__wp-uploader-id-2').focus();
+      jQuery('body').addClass('ad-modal-open');
+      jQuery('#__wp-uploader-id-2').focus();
    },
 
    clickOnUploadTab: function(e) {
-      $('#upload-file, #file-library').removeClass('active');
-      $(e.target).addClass('active');
-      $('#ad-uploader, #ad-library, #ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
+      jQuery('#upload-file, #file-library').removeClass('active');
+      jQuery(e.target).addClass('active');
+      jQuery('#ad-uploader, #ad-library, #ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
       switch(e.target.id) {
          case 'file-library':
-            $('#ad-library, #ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').show();
+            jQuery('#ad-library, #ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').show();
             break;
          case 'upload-file':
          default:
-            $('#ad-uploader').show();
+            jQuery('#ad-uploader').show();
             break;
       }
    },
 
    clickOnTagTab: function(e) {
-      $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').removeClass('active');
-      $(e.target).addClass('active');
-      $('.tag-form').hide();
+      jQuery('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').removeClass('active');
+      jQuery(e.target).addClass('active');
+      jQuery('.tag-form').hide();
       this.hideOpenedSelect2();
       switch(e.target.id) {
          case 'ad-tag-venue-tab':
-            $('#tag-venue').show();
-            $('#tag-venue input').first().focus();
+            jQuery('#tag-venue').show();
+            jQuery('#tag-venue input').first().focus();
             break;
          case 'ad-tag-person-tab':
-            $('#tag-person').show();
-            $('#tag-person input').first().focus();
+            jQuery('#tag-person').show();
+            jQuery('#tag-person input').first().focus();
             break;
          case 'ad-tag-product-tab':
          default:
-            $('#tag-product').show();
-            $('#tag-product input').first().focus();
+            jQuery('#tag-product').show();
+            jQuery('#tag-product input').first().focus();
             break;
       }
    },
 
    hideOpenedSelect2: function() {
-      $('#select2-drop-mask').click();
+      jQuery('#select2-drop-mask').click();
    },
 
    clickOnUploaderButton: function() {
        var that = this;
-       $('#upload-img').click().fileupload({
+       jQuery('#upload-img').click().fileupload({
          datatype: 'json',
          url: adentifyTagsData.admin_ajax_url,
          formData: {
             'action': 'ad_upload'
          },
          add: function (e, data) {
-            $('#ad-uploader-content').hide();
+            jQuery('#ad-uploader-content').hide();
             that.startLoading('uploading-message');
             data.submit();
          },
@@ -89,7 +89,7 @@ var AdEntifyBO = {
          },
           complete: function() {
              that.stopLoading('uploading-message');
-             $('#ad-uploader-content').show();
+             jQuery('#ad-uploader-content').show();
           }
       });
    },
@@ -98,19 +98,19 @@ var AdEntifyBO = {
       if (this.currentSelectedPhoto) {
          this.currentSelectedPhoto.removeClass(this.selectedPhotoClassName);
       }
-      this.currentSelectedPhoto = $(e.target);
+      this.currentSelectedPhoto = jQuery(e.target);
       this.currentSelectedPhoto.addClass(this.selectedPhotoClassName);
-      $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
+      jQuery('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
       this.photoIdSelected = this.currentSelectedPhoto.attr('data-adentify-photo-id');
       this.wpPhotoIdSelected = this.currentSelectedPhoto.attr('data-wp-photo-id');
    },
 
    clickOnDeletePhoto: function(e) {
       var that = this;
-      if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected)
+      if (!jQuery(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected)
       {
          that.startLoading('tag-from-library');
-         $.ajax({
+         jQuery.ajax({
             type: 'GET',
             url: adentifyTagsData.admin_ajax_url,
             data: {
@@ -121,7 +121,7 @@ var AdEntifyBO = {
             complete: function() {
                console.log("photo: " + that.wpPhotoIdSelected + " deleted from wordpress");
                console.log("photo: " + that.photoIdSelected + " deleted from Adentify");
-               $('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
+               jQuery('.ad-library-photo-thumbnail:has(.ad-library-photo-wrapper[data-wp-photo-id="' + that.wpPhotoIdSelected + '"])').remove();
                that.removePhotoSelection(false);
                that.stopLoading('tag-from-library');
             }
@@ -136,43 +136,43 @@ var AdEntifyBO = {
       var that = this;
 
       // hide the modals
-      $('#adentify-modal-backdrop, #adentify-modal-backdrop2, #adentify-modal-close, #adentify-modal-close2').click($.proxy(this.closeModals, this));
+      jQuery('#adentify-modal-backdrop, #adentify-modal-backdrop2, #adentify-modal-close, #adentify-modal-close2').click(jQuery.proxy(this.closeModals, this));
 
       // Close modals on ECHAP
-      $('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) { if (e.which == 27) that.closeModals(); });
+      jQuery('#__wp-uploader-id-2, #__wp-uploader-id-3').keydown(function(e) { if (e.which == 27) that.closeModals(); });
 
       // switch between the upload's tabs
-      $('#upload-file, #file-library').click($.proxy(this.clickOnUploadTab, this));
+      jQuery('#upload-file, #file-library').click(jQuery.proxy(this.clickOnUploadTab, this));
 
       // switch between the tag's tabs
-      $('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').click($.proxy(this.clickOnTagTab, this));
+      jQuery('#ad-tag-product-tab, #ad-tag-venue-tab, #ad-tag-person-tab').click(jQuery.proxy(this.clickOnTagTab, this));
 
       // upload the image
-      $('#adentify-uploader-button').click($.proxy(this.clickOnUploaderButton, this));
+      jQuery('#adentify-uploader-button').click(jQuery.proxy(this.clickOnUploaderButton, this));
 
       // Add tag
-      $('.ad-media-frame-content .photo-overlay').click($.proxy(this.addTag, this));
+      jQuery('.ad-media-frame-content .photo-overlay').click(jQuery.proxy(this.addTag, this));
 
       // post tag
-      $('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click($.proxy(this.retrieveTagData, this));
+      jQuery('#submit-tag-product, #submit-tag-venue, #submit-tag-person').click(jQuery.proxy(this.retrieveTagData, this));
 
       // delete a tag
-      $('div').on('click', '.ad-delete-tag', $.proxy(this.removeTag, this));
+      jQuery('div').on('click', '.ad-delete-tag', jQuery.proxy(this.removeTag, this));
 
       // Store the id of the selected photo and enabled the buttons
-      $('.ad-library-photo-wrapper').on('click', $.proxy(this.clickOnLibraryPhoto, this));
+      jQuery('.ad-library-photo-wrapper').on('click', jQuery.proxy(this.clickOnLibraryPhoto, this));
 
       // show the tag modal with the selected photo
-      $('#ad-tag-from-library').click($.proxy(this.getPhoto, this));
+      jQuery('#ad-tag-from-library').click(jQuery.proxy(this.getPhoto, this));
 
       // insert a photo in the post editor
-      $('#ad-insert-from-library, #ad-insert-after-tag').click($.proxy(this.insertPhotoInPostEditor, this));
+      jQuery('#ad-insert-from-library, #ad-insert-after-tag').click(jQuery.proxy(this.insertPhotoInPostEditor, this));
 
       // "back" button on the tag modal
-      $('#ad-back-to-library').click($.proxy(this.backToMainModal, this));
+      jQuery('#ad-back-to-library').click(jQuery.proxy(this.backToMainModal, this));
 
       // delete a photo
-      $('#ad-delete-photo').click($.proxy(this.clickOnDeletePhoto, this));
+      jQuery('#ad-delete-photo').click(jQuery.proxy(this.clickOnDeletePhoto, this));
    },
 
    /*
@@ -202,59 +202,59 @@ var AdEntifyBO = {
    },
 
    removePhotoSelection: function(needId) {
-      $('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
+      jQuery('.ad-library-photo-wrapper[data-adentify-photo-id=' + this.photoIdSelected +']').removeClass(this.selectedPhotoClassName);
       if (needId === false) {
          this.photoIdSelected = undefined;
          this.wpPhotoIdSelected = undefined;
       }
-      $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').attr('disabled', 'disabled');
+      jQuery('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').attr('disabled', 'disabled');
    },
 
    renderModals: function() {
-      $('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
-      $('#adentify-upload-modal').html($('#adentify-uploader').html());
-      $('#adentify-tag-modal').hide().html($('#adentify-tag-modal-template').html());
-      $('#ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
+      jQuery('body').append('<div id="adentify-upload-modal"></div>').append('<div id="adentify-tag-modal"></div>');
+      jQuery('#adentify-upload-modal').html(jQuery('#adentify-uploader').html());
+      jQuery('#adentify-tag-modal').hide().html(jQuery('#adentify-tag-modal-template').html());
+      jQuery('#ad-tag-from-library, #ad-insert-from-library, #ad-delete-photo').hide();
       this.stopLoading('uploading-message');
       this.initTinyEditor();
    },
 
    closeModals: function() {
-      $('body').removeClass("ad-modal-open");
-      $('#adentify-upload-modal').hide(0, function() {
-         $('#ad-uploader-content').show();
+      jQuery('body').removeClass("ad-modal-open");
+      jQuery('#adentify-upload-modal').hide(0, function() {
+         jQuery('#ad-uploader-content').show();
       });
-      $('#adentify-tag-modal').hide();
+      jQuery('#adentify-tag-modal').hide();
       this.removePhotoSelection(false);
       this.resetForms();
-      this.removeTempTagsFromDOM($('.photo-overlay'));
-      this.removeTagsFromDOM($('.photo-overlay'));
+      this.removeTempTagsFromDOM(jQuery('.photo-overlay'));
+      this.removeTagsFromDOM(jQuery('.photo-overlay'));
    },
 
    backToMainModal: function() {
       this.hideOpenedSelect2();
-      $('#adentify-tag-modal').hide();
-      $('#ad-uploader-content, #adentify-upload-modal').show();
-      $('#__wp-uploader-id-2').focus();
+      jQuery('#adentify-tag-modal').hide();
+      jQuery('#ad-uploader-content, #adentify-upload-modal').show();
+      jQuery('#__wp-uploader-id-2').focus();
       this.resetForms();
-      this.removeTempTagsFromDOM($('.photo-overlay'));
-      this.removeTagsFromDOM($('.photo-overlay'));
+      this.removeTempTagsFromDOM(jQuery('.photo-overlay'));
+      this.removeTagsFromDOM(jQuery('.photo-overlay'));
    },
 
    startLoading: function(loader, tagId) {
       switch (loader) {
          case 'tag-from-library':
-            $('#ad-tag-from-library-loading').show();
+            jQuery('#ad-tag-from-library-loading').show();
             break;
          case 'uploading-message':
-            $('#ad-uploading-message').show();
+            jQuery('#ad-uploading-message').show();
             break;
          case 'remove-tag':
-            $('#ad-remove-tag-loader-' + tagId).show();
+            jQuery('#ad-remove-tag-loader-' + tagId).show();
             break;
          case 'posting-tag':
          default:
-            $('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').show();
+            jQuery('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').show();
             break;
       }
    },
@@ -262,17 +262,17 @@ var AdEntifyBO = {
    stopLoading: function(loader, tagId) {
       switch (loader) {
          case 'tag-from-library':
-            $('#ad-tag-from-library-loading').hide();
+            jQuery('#ad-tag-from-library-loading').hide();
             break;
          case 'uploading-message':
-            $('#ad-uploading-message').hide();
+            jQuery('#ad-uploading-message').hide();
             break;
          case 'remove-tag':
-            $('.ad-remove-tag-loader-' + tagId).hide();
+            jQuery('.ad-remove-tag-loader-' + tagId).hide();
             break;
          case 'posting-tag':
          default:
-            $('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').hide();
+            jQuery('#ad-posting-tag-person, #ad-posting-tag-product, #ad-posting-tag-venue').hide();
             break;
       }
    },
@@ -280,17 +280,18 @@ var AdEntifyBO = {
    appendPhotoToLibrary: function(photo, wp_photo_id) {
       var that = this;
       try {
+         var photo = photo;
          that.wpPhotoIdSelected = wp_photo_id;
          var thumbnail = '<div class="ad-library-photo-wrapper" data-wp-photo-id="' + that.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id + '" style="background-image: url(' + photo.small_url + ')"></div>';
          var wrapper = '<li class="ad-library-photo-thumbnail">' + thumbnail + '</li>';
-         $('#ad-library-list').append(wrapper);
-         $('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
+         jQuery('#ad-library-list').append(wrapper);
+         jQuery('.ad-library-photo-wrapper[data-adentify-photo-id="' + photo.id + '"]').click(function() {
             if (that.currentSelectedPhoto) {
                that.currentSelectedPhoto.removeClass(that.selectedPhotoClassName);
             }
-            that.currentSelectedPhoto = $(this);
+            that.currentSelectedPhoto = jQuery(this);
             that.currentSelectedPhoto.addClass(that.selectedPhotoClassName);
-            $('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
+            jQuery('#ad-insert-from-library, #ad-tag-from-library, #ad-delete-photo').removeAttr('disabled');
             that.photoIdSelected = that.currentSelectedPhoto.attr('data-adentify-photo-id');
             that.wpPhotoIdSelected = that.currentSelectedPhoto.attr('data-wp-photo-id');
          });
@@ -301,24 +302,24 @@ var AdEntifyBO = {
    },
 
    openPhotoModal: function(data) {
-      $('#photo-getting-tagged').remove();
-      $('#adentify-upload-modal').hide();
-      $('#adentify-tag-modal').show(0, function() {
-         $('#tag-product input').first().focus();
+      jQuery('#photo-getting-tagged').remove();
+      jQuery('#adentify-upload-modal').hide();
+      jQuery('#adentify-tag-modal').show(0, function() {
+         jQuery('#tag-product input').first().focus();
       });
       try {
          var that = this;
          var photo = data;
          photo.tags.forEach(function(tag) {
-            that.renderTag($('.photo-overlay'), tag);
+            that.renderTag(jQuery('.photo-overlay'), tag);
          });
          this.setupTagForms();
-         var maxHeight = $('#ad-display-photo').height();
+         var maxHeight = jQuery('#ad-display-photo').height();
 
-         $('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
+         jQuery('#ad-wrapper-tag-photo').append('<img id="photo-getting-tagged" style="max-height:' + maxHeight
          + 'px" class="ad-photo-getting-tagged" data-wp-photo-id="' + this.wpPhotoIdSelected + '" data-adentify-photo-id="' + photo.id
          + '" src="' + photo.large_url + '"/>');
-         (photo.large_height > maxHeight) ? $('#ad-wrapper-tag-photo').height(maxHeight) : $('#ad-wrapper-tag-photo').height(photo.large_height);
+         (photo.large_height > maxHeight) ? jQuery('#ad-wrapper-tag-photo').height(maxHeight) : jQuery('#ad-wrapper-tag-photo').height(photo.large_height);
       } catch(e) {
          console.log(e);
          console.log("Error: " + data); // TODO gestion erreur
@@ -327,9 +328,9 @@ var AdEntifyBO = {
 
    getPhoto: function(e) {
       var that = this;
-      if (!$(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
+      if (!jQuery(e.target).is('[disabled]') && typeof this.photoIdSelected !== 'undefined' && this.photoIdSelected) {
          that.startLoading('tag-from-library');
-         $.ajax({
+         jQuery.ajax({
             type: 'GET',
             url: adentifyTagsData.admin_ajax_url,
             dataType: 'json',
@@ -360,8 +361,8 @@ var AdEntifyBO = {
       var select2Parameters = {
          placeholder: placeholder,
          minimumInputLength: 1,
+         id: function(e) { return typeof e.id !== 'undefined' ? e.id : null; },
          ajax: {
-            id: function(e) { return typeof e.id !== 'undefined' ? e.id : e.foursquare_id; },
             url: searchUrl,
             dataType: 'json',
             quietMillis: 250,
@@ -370,7 +371,7 @@ var AdEntifyBO = {
                var queryParams = {
                   query: term
                };
-               $.extend(queryParams, extraQueryParams);
+               jQuery.extend(queryParams, extraQueryParams);
 
                return queryParams;
             },
@@ -382,13 +383,13 @@ var AdEntifyBO = {
                params.beforeSend = function(request){
                   request.setRequestHeader("Authorization", 'Bearer ' + adentifyTagsData.adentify_api_access_token);
                };
-               return $.ajax(params);
+               return jQuery.ajax(params);
             }
          },
          initSelection: function(element, callback) {
-            var id = $(element).val();
+            var id = jQuery(element).val();
             if (id !== "") {
-               $.ajax(getUrl + id, {
+               jQuery.ajax(getUrl + id, {
                   dataType: "json"
                }).done(function(data) { callback(data); });
             }
@@ -399,24 +400,21 @@ var AdEntifyBO = {
          escapeMarkup: function (m) { return m; }
       };
       if (enableCreateSearchChoice) {
-         $.extend(select2Parameters, {
+         jQuery.extend(select2Parameters, {
             createSearchChoice: function(term) {
-               return {
-                  id: 0,
-                  'name': term
-               }
+               return (selector === '#person-name') ? { id:0 ,'firstname': term } : {id: 0, 'name': term } ;
             },
             createSearchChoicePosition: 'bottom'
          });
       }
-      $(selector).select2(select2Parameters).on('select2-selecting', function(e) {
+      jQuery(selector).select2(select2Parameters).on('select2-selecting', function(e) {
          tagFormField.forEach(function(entry) {
             if (typeof entry.isSelect2 !== 'undefined' && entry.isSelect2) {
-               $(entry.fieldSelector).select2('data', e.choice[entry.propertyName]);
+               jQuery(entry.fieldSelector).select2('data', e.choice[entry.propertyName]);
             } else
-               $(entry.fieldSelector).val(e.choice[entry.propertyName]);
-            if ($(entry.fieldSelector).attr('id') == 'product-description')
-               $('.tinyeditor iframe').contents().find('#product-description-editor').html(e.choice[entry.propertyName]);
+               jQuery(entry.fieldSelector).val(e.choice[entry.propertyName]);
+            if (jQuery(entry.fieldSelector).attr('id') == 'product-description')
+               jQuery('.tinyeditor iframe').contents().find('#product-description-editor').html(e.choice[entry.propertyName]);
          });
       });
    },
@@ -502,7 +500,7 @@ var AdEntifyBO = {
    },
 
    addTag: function(e) {
-      if ($(e.target).hasClass('photo-overlay')) {
+      if (jQuery(e.target).hasClass('photo-overlay')) {
          var xPosition = (e.offsetX === undefined ? e.originalEvent.layerX : e.offsetX) / e.currentTarget.clientWidth;
          var yPosition = (e.offsetY === undefined ? e.originalEvent.layerY : e.offsetY) / e.currentTarget.clientHeight;
 
@@ -527,7 +525,7 @@ var AdEntifyBO = {
    },
 
    renderTag: function(photoOverlay, tag) {
-      $(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape +
+      jQuery(photoOverlay).find('.tags-container').append('<div class="' + adentifyTagsData.tag_shape +
          ' tag" ' + (typeof tag.temp !== 'undefined' ? 'data-temp-tag="true"' : '') + ' style="left: ' + (tag.x_position * 100) + '%; ' +
          'top: ' + tag.y_position * 100 + '%; margin-left: -15px; margin-top: -15px;">' +
          ((typeof tag.id !== 'undefined') ? '<div class="popover"><div class="popover-inner">' +
@@ -540,17 +538,17 @@ var AdEntifyBO = {
    },
 
    removeTempTagsFromDOM: function(photoOverlay) {
-      $(photoOverlay).find('.tags-container .tag[data-temp-tag]').remove();
+      jQuery(photoOverlay).find('.tags-container .tag[data-temp-tag]').remove();
    },
 
    removeTagsFromDOM: function(photoOverlay) {
-      $(photoOverlay).find('div .tag').remove();
+      jQuery(photoOverlay).find('div .tag').remove();
    },
 
    removeTag: function(e) {
       var that = this;
       that.startLoading('remove-tag', e.target.attributes['data-tag-id'].value);
-      $.ajax({
+      jQuery.ajax({
          type: 'GET',
          url: adentifyTagsData.admin_ajax_url,
          data: {
@@ -559,7 +557,7 @@ var AdEntifyBO = {
          },
          complete: function() {
             console.log("tag removed");
-            $('div .tag:has([data-tag-id="' + e.target.attributes['data-tag-id'].value + '"])').remove();
+            jQuery('div .tag:has([data-tag-id="' + e.target.attributes['data-tag-id'].value + '"])').remove();
             that.stopLoading('remove-tag', e.target.id);
          }
       });
@@ -579,10 +577,10 @@ var AdEntifyBO = {
       options.array.forEach(function(item) {
          var value;
          if (typeof item.objectProperty !== 'undefined') {
-            var data = $(item.select2Selector).select2('data');
+            var data = jQuery(item.select2Selector).select2('data');
             value = that.implodeObject(data, item.objectProperty);
          } else
-            value = $(item.select2Selector).select2('val');
+            value = jQuery(item.select2Selector).select2('val');
 
          if (typeof value !== 'undefined' && value && value != "0") {
             options.properties[item.propertyName] = value;
@@ -591,7 +589,7 @@ var AdEntifyBO = {
             if (typeof options.properties.extraData === 'undefined')
                options.properties.extraData = {};
 
-            var data = $(item.select2Selector).select2('data');
+            var data = jQuery(item.select2Selector).select2('data');
             options.properties.extraData[item.propertyName] = data;
          }
          else {
@@ -609,17 +607,17 @@ var AdEntifyBO = {
 
       if (typeof this.currentTagIndex !== 'undefined' && typeof this.tags[this.currentTagIndex] !== 'undefined') {
          // Get data from form
-         var tagForm = $('#' + $(e.target).context.form.id).serializeObject();
+         var tagForm = jQuery('#' + jQuery(e.target).context.form.id).serializeObject();
          var tag = this.tags[this.currentTagIndex];
 
          var properties = {
-            'type': $(e.target).context.form.attributes['data-tag-type'].value,
+            'type': jQuery(e.target).context.form.attributes['data-tag-type'].value,
             'description': tagForm.description,
             'link': tagForm.url,
-            'photo': $('#photo-getting-tagged').attr('data-adentify-photo-id')
+            'photo': jQuery('#photo-getting-tagged').attr('data-adentify-photo-id')
          };
 
-         switch ($(e.target).context.form.attributes['data-tag-type'].value) {
+         switch (jQuery(e.target).context.form.attributes['data-tag-type'].value) {
             case 'place':
                this.getValuesFromSelect2({
                   array: [
@@ -636,7 +634,7 @@ var AdEntifyBO = {
                   ],
                   properties: properties,
                   success: function() {
-                     that.postTag($.extend(tag, properties));
+                     that.postTag(jQuery.extend(tag, properties));
                   },
                   fail: function () {
                      alert('Please select a venue before adding'); // TODO: gestion erreur
@@ -662,7 +660,7 @@ var AdEntifyBO = {
                   ],
                   properties: properties,
                   success: function() {
-                     that.postTag($.extend(tag, properties));
+                     that.postTag(jQuery.extend(tag, properties));
                   },
                   fail: function () {
                      alert('Please select a product and a brand before adding'); // TODO: gestion erreur
@@ -684,7 +682,7 @@ var AdEntifyBO = {
                   ],
                   properties: properties,
                   success: function() {
-                     that.postTag($.extend(tag, properties));
+                     that.postTag(jQuery.extend(tag, properties));
                   },
                   fail: function () {
                      alert('Please select a person before adding'); // TODO: gestion erreur
@@ -699,18 +697,18 @@ var AdEntifyBO = {
    },
 
    resetForms: function() {
-      $('.ad-tag-frame-content textarea, .ad-tag-frame-content input').each(function(index, element) {
-         $(element).val('');
+      jQuery('.ad-tag-frame-content textarea, .ad-tag-frame-content input').each(function(index, element) {
+         jQuery(element).val('');
       });
-      $('#product-name, #venue-name, #brand-name, #person-name').select2('data', null);
-      $('.tinyeditor iframe').contents().find('#product-description-editor').html('');
+      jQuery('#product-name, #venue-name, #brand-name, #person-name').select2('data', null);
+      jQuery('.tinyeditor iframe').contents().find('#product-description-editor').html('');
    },
 
    postTag: function(tag) {
       var that = this;
-      $('.submit-tag').hide();
+      jQuery('.submit-tag').hide();
       that.startLoading('posting-tag');
-      $.ajax({
+      jQuery.ajax({
          type: 'POST',
          url: adentifyTagsData.admin_ajax_url,
          data: {
@@ -719,19 +717,20 @@ var AdEntifyBO = {
          },
          success: function(data) {
             that.resetForms();
-            that.renderTag($('.photo-overlay'), JSON.parse(data));
-            that.removeTempTagsFromDOM($('.photo-overlay'));
+            that.renderTag(jQuery('.photo-overlay'), JSON.parse(data));
+            that.removeTempTagsFromDOM(jQuery('.photo-overlay'));
             // TODO: append popover to tag
          },
          complete: function() {
-            $('.submit-tag').show();
+            jQuery('.submit-tag').show();
             that.stopLoading('posting-tag');
+            that.currentTagIndex = null;
          }
       });
    },
 
    insertPhotoInPostEditor: function(e) {
-      if (!$(e.target).is('[disabled]')) {
+      if (!jQuery(e.target).is('[disabled]')) {
          if (typeof this.photoIdSelected !== "undefined" && this.photoIdSelected) {
             window.send_to_editor('[adentify=' + this.photoIdSelected + ']');
             this.closeModals();
@@ -781,7 +780,7 @@ var AdEntifyBO = {
       if (xhr) {
          xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
          xhr.setRequestHeader('X-Custom-Header', 'value');
-         xhr.send($.param({
+         xhr.send(jQuery.param({
             'analytic': {
                'platform': 'wordpress',
                'action': 'hover',
@@ -796,14 +795,14 @@ var AdEntifyBO = {
 
       var that = this;
       // Listen click event on AdEntify button
-      var adentifyButton = $('#adentify-upload-img');
+      var adentifyButton = jQuery('#adentify-upload-img');
       if (adentifyButton.length) {
          adentifyButton.click(function() {
             that.clickOnAdEntifyButton();
          });
       }
 
-      /*$.ajax({
+      /*jQuery.ajax({
          url: adentifyTagsData.adentify_api_analytics_post_url,
          type: 'POST',
          xhrFields: {
@@ -828,14 +827,14 @@ var AdEntifyBO = {
    }
 };
 
-jQuery(document).ready(function($) {
+jQuery(document).ready(function(jQuery) {
    // Helpers
    jQuery.fn.extend({
       serializeObject: function()
       {
          var o = {};
          var a = this.serializeArray();
-         $.each(a, function() {
+         jQuery.each(a, function() {
             if (o[this.name] !== undefined) {
                if (!o[this.name].push) {
                   o[this.name] = [o[this.name]];

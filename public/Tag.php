@@ -82,16 +82,17 @@ class Tag
                 if ($response)
                     $venue = json_decode($response->getBody());
             }
-            if (array_key_exists('product', $postArray['extraData'])) {
-                $response = APIManager::getInstance()->postProduct($postArray['extraData']['product']);
-                if ($response) {
-                    $product = json_decode($response->getBody());
-                }
-            }
             if (array_key_exists('brand', $postArray['extraData'])) {
                 $response = APIManager::getInstance()->postBrand($postArray['extraData']['brand']);
                 if ($response)
                     $brand = json_decode($response->getBody());
+            }
+            if (array_key_exists('product', $postArray['extraData'])) {
+                $brandId = ($brand) ? $brand->id : $postArray['brand'];
+                $response = APIManager::getInstance()->postProduct($postArray['extraData']['product'], $brandId);
+                if ($response) {
+                    $product = json_decode($response->getBody());
+                }
             }
             if (array_key_exists('person', $postArray['extraData'])) {
                 $response = APIManager::getInstance()->postPerson($postArray['extraData']['person']);

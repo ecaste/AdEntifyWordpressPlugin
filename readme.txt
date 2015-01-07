@@ -48,9 +48,11 @@ For more information visit business.adentify.com or email us at contact@adentify
 
 1. Tag your photo with products, people or placs
 2. Plugin's settings
-2. Enjoy tags!
+3. Enjoy tags!
 
 == Changelog ==
 
 = 1.0 =
 * First version of the plugin
+= 1.0.1 =
+* Support of french and english

@@ -57,4 +57,5 @@ For more information visit business.adentify.com or email us at contact@adentify
 = 1.0.1 =
 * Support of french and english
 = 1.0.2 =
+* Fix tags visibility in media library
 * Vendors updates

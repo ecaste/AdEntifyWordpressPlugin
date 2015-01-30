@@ -124,7 +124,7 @@ function adentify_plugin_settings() {
     $settings = array();
     $productProvidersId = array();
 
-    //fill the settings array with the user's providers
+    // fill the settings array with the user's providers
     $productProviders = APIManager::getInstance()->getProductProviders();
     if (!empty($productProviders))
     {
@@ -164,6 +164,13 @@ function adentify_plugin_settings() {
         ));
     }
 
+    if (APIManager::getInstance()->isAccesTokenValid()) {
+        $photos = APIManager::getInstance()->getPhotos();
+        if ($photos && property_exists($photos, 'data')) {
+            DBManager::getInstance()->insertPhotos($photos->data);
+        }
+    }
+
     echo Twig::render('adentify.settings.html.twig', $settings);
 }
 
@@ -176,6 +183,7 @@ function adentify_button($editor_id = 'content') {
         esc_attr__( 'Upload images with AdEntify plugin' ),
         'AdEntify'
     );
+
     echo Twig::render('admin\modals\upload.modal.html.twig', array(
         'photos' => DBManager::getInstance()->getPhotos(),
         'max_upload_size' => $max_upload_size
